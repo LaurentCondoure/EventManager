@@ -32,7 +32,7 @@ EventManager/
 └── README.md
 ```
 
-> See [ADR-001](docs/adr/ADR-001-repository-structure.md) — mono-repository decision and component-scoped pipelines.
+> See [ADR-001](documents/adr/ADR-001-repository-structure.md) — mono-repository decision and component-scoped pipelines.
 
 ---
 
