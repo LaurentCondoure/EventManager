@@ -1,0 +1,227 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Api\\EventManager.Api.csproj": {}
+  },
+  "projects": {
+    "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Api\\EventManager.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Api\\EventManager.Api.csproj",
+        "projectName": "EventManager.Api",
+        "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Api\\EventManager.Api.csproj",
+        "packagesPath": "C:\\Users\\lcond\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Api\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\lcond\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj": {
+                "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj"
+              },
+              "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\EventManager.Infrastructure.csproj": {
+                "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\EventManager.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FluentValidation.AspNetCore": {
+              "target": "Package",
+              "version": "[11.3.1, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[8.0.26, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.1.7, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj",
+        "projectName": "EventManager.Domain",
+        "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj",
+        "packagesPath": "C:\\Users\\lcond\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\lcond\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\EventManager.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\EventManager.Infrastructure.csproj",
+        "projectName": "EventManager.Infrastructure",
+        "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\EventManager.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\lcond\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\lcond\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj": {
+                "projectPath": "D:\\Projects\\Formation\\EventManager\\backend\\EventManager.Domain\\EventManager.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.72, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

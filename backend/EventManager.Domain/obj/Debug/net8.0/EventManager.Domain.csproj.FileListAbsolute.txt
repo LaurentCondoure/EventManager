@@ -1,0 +1,12 @@
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\bin\Debug\net8.0\EventManager.Domain.deps.json
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\bin\Debug\net8.0\EventManager.Domain.dll
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\bin\Debug\net8.0\EventManager.Domain.pdb
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.AssemblyInfoInputs.cache
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.AssemblyInfo.cs
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.csproj.CoreCompileInputs.cache
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.sourcelink.json
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.dll
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\refint\EventManager.Domain.dll
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\EventManager.Domain.pdb
+D:\Projects\Formation\EventManager\backend\EventManager.Domain\obj\Debug\net8.0\ref\EventManager.Domain.dll
