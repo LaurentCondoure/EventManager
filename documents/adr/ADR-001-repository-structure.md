@@ -32,7 +32,7 @@ EventManager/
 ├── terraform/
 ├── documents/
 │   ├── adr/
-│   ├── specifications/
+│   ├── functionnal/
 │   └── technical/
 ├── readme.md
 └── azure-pipelines.yml

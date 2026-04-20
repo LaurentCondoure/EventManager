@@ -10,3 +10,4 @@ Categories are added as patterns emerge across decisions.
 | # | Title | Status | Date |
 |---|-------|--------|------|
 | [ADR-001](ADR-001-repository-structure.md) | Mono-Repository Structure with Path-Scoped Pipelines | Accepted | 2026-04-19 |
+| [ADR-002](ADR-002-primary-key-strategy.md) | GUID as Primary Key Strategy | Accepted | 2026-04-20 |

@@ -1,7 +1,8 @@
 # Events Management
 
 A cultural events management platform enabling organizers to publish events (concerts, shows, exhibitions) and users to discover them, book seats, and share their reviews.
-API .NET built as part of a self-directed learning process started in February 2026 — focuced full-text search with Elasticsearch, distributed cache with Redis, infrastructure provisioned with Terraform.
+
+Technical demonstration project built as part of an intensive 52-hour training program.
 
 ---
 
@@ -17,16 +18,16 @@ API .NET built as part of a self-directed learning process started in February 2
 ## Repository Structure
 
 ```
-EventManager/
+events-management/
 ├── backend/
-│   ├── EventManager.Domain/
-│   ├── EventManager.Infrastructure/
-│   └── EventManager.Api/
+│   ├── EventsAPI.Domain/
+│   ├── EventsAPI.Infrastructure/
+│   └── EventsAPI.Api/
 ├── frontend/
 ├── terraform/
-├── documents/
+├── docs/
 │   ├── adr/
-│   ├── specifications/
+│   ├── functionnal/
 │   └── technical/
 ├── azure-pipelines.yml
 └── README.md
@@ -59,7 +60,9 @@ _To be completed_
 | Document | Description |
 |----------|-------------|
 | [ADR Index](documents/adr/00-index.md) | Architecture decision records |
-| [Specifications](documents/Specifications/) | project definition, User stories, acceptance criteria and business rules |
+| [Specifications](documents/functionnal/) | Project definition, user stories, acceptance criteria and business rules |
+| [Data Model](documents/technical/DATA_MODEL.md) | Database schema (SQL Server, MongoDB) and key design decisions |
+| [Technical Design](documents/technical/TECHNICAL_DESIGN.md) | Target architecture, data flows, technical choices, API endpoints |
 | Architecture | _To be completed_ |
 | Deployment | _To be completed_ |
 | AI Usage | _To be completed_ |
