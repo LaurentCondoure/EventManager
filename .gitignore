@@ -1,0 +1,54 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs
+logs/
+*.log
+
+# ASP.NET
+appsettings.Development.json
+
+# Test results
+TestResults/
+coverage/
+*.cobertura.xml
+*.opencover.xml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# JetBrains / Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Docker
+.env
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfplan
+terraform/tfplan.json
+terraform/.terraform.lock.hcl
+
+# Node (frontend)
+node_modules/
+dist/
+.nuxt/
