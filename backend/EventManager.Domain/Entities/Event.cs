@@ -15,9 +15,6 @@ public class Event
     /// <summary>Date and time when the event takes place (UTC).</summary>
     public DateTime Date { get; set; }
 
-    /// <summary>Name and location of the venue (city, hall).</summary>
-    public string Location { get; set; } = string.Empty;
-
     /// <summary>Maximum number of seats available.</summary>
     public int Capacity { get; set; }
 
@@ -26,9 +23,6 @@ public class Event
 
     /// <summary>Category of the event (e.g. Concert, Théâtre, Exposition).</summary>
     public string Category { get; set; } = string.Empty;
-
-    /// <summary>Name of the artist or performing group. Optional.</summary>
-    public string? ArtistName { get; set; }
 
     /// <summary>Date and time the record was created (UTC).</summary>
     public DateTime CreatedAt { get; set; }
