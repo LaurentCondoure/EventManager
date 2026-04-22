@@ -1,4 +1,4 @@
-namespace EventManagement.Core.Domain;
+namespace EventManager.Core.Domain;
 
 /// <summary>Represents a registered user of the platform.</summary>
 public class User

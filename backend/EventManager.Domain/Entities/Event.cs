@@ -1,4 +1,4 @@
-namespace EventManagement.Domain.Entities;
+namespace EventManager.Domain.Entities;
 
 /// <summary>Represents a cultural event (concert, show, exhibition).</summary>
 public class Event

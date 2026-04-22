@@ -1,7 +1,7 @@
-using EventManagement.Domain.Entities;
-using EventManagement.Domain.DTOs;
+using EventManager.Domain.Entities;
+using EventManager.Domain.DTOs;
 
-namespace EventManagement.Domain.Interfaces;
+namespace EventManager.Domain.Interfaces;
 
 /// <summary>Data access contract for the Events table.</summary>
 public interface IEventRepository
