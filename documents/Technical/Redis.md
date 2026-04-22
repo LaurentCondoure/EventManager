@@ -67,6 +67,18 @@ JSON allows visual inspection of the cache with Redis CLI or RedisInsight.
 ### Errors Handling
 Health check and Redis supervision have to be worked on
 
+## Redis issues
+
+### Memory Management
+data are stored in memory. If not manage well, Redis will invalidate key based on configured policy or raise errors for write operations.
+To avoir this, the maxmemory and maxmemory-policy defined in the redis configuration file should match the planned usage of the application. 
+
+### Network Latency and Connection Limits
+In case of to many connection, or latencies on the network, it can result on rejected or very slow response.
+There are two possible actions. First one is to set a maxclients value corresponding to the application's traffic (max expected concurrent users). And to implement in the project a connection pooling to access Redis
+
+N.B : The project doesn't require data persistence which can also be a challenge
+
 ## To Go further
 ### Tools
 + Redis CLI

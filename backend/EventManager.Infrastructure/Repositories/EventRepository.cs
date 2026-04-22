@@ -1,7 +1,7 @@
 using Dapper;
-using EventManagement.Domain.Entities;
-using EventManagement.Domain.DTOs;
-using EventManagement.Domain.Interfaces;
+using EventManager.Domain.Entities;
+using EventManager.Domain.DTOs;
+using EventManager.Domain.Interfaces;
 using EventManagement.Infrastructure.Options;
 using EventManagement.Infrastructure.Queries;
 using Microsoft.Data.SqlClient;
