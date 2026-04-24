@@ -1,4 +1,4 @@
-﻿namespace EventManagement.Infrastructure.Queries;
+﻿namespace EventManager.Infrastructure.Queries;
 
 /// <summary>Centralized storage for all SQL queries related to event management.</summary>
 public class EventQueries

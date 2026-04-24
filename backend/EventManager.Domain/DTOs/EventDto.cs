@@ -23,43 +23,35 @@ public record EventDto(
 );
 
 /// <summary>Payload used to create a new event.</summary>
-public record CreateEventRequest(
+public record CreateEventInput(
     /// <summary>Display title of the event.</summary>
     string Title,
     /// <summary>Full description of the event.</summary>
     string Description,
     /// <summary>Date and time when the event takes place (UTC).</summary>
     DateTime Date,
-    /// <summary>Name and location of the venue.</summary>
-    string Location,
     /// <summary>Maximum number of seats available.</summary>
     int Capacity,
     /// <summary>Ticket price per seat.</summary>
     decimal Price,
     /// <summary>Category of the event.</summary>
-    string Category,
-    /// <summary>Name of the artist or performing group. Optional.</summary>
-    string? ArtistName
+    string Category
 );
 
 /// <summary>Payload used to update an existing event.</summary>
-public record UpdateEventRequest(
+public record UpdateEvent(
     /// <summary>Display title of the event.</summary>
     string Title,
     /// <summary>Full description of the event.</summary>
     string Description,
     /// <summary>Date and time when the event takes place (UTC).</summary>
     DateTime Date,
-    /// <summary>Name and location of the venue.</summary>
-    string Location,
     /// <summary>Maximum number of seats available.</summary>
     int Capacity,
     /// <summary>Ticket price per seat.</summary>
     decimal Price,
     /// <summary>Category of the event.</summary>
-    string Category,
-    /// <summary>Name of the artist or performing group. Optional.</summary>
-    string? ArtistName
+    string Category
 );
 
 /// <summary>Query parameters for paginated event listing.</summary>

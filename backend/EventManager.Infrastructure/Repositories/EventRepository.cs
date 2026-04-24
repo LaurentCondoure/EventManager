@@ -1,25 +1,26 @@
-using Dapper;
 using EventManager.Domain.Entities;
-using EventManager.Domain.DTOs;
 using EventManager.Domain.Interfaces;
-using EventManagement.Infrastructure.Options;
-using EventManagement.Infrastructure.Queries;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
+using EventManager.Infrastructure.Factories;
+using EventManager.Infrastructure.Queries;
 
-namespace EventManagement.Infrastructure.Repositories;
+using System.Data;
+
+using Dapper;
+
+
+namespace EventManager.Infrastructure.Repositories;
 
 /// <summary>Dapper-based implementation of <see cref="IEventRepository"/> targeting SQL Server.</summary>
 /// <remarks>
 /// This repository uses raw SQL queries defined in <see cref="EventQueries"/> for better performance and maintainability.
 /// </remarks>
 /// <param name="options">Database connection options injected via IOptions pattern.</param>
-public class EventRepository(IOptions<DatabaseOptions> options) : IEventRepository
+public class EventRepository(IDbConnectionFactory dbConnectionfactory) : IEventRepository
 {
-    private readonly DatabaseOptions _options = options.Value;
+    private readonly IDbConnectionFactory _dbConnectionfactory = dbConnectionfactory;
 
-    /// <summary>Creates and returns a new SQL connection using the configured connection string.</summary>
-    private SqlConnection CreateConnection() => new(_options.DefaultConnection);
+    /// <summary>Creates and returns a new DB connection using the configured factory.</summary>
+    private IDbConnection CreateConnection() => _dbConnectionfactory.CreateConnection();
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Event>> GetAllAsync(int page = 1, int pageSize = 20)

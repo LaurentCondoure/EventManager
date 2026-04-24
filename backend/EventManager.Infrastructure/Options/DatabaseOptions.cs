@@ -1,4 +1,4 @@
-namespace EventManagement.Infrastructure.Options;
+namespace EventManager.Infrastructure.Options;
 
 /// <summary>Strongly-typed configuration for database connection settings.</summary>
 public class DatabaseOptions
