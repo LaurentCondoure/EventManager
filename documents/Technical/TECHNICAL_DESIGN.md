@@ -10,13 +10,13 @@
 
 ```mermaid
 graph TB
-    Client["Web Client\n(Vue.js 3)"]
-    Varnish["Varnish\n(HTTP Cache — 5min TTL)"]
-    API["API .NET 8\n(ASP.NET Core)"]
-    Redis["Redis\n(Applicative Cache)"]
-    SQL["SQL Server\n(Structured Data)"]
-    Mongo["MongoDB\n(Comments)"]
-    ES["Elasticsearch\n(Full-text Search)"]
+    Client["Web Client (Vue.js 3)"]
+    Varnish["Varnish (HTTP Cache — 5min TTL)"]
+    API["API .NET 8 (ASP.NET Core)"]
+    Redis["Redis (Applicative Cache)"]
+    SQL["SQL Server (Structured Data)"]
+    Mongo["MongoDB (Comments)"]
+    ES["Elasticsearch (Full-text Search)"]
 
     Client -->|HTTP| Varnish
     Varnish -->|on MISS| API

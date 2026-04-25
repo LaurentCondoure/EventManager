@@ -5,7 +5,26 @@ A cultural events management platform enabling organizers to publish events (con
 Technical demonstration project built as part of an intensive 52-hour training program.
 
 ---
+## Target Architecture
 
+```mermaid
+graph TD
+    Frontend["Vue.js 3 (Frontend)"]
+    Varnish["Varnish (HTTP Cache)"]
+    API["ASP.NET Core API (.NET 8)"]
+    Redis[("Redis (Application Cache)")]
+    SQL[("SQL Server (Events)")]
+    Mongo[("MongoDB (Comments)")]
+    ES[("Elasticsearch (Search)")]
+
+    Frontend --> Varnish
+    Varnish --> API
+    API --> Redis
+    Redis -->|Cache miss| SQL
+    API --> Mongo
+    API --> ES
+```
+---
 ## Tech Stack
 
 **Backend** — .NET 8, ASP.NET Core, C#, Dapper, SQL Server, MongoDB, Redis, Elasticsearch  
@@ -20,9 +39,9 @@ Technical demonstration project built as part of an intensive 52-hour training p
 ```
 events-management/
 ├── backend/
-│   ├── EventsAPI.Domain/
-│   ├── EventsAPI.Infrastructure/
-│   └── EventsAPI.Api/
+│   ├── EventsManager.Domain/
+│   ├── EventsManager.Infrastructure/
+│   └── EventsManager.Api/
 ├── frontend/
 ├── terraform/
 ├── docs/
@@ -68,13 +87,20 @@ sqlcmd -S localhost -i database/migrations/001_InitialSchema.sql
 dotnet run --project backend/EventManager.Api
 ```
 
-Swagger available at `https://localhost:{port}/swagger`.
+
 
 ---
 
 ## API Endpoints
 
-_To be completed — Swagger documentation available at `/swagger` after startup_
+
+| HTTP VERB | Endpoint | Description | HTTP Status |
+|---|---|---|---|
+| `GET` | `/api/events` | Liste paginée (`page`, `pageSize`) | `200` |
+| `GET` | `/api/events/{id}` | Détail d'un événement | `200`, `404` |
+| `POST` | `/api/events` | Créer un événement | `201`, `400` |
+
+Test endpoint available through Swagger at `https://localhost:{port}/swagger`.
 
 ---
 
@@ -95,7 +121,7 @@ Current coverage: **38%** — tracked via [Codecov](https://codecov.io).
 | [ADR Index](documents/adr/00-index.md) | Architecture decision records |
 | [Specifications](documents/functionnal/) | Project definition, user stories, acceptance criteria and business rules |
 | [Data Model](documents/technical/DATA_MODEL.md) | Database schema (SQL Server, MongoDB) and key design decisions |
-| [Technical Design](documents/technical/TECHNICAL_DESIGN.md) | Target architecture, data flows, technical choices, API endpoints |
-| Architecture | _To be completed_ |
+| [Technical Design](documents/technical/TECHNICAL_DESIGN.md) | Target architecture, planned endpoints, technical decisions |
+| [Architecture](documents/technical/Architecture.md) | Implemented component diagrams, project dependencies, data flows |
 | Deployment | _To be completed_ |
 | AI Usage | _To be completed_ |

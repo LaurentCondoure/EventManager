@@ -1,6 +1,6 @@
 # Technology Choices — Rationale & Market Comparison
 
-**Project:** EventsAPI — Formation 52h  
+**Project:** EventManager — Formation 52h  
 **Stack:** .NET 8 · SQL Server · MongoDB · Redis · Elasticsearch · Varnish · Vue.js 3 · Terraform · Azure DevOps
 
 ---
