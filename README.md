@@ -39,7 +39,36 @@ events-management/
 
 ## Getting Started
 
-_To be completed_
+### Prerequisites
+
+- [.NET SDK 8](https://dotnet.microsoft.com/download) or later
+- SQL Server (local instance)
+- Redis (local instance)
+
+### Configuration
+
+SQL Server connection string via User Secrets:
+
+```bash
+cd backend/EventManager.Api
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=EventManager;User Id=sa;Password=<password>;TrustServerCertificate=True"
+```
+
+### Database
+
+Create the `EventManager` database and apply the initial schema:
+
+```bash
+sqlcmd -S localhost -i database/migrations/001_InitialSchema.sql
+```
+
+### Run
+
+```bash
+dotnet run --project backend/EventManager.Api
+```
+
+Swagger available at `https://localhost:{port}/swagger`.
 
 ---
 
@@ -51,7 +80,11 @@ _To be completed — Swagger documentation available at `/swagger` after startup
 
 ## Tests
 
-_To be completed_
+```bash
+dotnet test backend/EventManager.slnx
+```
+
+Current coverage: **38%** — tracked via [Codecov](https://codecov.io).
 
 ---
 
