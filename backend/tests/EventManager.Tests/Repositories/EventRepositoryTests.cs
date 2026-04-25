@@ -41,7 +41,7 @@ public class EventRepositoryTests : IAsyncLifetime
         // Unique name per instance: each test gets its own isolated in-memory database.
         // A fixed name would allow databases to leak across tests via SQLite shared-cache.
         string dbName = $"EventManagerTestDb_{Guid.NewGuid():N}";
-        var options = Options.Create(new DatabaseOptions
+        IOptions<DatabaseOptions> options = Options.Create(new DatabaseOptions
         {
             DefaultConnection = $"Data Source={dbName};Mode=Memory;Cache=Shared;Pooling=False"
         });

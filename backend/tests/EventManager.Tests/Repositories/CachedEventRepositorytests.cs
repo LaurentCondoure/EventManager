@@ -1,13 +1,16 @@
 ﻿using EventManager.Domain.Entities;
 using EventManager.Domain.Interfaces;
+using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Xml.Linq;
 
 namespace EventManager.UnitTests.Repositories;
 
@@ -37,8 +40,12 @@ public class CachedEventRepositoryTests
         var redisMock = new Mock<IConnectionMultiplexer>();
         redisMock.Setup(r => r.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
                  .Returns(_dbMock.Object);
-
-        _sut = new CachedEventRepository(_innerMock.Object, redisMock.Object);
+        IOptions<RedisOptions> options = Options.Create(new RedisOptions
+        {
+            ConnectionString = "localhost:6379",
+            TimeToLive = 1
+        });
+        _sut = new CachedEventRepository(_innerMock.Object, redisMock.Object, options);
     }
 
     // ── GetAllAsync ──────────────────────────────────────────────────────────

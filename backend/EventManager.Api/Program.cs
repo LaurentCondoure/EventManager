@@ -39,11 +39,16 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
+builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection(RedisOptions.SectionName));
+
 
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
     ?? "localhost:6379";
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-    ConnectionMultiplexer.Connect(redisConnectionString));
+                                                    ConnectionMultiplexer.Connect(
+                                                                                    _.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString
+                                                                                )
+                                                    );
 
 builder.Services.AddScoped<IDbConnectionFactory>(sp =>
                                                     new DbConnectionFactory(

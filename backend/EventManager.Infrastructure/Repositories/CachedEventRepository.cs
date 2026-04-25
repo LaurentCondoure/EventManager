@@ -1,9 +1,12 @@
 using EventManager.Domain.Entities;
 using EventManager.Domain.Interfaces;
+using EventManager.Infrastructure.Options;
 
 using System.Text.Json;
 
 using StackExchange.Redis;
+using Microsoft.Extensions.Options;
+
 
 namespace EventManager.Infrastructure.Repositories;
 
@@ -11,7 +14,7 @@ namespace EventManager.Infrastructure.Repositories;
 /// Decorator over <see cref="IEventRepository"/> that adds a Redis cache layer.
 /// Reads check the cache first (cache-aside pattern); writes invalidate the relevant keys.
 /// </summary>
-public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexer redis) : IEventRepository
+public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexer redis, IOptions<RedisOptions> options) : IEventRepository
 {
     /// <summary>
     /// Repository that performs data access operations.
@@ -26,7 +29,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     /// <summary>
     /// Default time to live for cached items.
     /// </summary>
-    private static readonly TimeSpan Ttl = TimeSpan.FromMinutes(10);
+    private readonly TimeSpan Ttl = TimeSpan.FromMinutes(options.Value.TimeToLive);
 
     /// <summary>
     /// Key to track the version of the events list. 
