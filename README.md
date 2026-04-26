@@ -63,6 +63,7 @@ events-management/
 - [.NET SDK 8](https://dotnet.microsoft.com/download) or later
 - SQL Server (local instance)
 - Redis (local instance)
+- MongoDB (local instance)
 
 ### Configuration
 
@@ -99,6 +100,8 @@ dotnet run --project backend/EventManager.Api
 | `GET` | `/api/events` | Liste paginée (`page`, `pageSize`) | `200` |
 | `GET` | `/api/events/{id}` | Détail d'un événement | `200`, `404` |
 | `POST` | `/api/events` | Créer un événement | `201`, `400` |
+| `GET` | `/api/events/{id}/comments` | Liste des commentaires d'un événement | `200` |
+| `POST` | `/api/events/{id}/comments` | Ajouter un commentaire | `201`, `400` |
 
 Test endpoint available through Swagger at `https://localhost:{port}/swagger`.
 

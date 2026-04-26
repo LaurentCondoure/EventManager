@@ -15,7 +15,7 @@ namespace EventManager.Infrastructure.Repositories;
 /// This repository uses raw SQL queries defined in <see cref="EventQueries"/> for better performance and maintainability.
 /// </remarks>
 /// <param name="options">Database connection options injected via IOptions pattern.</param>
-public class EventRepository(IDbConnectionFactory dbConnectionfactory) : IEventRepository
+public class SqlServerEventRepository(IDbConnectionFactory dbConnectionfactory) : IEventRepository
 {
     private readonly IDbConnectionFactory _dbConnectionfactory = dbConnectionfactory;
 

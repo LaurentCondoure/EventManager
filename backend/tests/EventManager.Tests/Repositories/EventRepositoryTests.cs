@@ -84,7 +84,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetByIdAsync_ExistingId_ReturnsMatchingEvent()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
 
         var result = await repository.GetByIdAsync(Event1Id);
 
@@ -96,7 +96,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetByIdAsync_ExistingId_MapsAllColumns()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
 
         var result = await repository.GetByIdAsync(Event1Id);
 
@@ -111,7 +111,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetByIdAsync_UnknownId_ReturnsNull()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
 
         var result = await repository.GetByIdAsync(Guid.NewGuid());
 
@@ -123,7 +123,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task CreateAsync_ValidEvent_ReturnsNonEmptyGuid()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
 
         var id = await repository.CreateAsync(BuildTestEvent());
 
@@ -133,7 +133,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task CreateAsync_ValidEvent_CanBeRetrievedById()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
         var @event = BuildTestEvent();
 
         var id = await repository.CreateAsync(@event);
@@ -151,7 +151,7 @@ public class EventRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task CreateAsync_TwoEvents_EachReceiveDistinctId()
     {
-        var repository = new EventRepository(_connectionFactory);
+        var repository = new SqlServerEventRepository(_connectionFactory);
 
         var id1 = await repository.CreateAsync(BuildTestEvent("Event A"));
         var id2 = await repository.CreateAsync(BuildTestEvent("Event B"));

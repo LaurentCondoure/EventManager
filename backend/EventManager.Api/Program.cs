@@ -40,10 +40,8 @@ builder.Services.AddProblemDetails();
 
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
 builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection(RedisOptions.SectionName));
+builder.Services.Configure<MongoDbOptions>(builder.Configuration.GetSection(MongoDbOptions.SectionName));
 
-
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
-    ?? "localhost:6379";
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
                                                     ConnectionMultiplexer.Connect(
                                                                                     _.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString
@@ -56,7 +54,7 @@ builder.Services.AddScoped<IDbConnectionFactory>(sp =>
                                                         DbProvider.SqlServer
                                                     )
                                                 );
-builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
 builder.Services.AddScoped<IEventService, EventService>();

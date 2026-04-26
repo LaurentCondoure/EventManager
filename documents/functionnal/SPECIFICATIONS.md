@@ -1,7 +1,7 @@
 # Specifications — Events Management Platform
 
 **Date:** 2026-04-15  
-**Project:** EventsAPI — Cultural Events Management Application  
+**Project:** EventManager — Cultural Events Management Application  
 **Objective:** Define the functional scope before development
 
 ---
