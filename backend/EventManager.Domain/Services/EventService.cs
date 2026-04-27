@@ -36,9 +36,11 @@ public class EventService(
             Title       = request.Title,
             Description = request.Description,
             Date        = request.Date,
+            Location    = request.Location,
             Capacity    = request.Capacity,
             Price       = request.Price,
             Category    = request.Category,
+            ArtistName  = request.ArtistName,
             CreatedAt   = DateTime.UtcNow
         };
 
@@ -54,9 +56,11 @@ public class EventService(
         e.Title,
         e.Description,
         e.Date,
+        e.Location,
         e.Capacity,
         e.Price,
         e.Category,
+        e.ArtistName,
         e.CreatedAt,
         e.UpdatedAt
     );

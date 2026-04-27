@@ -3,7 +3,9 @@ using FluentValidation;
 
 namespace EventManager.Api.Validators;
 
-/// <summary>Validates the payload used to create a new event, enforcing business rules RG1.</summary>
+/// <summary>
+/// Validate the input for creating an event, see ##BR1: Event in ../docs/specification.md for more details.
+/// </summary>
 public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
 {
     private static readonly string[] ValidCategories =
@@ -11,7 +13,7 @@ public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
         "Concert", "Théâtre", "Exposition", "Conférence", "Spectacle", "Autre"
     ];
 
-    /// <summary>Initializes a new instance of <see cref="CreateEventInputValidator"/> with all RG1 rules.</summary>
+    /// <summary>Initializes a new instance of <see cref="CreateEventInputValidator"/> with all BR1 rules.</summary>
     public CreateEventInputValidator()
     {
         RuleFor(x => x.Title)
@@ -27,6 +29,10 @@ public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
             .GreaterThanOrEqualTo(_ => DateTime.UtcNow.Date)
             .WithMessage("La date de l'événement doit être aujourd'hui ou dans le futur.");
 
+        RuleFor(x => x.Location)
+            .NotEmpty().WithMessage("Le lieu est obligatoire.")
+            .MaximumLength(200).WithMessage("Le lieu ne peut pas dépasser 200 caractères.");
+
         RuleFor(x => x.Capacity)
             .GreaterThan(0).WithMessage("La capacité doit être supérieure à 0.");
 
@@ -37,5 +43,9 @@ public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
             .NotEmpty().WithMessage("La catégorie est obligatoire.")
             .Must(c => ValidCategories.Contains(c))
             .WithMessage($"La catégorie doit être parmi : {string.Join(", ", ValidCategories)}.");
+
+        RuleFor(x => x.ArtistName)
+            .MaximumLength(200).WithMessage("Le nom de l'artiste ne peut pas dépasser 200 caractères.")
+            .When(x => x.ArtistName is not null);
     }
 }

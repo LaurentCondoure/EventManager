@@ -10,12 +10,16 @@ public record EventDto(
     string Description,
     /// <summary>Date and time when the event takes place (UTC).</summary>
     DateTime Date,
+    /// <summary>Name and location of the venue (city, hall).</summary>
+    string Location,
     /// <summary>Maximum number of seats available.</summary>
     int Capacity,
     /// <summary>Ticket price per seat.</summary>
     decimal Price,
     /// <summary>Category of the event.</summary>
     string Category,
+    /// <summary>Name of the artist or performing group at the event.</summary>
+    string? ArtistName,
     /// <summary>Date and time the record was created (UTC).</summary>
     DateTime CreatedAt,
     /// <summary>Date and time of the last update (UTC). Null if never updated.</summary>
@@ -30,12 +34,16 @@ public record CreateEventInput(
     string Description,
     /// <summary>Date and time when the event takes place (UTC).</summary>
     DateTime Date,
+    /// <summary>Name and location of the venue (city, hall).</summary>
+    string Location,
     /// <summary>Maximum number of seats available.</summary>
     int Capacity,
     /// <summary>Ticket price per seat.</summary>
     decimal Price,
     /// <summary>Category of the event.</summary>
-    string Category
+    string Category,
+    /// <summary>Name of the artist or performing group at the event.</summary>
+    string? ArtistName
 );
 
 /// <summary>Payload used to update an existing event.</summary>
@@ -46,12 +54,16 @@ public record UpdateEvent(
     string Description,
     /// <summary>Date and time when the event takes place (UTC).</summary>
     DateTime Date,
+    /// <summary>Name and location of the venue (city, hall).</summary>
+    string Location,
     /// <summary>Maximum number of seats available.</summary>
     int Capacity,
     /// <summary>Ticket price per seat.</summary>
     decimal Price,
     /// <summary>Category of the event.</summary>
-    string Category
+    string Category,
+    /// <summary>Name of the artist or performing group at the event.</summary>
+    string? ArtistName
 );
 
 /// <summary>Query parameters for paginated event listing.</summary>

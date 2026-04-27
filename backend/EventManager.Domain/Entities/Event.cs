@@ -15,6 +15,9 @@ public class Event
     /// <summary>Date and time when the event takes place (UTC).</summary>
     public DateTime Date { get; set; }
 
+    /// <summary>Name and location of the venue (city, hall).</summary>
+    public string Location { get; set; } = string.Empty;
+
     /// <summary>Maximum number of seats available.</summary>
     public int Capacity { get; set; }
 
@@ -29,4 +32,9 @@ public class Event
 
     /// <summary>Date and time of the last update (UTC). Null if never updated.</summary>
     public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Name of the artist or performing group  at the event.
+    /// </summary>
+    public string? ArtistName { get; set; }
 }

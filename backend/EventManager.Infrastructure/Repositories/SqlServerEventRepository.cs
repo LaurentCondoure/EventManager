@@ -52,9 +52,11 @@ public class SqlServerEventRepository(IDbConnectionFactory dbConnectionfactory) 
             @event.Title,
             @event.Description,
             @event.Date,
+            @event.Location,
             @event.Capacity,
             @event.Price,
             @event.Category,
+            @event.ArtistName,
             CreatedAt   = DateTime.UtcNow
         });
 

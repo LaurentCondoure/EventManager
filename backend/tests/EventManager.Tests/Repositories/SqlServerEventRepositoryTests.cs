@@ -98,14 +98,16 @@ public class SqlServerEventRepositoryTests : IAsyncLifetime
     {
         var repository = new SqlServerEventRepository(_connectionFactory);
 
-        var result = await repository.GetByIdAsync(Event1Id);
+        var result = await repository.GetByIdAsync(Event2Id);
 
         Assert.NotNull(result);
-        Assert.Equal("Comédie musicale", result.Category);
+        Assert.Equal("Musique classique", result.Category);
         Assert.True(result.Capacity > 0);
+        Assert.Equal("Paris, Philharmonie", result.Location);
         Assert.True(result.Price >= 0);
         Assert.NotEqual(default, result.Date);
         Assert.NotEqual(default, result.CreatedAt);
+        Assert.Equal("Orchestre National de France", result.ArtistName);
     }
 
     [Fact]
@@ -145,6 +147,8 @@ public class SqlServerEventRepositoryTests : IAsyncLifetime
         Assert.Equal(@event.Description, retrieved.Description);
         Assert.Equal(@event.Capacity, retrieved.Capacity);
         Assert.Equal(@event.Price, retrieved.Price);
+        Assert.Equal(@event.Location, retrieved.Location);
+        Assert.Equal(@event.ArtistName, retrieved.ArtistName);
         Assert.Equal(@event.Category, retrieved.Category);
     }
 
@@ -173,8 +177,11 @@ public class SqlServerEventRepositoryTests : IAsyncLifetime
         Title       = title,
         Description = "A test event description",
         Date        = DateTime.UtcNow.AddDays(30),
+        Location    = "Paris, Bercy",
         Capacity    = 100,
         Price       = 25.00m,
         Category    = "Concert",
+        ArtistName  = "Test artiste",
+        CreatedAt = DateTime.UtcNow,
     };
 }

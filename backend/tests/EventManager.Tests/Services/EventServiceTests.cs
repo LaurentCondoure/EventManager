@@ -118,6 +118,24 @@ public class EventServiceTests
             .WithMessage($"*Event*{id}*");
     }
 
+    [Fact]
+    public async Task GetByIdAsync_ShouldMapArtistName_WhenSet()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var @event = BuildEvent(id, "Rock Festival", "Concert");
+        @event.ArtistName = "The Rolling Stones";
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(@event);
+
+        // Act
+        var result = await _sut.GetByIdAsync(id);
+
+        // Assert
+        result.ArtistName.Should().Be("The Rolling Stones");
+    }
+
+
+
     // ── CreateAsync ──────────────────────────────────────────────────────────
 
     [Fact]
@@ -150,6 +168,37 @@ public class EventServiceTests
         _repositoryMock.Verify(r => r.CreateAsync(It.IsAny<Event>()), Times.Once);
     }
 
+
+
+    [Fact]
+    public async Task CreateAsync_ShouldPassAllFieldsToRepository()
+    {
+        // Arrange
+        var request = new CreateEventInput(
+            Title: "Jazz Festival",
+            Description: "Une nuit de jazz",
+            Date: DateTime.UtcNow.AddDays(30),
+            Location: "Paris, Olympia",
+            Capacity: 500,
+            Price: 35.00m,
+            Category: "Concert",
+            ArtistName: "Miles Davis Tribute"
+        );
+        _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(Guid.NewGuid());
+
+        // Act
+        await _sut.CreateAsync(request);
+
+        // Assert
+        _repositoryMock.Verify(r => r.CreateAsync(It.Is<Event>(e =>
+            e.Title == "Jazz Festival" &&
+            e.Location == "Paris, Olympia" &&
+            e.Capacity == 500 &&
+            e.Price == 35.00m &&
+            e.ArtistName == "Miles Davis Tribute"
+        )), Times.Once);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(Guid id, string title, string category) => new()
@@ -169,7 +218,9 @@ public class EventServiceTests
         Description: "Description de test",
         Date:        DateTime.UtcNow.AddDays(10),
         Capacity:    100,
+        Location:    "Bercy (Paris)",
         Price:       20m,
-        Category:    category
+        Category:    category,
+        ArtistName: "Artiste de test"
     );
 }

@@ -16,9 +16,11 @@ public class CreateEventInputValidatorTests
         Title:       "Concert Jazz",
         Description: "Une belle soirée de jazz au Théâtre des Arts.",
         Date:        DateTime.UtcNow.Date.AddDays(1),
+        Location:    "Palais des congrès (Paris)",
         Capacity:    100,
         Price:       25.00m,
-        Category:    "Concert"
+        Category:    "Concert",
+        ArtistName: "John Doe Quartet"
     );
 
     // ── Title ─────────────────────────────────────────────────────────────

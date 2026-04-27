@@ -13,9 +13,11 @@ CREATE TABLE Events
     Title       TEXT      NOT NULL,
     Description TEXT      NOT NULL,
     Date        TEXT      NOT NULL,
+    Location    TEXT      NOT NULL,
     Capacity    INTEGER   NOT NULL,
     Price       NUMERIC   NOT NULL,
     Category    TEXT      NOT NULL,
+    ArtistName TEXT      NOT NULL,
     CreatedAt   TEXT      NOT NULL DEFAULT (CURRENT_TIMESTAMP),
     UpdatedAt   TEXT      NULL,
     CONSTRAINT CK_Events_Capacity CHECK (Capacity > 0),
@@ -42,16 +44,16 @@ CREATE TABLE Reservations
 CREATE INDEX IX_Reservations_EventId   ON Reservations (EventId);
 CREATE INDEX IX_Reservations_UserEmail ON Reservations (UserEmail);
 
-INSERT INTO Events (Id, Title, Description, Date, Capacity, Price, Category)
+INSERT INTO Events (Id, Title, Description, Date, Location, Capacity, Price, Category, ArtistName)
 VALUES
     ('00000000-0000-0000-0000-000000000001', 'Les Misérables',
      'La comédie musicale incontournable tirée du roman de Victor Hugo.',
-     '2026-06-15 20:00', 3000, 89.00, 'Comédie musicale'),
+     '2026-06-15 20:00', 'Paris, Olympia', 3000, 89.00, 'Comédie musicale', 'Les Misérables Artist'),
 
     ('00000000-0000-0000-0000-000000000002', 'Orchestre National de France — Beethoven',
      'Concert symphonique : Symphonie n°9 de Beethoven dirigée par Klaus Mäkelä.',
-     '2026-06-20 20:30',  1900, 45.00, 'Musique classique'),
+     '2026-06-20 20:30', 'Paris, Philharmonie',  1900, 45.00, 'Musique classique', 'Orchestre National de France'),
 
     ('00000000-0000-0000-0000-000000000003', 'Festival Jazz à Vienne',
      'Grande soirée jazz avec des artistes internationaux dans le cadre exceptionnel du théâtre antique.',
-     '2026-07-05 21:00',  8000, 35.00, 'Jazz');
+     '2026-07-05 21:00', 'Vienne, Théâtre Antique',  8000, 35.00, 'Jazz', 'Festival Jazz à Vienne');

@@ -8,6 +8,7 @@ namespace EventManager.Api.Validators;
 /// </summary>
 public class CreateCommentInputValidator : AbstractValidator<CreateCommentInput>
 {
+    /// <summary>Initializes a new instance of <see cref="CreateCommentInputValidator"/> with all BR2 rules.</summary>
     public CreateCommentInputValidator()
     {
         RuleFor(x => x.UserId)
