@@ -14,7 +14,7 @@ namespace EventManager.Domain.Interfaces
         /// </summary>
         /// <param name="eventId">Id of the event to get comments from</param>
         /// <returns>list of all comment <see cref="EventComment"/> for the given event</returns>
-        Task<IEnumerable<CommentDto>> GetCommentsByEventId(Guid eventIdInput);
+        Task<IEnumerable<CommentDto>> GetCommentsByEventId(Guid eventId);
 
         /// <summary>
         /// Create a new comment on a event
