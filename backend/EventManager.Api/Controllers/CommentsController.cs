@@ -7,7 +7,7 @@ namespace EventManager.Api.Controllers;
 
 [ApiController]
 [Route("api/events/{eventId:guid}/comments")]
-public class CommentsController(ICommentRepository commentRepository, ILogger<CommentsController> logger) : ControllerBase
+public class CommentsController(ICommentService commentService, ILogger<CommentsController> logger) : ControllerBase
 {
 
     [HttpGet]
@@ -16,14 +16,9 @@ public class CommentsController(ICommentRepository commentRepository, ILogger<Co
     {
         logger.LogInformation("Retrieved comments for event {EventId}", eventId);
 
-        var comments = await commentRepository.GetByEventIdAsync(eventId);
+        IEnumerable<CommentDto> commentDTOs = await commentService.GetCommentsByEventId(eventId);
 
-        
-
-        var dtos = comments.Select(c => new CommentDto(
-            c.Id, c.EventId, c.UserId, c.UserName, c.Text, c.Rating, c.CreatedAt));
-
-        return Ok(dtos);
+        return Ok(commentDTOs);
     }
 
     [HttpPost]
@@ -31,20 +26,11 @@ public class CommentsController(ICommentRepository commentRepository, ILogger<Co
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(Guid eventId, [FromBody] CreateCommentInput request)
     {
-        var comment = new EventComment
-        {
-            EventId  = eventId,
-            UserId   = request.UserId,
-            UserName = request.UserName,
-            Text     = request.Text,
-            Rating   = request.Rating
-        };
 
-        var id = await commentRepository.CreateAsync(comment);
+        CommentDto commentDTO = await commentService.CreateAsync(eventId, request);
 
-        logger.LogInformation("Created comment {CommentId} for event {EventId}", id, eventId);
+        logger.LogInformation("Created comment {CommentId} for event {EventId}", commentDTO.Id, eventId);
 
-        var dto = new CommentDto(id, eventId, request.UserId, request.UserName, request.Text, request.Rating, comment.CreatedAt);
-        return CreatedAtAction(nameof(GetByEvent), new { eventId }, dto);
+        return CreatedAtAction(nameof(GetByEvent), new { eventId }, commentDTO);
     }
 }

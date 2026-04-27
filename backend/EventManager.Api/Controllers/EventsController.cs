@@ -17,7 +17,7 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         _logger.LogInformation("Retrieved events page {Page} with page size {PageSize}", page, pageSize);
-        var events = await _eventService.GetAllAsync(page, pageSize);
+        IEnumerable<EventDto> events = await _eventService.GetAllAsync(page, pageSize);
         Response.Headers.CacheControl = "public, max-age=300";
         return Ok(events);
     }
