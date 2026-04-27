@@ -12,7 +12,7 @@ namespace EventManager.UnitTests.Repositories;
 /// <summary>
 /// EventRepository test class
 /// </summary>
-public class EventRepositoryTests : IAsyncLifetime
+public class SqlServerEventRepositoryTests : IAsyncLifetime
 {
     //Conection to an in-memory SQLite database, initialized with the schema and data from the provided SQL file before each test,
     //and disposed after all tests are completed to ensure a clean testing environment without affecting the original database file.
