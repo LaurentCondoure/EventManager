@@ -113,7 +113,10 @@ Test endpoint available through Swagger at `https://localhost:{port}/swagger`.
 dotnet test backend/EventManager.slnx
 ```
 
-Current coverage: **38%** — tracked via [Codecov](https://codecov.io).
+Current coverage: **45.85%** — tracked via [Codecov](https://codecov.io).
+
+Test strategy
+documentation :  [TEST_STRATEGY](documents/technical/TEST_STRATEGY.md)
 
 ---
 
