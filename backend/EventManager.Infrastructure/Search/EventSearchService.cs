@@ -6,15 +6,12 @@ using EventManager.Domain.Interfaces;
 
 namespace EventManager.Infrastructure.Search;
 
-public class EventSearchService : IEventSearchService
+/// <summary>
+/// 
+/// </summary>
+public class EventSearchService(ElasticsearchClient client) : IEventSearchService
 {
-    private readonly ElasticsearchClient _client;
     private const string IndexName = "events";
-
-    public EventSearchService(ElasticsearchClient client)
-    {
-        _client = client;
-    }
 
     public async Task IndexAsync(Event @event)
     {
@@ -30,17 +27,17 @@ public class EventSearchService : IEventSearchService
             ArtistName  = @event.ArtistName
         };
 
-        await _client.IndexAsync(document, i => i.Index(IndexName).Id(@event.Id.ToString()));
+        await client.IndexAsync(document, i => i.Index(IndexName).Id(@event.Id.ToString()));
     }
 
     public async Task DeleteAsync(Guid eventId)
     {
-        await _client.DeleteAsync(IndexName, eventId.ToString());
+        await client.DeleteAsync(IndexName, eventId.ToString());
     }
 
     public async Task ReindexAllAsync(IEnumerable<Event> events)
     {
-        await _client.DeleteByQueryAsync<EventSearchDocument>(IndexName, d => d
+        await client.DeleteByQueryAsync<EventSearchDocument>(IndexName, d => d
             .Query(q => q.MatchAll(new MatchAllQuery())));
 
         var documents = events.Select(e => new EventSearchDocument
@@ -55,14 +52,14 @@ public class EventSearchService : IEventSearchService
             ArtistName  = e.ArtistName
         });
 
-        await _client.BulkAsync(b => b
+        await client.BulkAsync(b => b
             .Index(IndexName)
             .IndexMany(documents));
     }
 
-    public async Task<IEnumerable<EventDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
+    public async Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
     {
-        var response = await _client.SearchAsync<EventSearchDocument>(s => s
+        var response = await client.SearchAsync<EventSearchDocument>(s => s
             .Indices(IndexName)
             .From((page - 1) * pageSize)
             .Size(pageSize)
@@ -71,7 +68,7 @@ public class EventSearchService : IEventSearchService
                     .Query(query)
                     .Fields(new[]
                     {
-                        "title^2",       // titre booste x2
+                        "title^2",       // boosted title x2
                         "description",
                         "category",
                         "artistName"
@@ -80,9 +77,14 @@ public class EventSearchService : IEventSearchService
             )
         );
 
-        return response.Documents.Select(d => new EventDto(
-            d.Id, d.Title, d.Description, d.Date, d.Location,
-            0, d.Price, d.Category, d.ArtistName,
-            DateTime.MinValue, null));
+        return response.Documents.Select(d => new SearchResultDto(
+            d.Id, 
+            d.Title, 
+            d.Description, 
+            d.Date, 
+            d.Location,
+            d.Price, 
+            d.Category, 
+            d.ArtistName));
     }
 }

@@ -57,7 +57,7 @@ public class EventService(
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<EventDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
+    public async Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
         => await searchService.SearchAsync(query, page, pageSize);
 
     /// <summary>Maps a domain <see cref="Event"/> to its read DTO.</summary>

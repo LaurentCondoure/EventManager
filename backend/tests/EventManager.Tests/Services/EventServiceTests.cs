@@ -39,7 +39,7 @@ public class EventServiceTests
     public async Task GetAllAsync_ShouldReturnMappedDtos_WhenEventsExist()
     {
         // Arrange
-        var events = new List<Event>
+        List<Event> events = new List<Event>
         {
             BuildEvent(Guid.NewGuid(), "Concert Jazz", "Concert"),
             BuildEvent(Guid.NewGuid(), "Exposition Picasso", "Exposition")
@@ -47,7 +47,7 @@ public class EventServiceTests
         _repositoryMock.Setup(r => r.GetAllAsync(1, 20)).ReturnsAsync(events);
 
         // Act
-        var result = await _sut.GetAllAsync();
+        IEnumerable<EventDto> result = await _sut.GetAllAsync();
 
         // Assert
         result.Should().HaveCount(2);
@@ -62,7 +62,7 @@ public class EventServiceTests
         _repositoryMock.Setup(r => r.GetAllAsync(1, 20)).ReturnsAsync([]);
 
         // Act
-        var result = await _sut.GetAllAsync();
+        IEnumerable<EventDto> result = await _sut.GetAllAsync();
 
         // Assert
         result.Should().BeEmpty();
@@ -87,12 +87,12 @@ public class EventServiceTests
     public async Task GetByIdAsync_ShouldReturnDto_WhenEventExists()
     {
         // Arrange
-        var id = Guid.NewGuid();
-        var @event = BuildEvent(id, "Théâtre du Soleil", "Théâtre");
+        Guid id = Guid.NewGuid();
+        Event @event = BuildEvent(id, "Théâtre du Soleil", "Théâtre");
         _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(@event);
 
         // Act
-        var result = await _sut.GetByIdAsync(id);
+        EventDto result = await _sut.GetByIdAsync(id);
 
         // Assert
         result.Id.Should().Be(id);
@@ -104,7 +104,7 @@ public class EventServiceTests
     public async Task GetByIdAsync_ShouldThrowNotFoundException_WhenEventDoesNotExist()
     {
         // Arrange
-        var id = Guid.NewGuid();
+        Guid id = Guid.NewGuid();
         _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Event?)null);
 
         // Act
@@ -119,13 +119,13 @@ public class EventServiceTests
     public async Task GetByIdAsync_ShouldMapArtistName_WhenSet()
     {
         // Arrange
-        var id = Guid.NewGuid();
-        var @event = BuildEvent(id, "Rock Festival", "Concert");
+        Guid id = Guid.NewGuid();
+        Event @event = BuildEvent(id, "Rock Festival", "Concert");
         @event.ArtistName = "The Rolling Stones";
         _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(@event);
 
         // Act
-        var result = await _sut.GetByIdAsync(id);
+        EventDto result = await _sut.GetByIdAsync(id);
 
         // Assert
         result.ArtistName.Should().Be("The Rolling Stones");
@@ -139,12 +139,12 @@ public class EventServiceTests
     public async Task CreateAsync_ShouldReturnDtoWithGeneratedId()
     {
         // Arrange
-        var generatedId = Guid.NewGuid();
-        var request = BuildCreateRequest("Nouveau Concert", "Concert");
+        Guid generatedId = Guid.NewGuid();
+        CreateEventInput request = BuildCreateRequest("Nouveau Concert", "Concert");
         _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(generatedId);
 
         // Act
-        var result = await _sut.CreateAsync(request);
+        EventDto result = await _sut.CreateAsync(request);
 
         // Assert
         result.Id.Should().Be(generatedId);
@@ -155,7 +155,7 @@ public class EventServiceTests
     public async Task CreateAsync_ShouldCallRepository_ExactlyOnce()
     {
         // Arrange
-        var request = BuildCreateRequest("Test", "Autre");
+        CreateEventInput request = BuildCreateRequest("Test", "Autre");
         _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(Guid.NewGuid());
 
         // Act
@@ -171,7 +171,7 @@ public class EventServiceTests
     public async Task CreateAsync_ShouldPassAllFieldsToRepository()
     {
         // Arrange
-        var request = new CreateEventInput(
+        CreateEventInput request = new CreateEventInput(
             Title: "Jazz Festival",
             Description: "Une nuit de jazz",
             Date: DateTime.UtcNow.AddDays(30),
@@ -192,15 +192,16 @@ public class EventServiceTests
             e.Location == "Paris, Olympia" &&
             e.Capacity == 500 &&
             e.Price == 35.00m &&
-            e.ArtistName == "Miles Davis Tribute"
+            e.ArtistName == "Miles Davis Tribute" &&
+            e.CreatedAt != DateTime.MinValue // CreatedAt should be set by the service
         )), Times.Once);
     }
 
     [Fact]
     public async Task CreateAsync_ShouldCallIndexAsync_WithCreatedEvent()
     {
-        var generatedId = Guid.NewGuid();
-        var request = BuildCreateRequest("Jazz Festival", "Concert");
+        Guid generatedId = Guid.NewGuid();
+        CreateEventInput request = BuildCreateRequest("Jazz Festival", "Concert");
         _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(generatedId);
 
         await _sut.CreateAsync(request);
@@ -230,13 +231,13 @@ public class EventServiceTests
     [Fact]
     public async Task SearchAsync_ShouldDelegateToSearchService()
     {
-        var expected = new List<EventDto>
+        List<SearchResultDto> expected = new List<SearchResultDto>
         {
-            new(Guid.NewGuid(), "Concert Jazz", "Desc", DateTime.UtcNow, "Paris", 0, 25m, "Concert", null, DateTime.MinValue, null)
+            new(Guid.NewGuid(), "Concert Jazz", "Desc", DateTime.UtcNow, "Paris", 25m, "Concert", null)
         };
         _searchMock.Setup(s => s.SearchAsync("jazz", 1, 20)).ReturnsAsync(expected);
 
-        var result = await _sut.SearchAsync("jazz");
+        IEnumerable<SearchResultDto> result = await _sut.SearchAsync("jazz");
 
         result.Should().BeEquivalentTo(expected);
     }

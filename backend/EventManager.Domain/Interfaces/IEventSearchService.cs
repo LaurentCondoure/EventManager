@@ -27,6 +27,6 @@ public interface IEventSearchService
     /// <param name="query">The search query string.</param>
     /// <param name="page">The page number for pagination.</param>
     /// <param name="pageSize">The number of items per page.</param>
-    /// <returns>A collection of <see cref="EventDto"/> matching the search criteria.</returns>
-    Task<IEnumerable<EventDto>> SearchAsync(string query, int page = 1, int pageSize = 20);
+    /// <returns>A collection of <see cref="SearchResultDto"/> matching the search criteria.</returns>
+    Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20);
 }
