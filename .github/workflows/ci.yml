@@ -28,6 +28,22 @@ jobs:
       - name: Test with coverage
         run: dotnet test backend/EventManager.slnx --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
 
+      - name: Generate coverage report
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator \
+            -reports:"./coverage/**/coverage.cobertura.xml" \
+            -targetdir:coveragereport \
+            -reporttypes:"MarkdownSummaryGithub;Html"
+          cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coveragereport/
+          retention-days: 30
+
       - name: Upload to Codecov
         uses: codecov/codecov-action@v4
         with:
