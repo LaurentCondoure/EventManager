@@ -1,4 +1,3 @@
-
 using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Interfaces;
@@ -6,9 +5,14 @@ using EventManager.Domain.Services;
 using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
+using EventManager.Infrastructure.Search;
+
+
+using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
 
@@ -41,12 +45,20 @@ builder.Services.AddProblemDetails();
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
 builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection(RedisOptions.SectionName));
 builder.Services.Configure<MongoDbOptions>(builder.Configuration.GetSection(MongoDbOptions.SectionName));
+builder.Services.Configure<ElasticsearchOptions>(builder.Configuration.GetSection(ElasticsearchOptions.SectionName));
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-                                                    ConnectionMultiplexer.Connect(
-                                                                                    _.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString
-                                                                                )
-                                                    );
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(sp.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString));
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+    new MongoClient(sp.GetRequiredService<IOptions<MongoDbOptions>>().Value.ConnectionString));
+
+builder.Services.AddSingleton<ElasticsearchClient>(sp =>
+{
+    var url = sp.GetRequiredService<IOptions<ElasticsearchOptions>>().Value.Url;
+    var settings = new ElasticsearchClientSettings(new Uri(url));
+    return new ElasticsearchClient(settings);
+});
 
 builder.Services.AddScoped<IDbConnectionFactory>(sp =>
                                                     new DbConnectionFactory(
@@ -57,6 +69,13 @@ builder.Services.AddScoped<IDbConnectionFactory>(sp =>
 builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
+#region Declare Domain DI : justify why code coverage have to be hight (80% is the minimum acceptable)
+builder.Services.AddScoped<ICommentRepository, MongoDbCommentRepository>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
+builder.Services.AddScoped<IEventSearchService, EventSearchService>();
+
+#endregion
 builder.Services.AddScoped<IEventService, EventService>();
 
 WebApplication app = builder.Build();

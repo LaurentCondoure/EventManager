@@ -3,12 +3,16 @@ using EventManager.Domain.DTOs;
 using EventManager.Domain.Exceptions;
 using EventManager.Domain.Interfaces;
 
+using Microsoft.Extensions.Logging;
+
 
 namespace EventManager.Domain.Services;
 
 /// <summary>Implements business logic for event management.</summary>
 public class EventService(
-    IEventRepository eventRepository) : IEventService
+    IEventRepository eventRepository, 
+    IEventSearchService searchService,
+    ILogger<EventService> logger) : IEventService
 {
     private readonly IEventRepository _eventRepository = eventRepository;
 
@@ -47,8 +51,14 @@ public class EventService(
         var id = await _eventRepository.CreateAsync(@event);
         @event.Id = id;
 
+        await TryIndexAsync(@event);
+
         return MapToDto(@event);
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<EventDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
+        => await searchService.SearchAsync(query, page, pageSize);
 
     /// <summary>Maps a domain <see cref="Event"/> to its read DTO.</summary>
     private static EventDto MapToDto(Event e) => new(
@@ -64,4 +74,15 @@ public class EventService(
         e.CreatedAt,
         e.UpdatedAt
     );
+
+    /// <summary>Indexes the event in Elasticsearch. Logs and swallows any failure so a search outage never blocks event creation.</summary>
+    private async Task TryIndexAsync(Event @event)
+    {
+        try { await searchService.IndexAsync(@event); }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Search indexing failed for event {EventId} — search index may be stale", @event.Id);
+        }
+    }
+
 }

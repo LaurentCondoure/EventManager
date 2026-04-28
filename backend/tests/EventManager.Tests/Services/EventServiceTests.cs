@@ -5,6 +5,7 @@ using EventManager.Domain.Interfaces;
 using EventManager.Domain.Services;
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace EventManager.UnitTests.Services;
@@ -14,26 +15,22 @@ namespace EventManager.UnitTests.Services;
 /// </summary>
 public class EventServiceTests
 {
-    /// <summary>
-    /// Repository mock used to simulate data access for testing the service layer in isolation.
-    /// </summary>
-    private readonly Mock<IEventRepository> _repositoryMock;
-
-    /// <summary>
-    /// System Under Test: the EventService instance being tested, with the repository mock injected to control its behavior during tests.
-    /// </summary>
+    private readonly Mock<IEventRepository>    _repositoryMock = new();
+    private readonly Mock<IEventSearchService> _searchMock     = new();
+    private readonly Mock<ILogger<EventService>> _loggerMock   = new();
     private readonly EventService _sut;
 
-    /// <summary>
-    /// 
-    /// </summary>
     public EventServiceTests()
     {
-        //Instanciate Mock ti inject into SUT
-        _repositoryMock = new Mock<IEventRepository>();
+        // IndexAsync succeeds by default — individual tests override when needed.
+        _searchMock
+            .Setup(s => s.IndexAsync(It.IsAny<Event>()))
+            .Returns(Task.CompletedTask);
 
         _sut = new EventService(
-            _repositoryMock.Object);
+            _repositoryMock.Object,
+            _searchMock.Object,
+            _loggerMock.Object);
     }
 
     // ── GetAllAsync ──────────────────────────────────────────────────────────
@@ -197,6 +194,61 @@ public class EventServiceTests
             e.Price == 35.00m &&
             e.ArtistName == "Miles Davis Tribute"
         )), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldCallIndexAsync_WithCreatedEvent()
+    {
+        var generatedId = Guid.NewGuid();
+        var request = BuildCreateRequest("Jazz Festival", "Concert");
+        _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(generatedId);
+
+        await _sut.CreateAsync(request);
+
+        _searchMock.Verify(s => s.IndexAsync(It.Is<Event>(e =>
+            e.Id    == generatedId &&
+            e.Title == "Jazz Festival"
+        )), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldComplete_WhenIndexAsyncThrows()
+    {
+        // TryIndexAsync swallows exceptions so a search outage never blocks event creation.
+        _repositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>())).ReturnsAsync(Guid.NewGuid());
+        _searchMock
+            .Setup(s => s.IndexAsync(It.IsAny<Event>()))
+            .ThrowsAsync(new Exception("Elasticsearch unavailable"));
+
+        var act = async () => await _sut.CreateAsync(BuildCreateRequest("Test", "Autre"));
+
+        await act.Should().NotThrowAsync();
+    }
+
+    // ── SearchAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task SearchAsync_ShouldDelegateToSearchService()
+    {
+        var expected = new List<EventDto>
+        {
+            new(Guid.NewGuid(), "Concert Jazz", "Desc", DateTime.UtcNow, "Paris", 0, 25m, "Concert", null, DateTime.MinValue, null)
+        };
+        _searchMock.Setup(s => s.SearchAsync("jazz", 1, 20)).ReturnsAsync(expected);
+
+        var result = await _sut.SearchAsync("jazz");
+
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task SearchAsync_ShouldPassPaginationParams_ToSearchService()
+    {
+        _searchMock.Setup(s => s.SearchAsync("rock", 2, 5)).ReturnsAsync([]);
+
+        await _sut.SearchAsync("rock", page: 2, pageSize: 5);
+
+        _searchMock.Verify(s => s.SearchAsync("rock", 2, 5), Times.Once);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
