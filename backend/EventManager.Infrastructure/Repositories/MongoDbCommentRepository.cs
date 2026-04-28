@@ -34,8 +34,6 @@ public class MongoDbCommentRepository(IMongoClient client, IOptions<MongoDbOptio
     /// <inheritdoc/>
     public async Task<string> CreateAsync(EventComment comment)
     {
-        comment.CreatedAt = DateTime.UtcNow;
-
         await _collection.InsertOneAsync(comment);
 
         return comment.Id;

@@ -62,17 +62,6 @@ public class MongoDbCommentRepositoryTests
     // ── CreateAsync ───────────────────────────────────────────────────────
 
     [Fact]
-    public async Task CreateAsync_ShouldSetCreatedAt_BeforeInsert()
-    {
-        var comment = new EventComment { EventId = Guid.NewGuid(), UserName = "Thomas", Rating = 4 };
-        SetupInsert("507f1f77bcf86cd799439011");
-
-        await _sut.CreateAsync(comment);
-
-        comment.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-    }
-
-    [Fact]
     public async Task CreateAsync_ShouldReturnGeneratedId()
     {
         const string expectedId = "507f1f77bcf86cd799439011";

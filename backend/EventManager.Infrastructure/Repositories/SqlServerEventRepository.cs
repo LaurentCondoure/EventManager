@@ -15,12 +15,11 @@ namespace EventManager.Infrastructure.Repositories;
 /// This repository uses raw SQL queries defined in <see cref="EventQueries"/> for better performance and maintainability.
 /// </remarks>
 /// <param name="options">Database connection options injected via IOptions pattern.</param>
-public class SqlServerEventRepository(IDbConnectionFactory dbConnectionfactory) : IEventRepository
+public class SqlServerEventRepository(IDbConnectionFactory dbConnectionFactory) : IEventRepository
 {
-    private readonly IDbConnectionFactory _dbConnectionfactory = dbConnectionfactory;
 
     /// <summary>Creates and returns a new DB connection using the configured factory.</summary>
-    private IDbConnection CreateConnection() => _dbConnectionfactory.CreateConnection();
+    private IDbConnection CreateConnection() => dbConnectionFactory.CreateConnection();
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Event>> GetAllAsync(int page = 1, int pageSize = 20)

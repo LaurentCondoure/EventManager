@@ -18,7 +18,8 @@ namespace EventManager.Domain.Services
                 UserId = createCommentInput.UserId,
                 UserName = createCommentInput.UserName,
                 Text = createCommentInput.Text,
-                Rating = createCommentInput.Rating
+                Rating = createCommentInput.Rating,
+                CreatedAt = DateTime.UtcNow
             };
 
             string id = await commentRepository.CreateAsync(comment);

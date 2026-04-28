@@ -39,7 +39,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
 
     // ── cacheKeys ────────────────────────────────────────────────────────
     /// <summary>
-    /// Get the single event chache key for specified eventId
+    /// Get the single event cache key for specified eventId
     /// </summary>
     /// <param name="id">Unique id of the event</param>
     /// <returns>Key to retrieve the event data from cache</returns>
@@ -96,7 +96,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     {
         var id = await _inner.CreateAsync(@event);
 
-        //Incr will set +1 to the version, all oagined list keys will be invalidate 
+        //Incr will set +1 to the version, all pagined list keys will be invalidate 
         //next time they are requested
         await _cache.StringIncrementAsync(ListVersionKey);
         return id;
