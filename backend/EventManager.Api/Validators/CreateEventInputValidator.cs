@@ -1,3 +1,4 @@
+using EventManager.Domain.Constants;
 using EventManager.Domain.DTOs;
 using FluentValidation;
 
@@ -8,11 +9,6 @@ namespace EventManager.Api.Validators;
 /// </summary>
 public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
 {
-    private static readonly string[] ValidCategories =
-    [
-        "Concert", "Théâtre", "Exposition", "Conférence", "Spectacle", "Autre"
-    ];
-
     /// <summary>Initializes a new instance of <see cref="CreateEventInputValidator"/> with all BR1 rules.</summary>
     public CreateEventInputValidator()
     {
@@ -41,8 +37,8 @@ public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
 
         RuleFor(x => x.Category)
             .NotEmpty().WithMessage("La catégorie est obligatoire.")
-            .Must(c => ValidCategories.Contains(c))
-            .WithMessage($"La catégorie doit être parmi : {string.Join(", ", ValidCategories)}.");
+            .Must(c => EventCategories.All.Contains(c))
+            .WithMessage($"La catégorie doit être parmi : {string.Join(", ", EventCategories.All)}.");
 
         RuleFor(x => x.ArtistName)
             .MaximumLength(200).WithMessage("Le nom de l'artiste ne peut pas dépasser 200 caractères.")

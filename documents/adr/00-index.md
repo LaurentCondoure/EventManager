@@ -17,4 +17,5 @@ Categories are added as patterns emerge across decisions.
 | [ADR-006](ADR-006-redis-list-cache-invalidation.md) | Redis list cache invalidation via versioned key | Accepted | 2026-04-24 |
 | [ADR-007](ADR-007-cross-database-orchestration.md) | Cross-database orchestration for event and comment operations | Accepted | 2026-04-29 |
 | [ADR-008](ADR-008-rate-limiter-algorithm.md) | Rate limiting algorithm selection — fixed window | Accepted | 2026-04-30 |
+| [ADR-009](ADR-009-category-list-source-of-truth.md) | Category list — single source of truth via dedicated endpoint | Accepted | 2026-04-30 |
 

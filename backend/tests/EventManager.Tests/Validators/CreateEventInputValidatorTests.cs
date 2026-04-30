@@ -1,4 +1,5 @@
 using EventManager.Api.Validators;
+using EventManager.Domain.Constants;
 using EventManager.Domain.DTOs;
 using FluentValidation.TestHelper;
 
@@ -120,13 +121,11 @@ public class CreateEventInputValidatorTests
         => _sut.TestValidate(Valid() with { Category = "Cinéma" })
                .ShouldHaveValidationErrorFor(x => x.Category);
 
+    public static IEnumerable<object[]> ValidCategoryData =>
+        EventCategories.All.Select(c => new object[] { c });
+
     [Theory]
-    [InlineData("Concert")]
-    [InlineData("Théâtre")]
-    [InlineData("Exposition")]
-    [InlineData("Conférence")]
-    [InlineData("Spectacle")]
-    [InlineData("Autre")]
+    [MemberData(nameof(ValidCategoryData))]
     public void Category_AllValidValues_ShouldPass(string category)
         => _sut.TestValidate(Valid() with { Category = category })
                .ShouldNotHaveValidationErrorFor(x => x.Category);
