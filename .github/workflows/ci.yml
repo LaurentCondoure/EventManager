@@ -28,6 +28,13 @@ jobs:
       - name: Test with coverage
         run: dotnet test backend/EventManager.slnx --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
 
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./coverage
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Generate coverage report
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool
@@ -43,10 +50,3 @@ jobs:
           name: coverage-report
           path: coveragereport/
           retention-days: 30
-
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: ./coverage
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
