@@ -5,7 +5,9 @@ namespace EventManager.Domain.Interfaces;
 /// <summary>Business logic contract for event management.</summary>
 public interface IEventService
 {
-    /// <summary>Returns upcoming events ordered by date ascending, with pagination.</summary>
+    /// <summary>
+    /// Returns upcoming events ordered by date ascending, with pagination.
+    /// </summary>
     /// <param name="page">Page number, starting at 1.</param>
     /// <param name="pageSize">Number of events per page.</param>
     /// <returns>List of <see cref="EventDto"/> matching the requested page</returns>
@@ -16,17 +18,32 @@ public interface IEventService
     /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
     Task<EventDto> GetByIdAsync(Guid id);
 
-    /// <summary>Creates a new event and returns its full representation.</summary>
+    /// <summary>
+    /// Creates a new event and returns its full representation.
+    /// </summary>
     /// <param name="request">The creation payload.</param>
     Task<EventDto> CreateAsync(CreateEventInput
         request);
 
     /// <summary>
-    /// <summary>Searches events by full-text query across title, description, category and artist name.</summary>
+    /// Searches events by full-text query across title, description, category and artist name.
     /// </summary>
-    /// <param name="query">search query string</param>
+    /// <param name="query">Search query string.</param>
     /// <param name="page">Page number, starting at 1.</param>
     /// <param name="pageSize">Number of events per page.</param>
-    /// <returns>List of <see cref="SearchResultDto"/> matching the search query and requested page</returns>
+    /// <returns>List of <see cref="SearchResultDto"/> matching the search query and requested page.</returns>
     Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20);
+
+    /// <summary>
+    /// Returns all comments for a given event, ordered by creation date descending.
+    /// </summary>
+    /// <param name="eventId">The event ID.</param>
+    /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
+    Task<IEnumerable<CommentDto>> GetCommentsAsync(Guid eventId);
+
+    /// <summary>Adds a comment to an existing event.</summary>
+    /// <param name="eventId">The event ID.</param>
+    /// <param name="input">The comment creation payload.</param>
+    /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
+    Task<CommentDto> AddCommentAsync(Guid eventId, CreateCommentInput input);
 }

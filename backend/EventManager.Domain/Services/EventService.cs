@@ -10,7 +10,8 @@ namespace EventManager.Domain.Services;
 
 /// <summary>Implements business logic for event management.</summary>
 public class EventService(
-    IEventRepository eventRepository, 
+    IEventRepository eventRepository,
+    ICommentRepository commentRepository,
     IEventSearchService searchService,
     ILogger<EventService> logger) : IEventService
 {
@@ -60,6 +61,38 @@ public class EventService(
     public async Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
         => await searchService.SearchAsync(query, page, pageSize);
 
+    /// <inheritdoc/>
+    public async Task<IEnumerable<CommentDto>> GetCommentsAsync(Guid eventId)
+    {
+        _ = await _eventRepository.GetByIdAsync(eventId)
+            ?? throw new NotFoundException(nameof(Event), eventId);
+
+        var comments = await commentRepository.GetByEventIdAsync(eventId);
+        return comments.Select(MapToCommentDto);
+    }
+
+    /// <inheritdoc/>
+    public async Task<CommentDto> AddCommentAsync(Guid eventId, CreateCommentInput input)
+    {
+        _ = await _eventRepository.GetByIdAsync(eventId)
+            ?? throw new NotFoundException(nameof(Event), eventId);
+
+        var comment = new EventComment
+        {
+            EventId   = eventId,
+            UserId    = input.UserId,
+            UserName  = input.UserName,
+            Text      = input.Text,
+            Rating    = input.Rating,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var id = await commentRepository.CreateAsync(comment);
+        comment.Id = id;
+
+        return MapToCommentDto(comment);
+    }
+
     /// <summary>Maps a domain <see cref="Event"/> to its read DTO.</summary>
     private static EventDto MapToDto(Event e) => new(
         e.Id,
@@ -75,6 +108,9 @@ public class EventService(
         e.UpdatedAt
     );
 
+    private static CommentDto MapToCommentDto(EventComment c) => new(
+        c.Id, c.EventId, c.UserId, c.UserName, c.Text, c.Rating, c.CreatedAt);
+
     /// <summary>Indexes the event in Elasticsearch. Logs and swallows any failure so a search outage never blocks event creation.</summary>
     private async Task TryIndexAsync(Event @event)
     {
@@ -84,5 +120,4 @@ public class EventService(
             logger.LogError(ex, "Search indexing failed for event {EventId} — search index may be stale", @event.Id);
         }
     }
-
 }

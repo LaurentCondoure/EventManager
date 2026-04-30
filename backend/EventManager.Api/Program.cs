@@ -69,13 +69,8 @@ builder.Services.AddScoped<IDbConnectionFactory>(sp =>
 builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
-#region Declare Domain DI : justify why code coverage have to be hight (80% is the minimum acceptable)
 builder.Services.AddScoped<ICommentRepository, MongoDbCommentRepository>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-
 builder.Services.AddScoped<IEventSearchService, EventSearchService>();
-
-#endregion
 builder.Services.AddScoped<IEventService, EventService>();
 
 WebApplication app = builder.Build();

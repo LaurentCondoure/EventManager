@@ -1,5 +1,6 @@
 using EventManager.Api.Controllers;
 using EventManager.Domain.DTOs;
+using EventManager.Domain.Exceptions;
 using EventManager.Domain.Interfaces;
 
 using FluentAssertions;
@@ -12,7 +13,7 @@ namespace EventManager.UnitTests.Controllers;
 
 public class CommentsControllerTests
 {
-    private readonly Mock<ICommentService>              _serviceMock = new();
+    private readonly Mock<IEventService>               _serviceMock = new();
     private readonly Mock<ILogger<CommentsController>> _loggerMock  = new();
     private readonly CommentsController _sut;
 
@@ -35,7 +36,7 @@ public class CommentsControllerTests
             new("id1", eventId, Guid.NewGuid(), "Alice", "Super !", 5, DateTime.UtcNow),
             new("id2", eventId, Guid.NewGuid(), "Bob",   null,      3, DateTime.UtcNow)
         };
-        _serviceMock.Setup(s => s.GetCommentsByEventId(eventId)).ReturnsAsync(comments);
+        _serviceMock.Setup(s => s.GetCommentsAsync(eventId)).ReturnsAsync(comments);
 
         var result = await _sut.GetByEvent(eventId);
 
@@ -47,7 +48,7 @@ public class CommentsControllerTests
     public async Task GetByEvent_ShouldReturnOk_WhenNoComments()
     {
         var eventId = Guid.NewGuid();
-        _serviceMock.Setup(s => s.GetCommentsByEventId(eventId)).ReturnsAsync([]);
+        _serviceMock.Setup(s => s.GetCommentsAsync(eventId)).ReturnsAsync([]);
 
         var result = await _sut.GetByEvent(eventId);
 
@@ -55,14 +56,26 @@ public class CommentsControllerTests
     }
 
     [Fact]
+    public async Task GetByEvent_ShouldPropagateNotFoundException_WhenEventDoesNotExist()
+    {
+        var eventId = Guid.NewGuid();
+        _serviceMock.Setup(s => s.GetCommentsAsync(eventId))
+            .ThrowsAsync(new NotFoundException(nameof(EventId), eventId));
+
+        var act = async () => await _sut.GetByEvent(eventId);
+
+        await act.Should().ThrowAsync<NotFoundException>();
+    }
+
+    [Fact]
     public async Task GetByEvent_ShouldDelegateToService_WithCorrectEventId()
     {
         var eventId = Guid.NewGuid();
-        _serviceMock.Setup(s => s.GetCommentsByEventId(eventId)).ReturnsAsync([]);
+        _serviceMock.Setup(s => s.GetCommentsAsync(eventId)).ReturnsAsync([]);
 
         await _sut.GetByEvent(eventId);
 
-        _serviceMock.Verify(s => s.GetCommentsByEventId(eventId), Times.Once);
+        _serviceMock.Verify(s => s.GetCommentsAsync(eventId), Times.Once);
     }
 
     // ── Create ───────────────────────────────────────────────────────────────
@@ -73,7 +86,7 @@ public class CommentsControllerTests
         var eventId = Guid.NewGuid();
         var input   = new CreateCommentInput(Guid.NewGuid(), "Thomas", "Excellent !", 5);
         var created = BuildCommentDto("507f1f77bcf86cd799439011", eventId, input);
-        _serviceMock.Setup(s => s.CreateAsync(eventId, input)).ReturnsAsync(created);
+        _serviceMock.Setup(s => s.AddCommentAsync(eventId, input)).ReturnsAsync(created);
 
         var result = await _sut.Create(eventId, input);
 
@@ -87,7 +100,7 @@ public class CommentsControllerTests
     {
         var eventId = Guid.NewGuid();
         var input   = new CreateCommentInput(Guid.NewGuid(), "Thomas", null, 4);
-        _serviceMock.Setup(s => s.CreateAsync(eventId, input))
+        _serviceMock.Setup(s => s.AddCommentAsync(eventId, input))
             .ReturnsAsync(BuildCommentDto("id1", eventId, input));
 
         var result = await _sut.Create(eventId, input);
@@ -98,16 +111,29 @@ public class CommentsControllerTests
     }
 
     [Fact]
+    public async Task Create_ShouldPropagateNotFoundException_WhenEventDoesNotExist()
+    {
+        var eventId = Guid.NewGuid();
+        var input   = new CreateCommentInput(Guid.NewGuid(), "Thomas", null, 4);
+        _serviceMock.Setup(s => s.AddCommentAsync(eventId, input))
+            .ThrowsAsync(new NotFoundException(nameof(EventId), eventId));
+
+        var act = async () => await _sut.Create(eventId, input);
+
+        await act.Should().ThrowAsync<NotFoundException>();
+    }
+
+    [Fact]
     public async Task Create_ShouldDelegateToService_ExactlyOnce()
     {
         var eventId = Guid.NewGuid();
         var input   = new CreateCommentInput(Guid.NewGuid(), "Alice", "Bien !", 4);
-        _serviceMock.Setup(s => s.CreateAsync(eventId, input))
+        _serviceMock.Setup(s => s.AddCommentAsync(eventId, input))
             .ReturnsAsync(BuildCommentDto("id1", eventId, input));
 
         await _sut.Create(eventId, input);
 
-        _serviceMock.Verify(s => s.CreateAsync(eventId, input), Times.Once);
+        _serviceMock.Verify(s => s.AddCommentAsync(eventId, input), Times.Once);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
