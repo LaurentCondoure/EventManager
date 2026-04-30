@@ -70,7 +70,11 @@ const submitting = ref(false)
 
 const categories = ref([])
 onMounted(async () => {
-  categories.value = await eventService.getCategories()
+  try {
+    categories.value = await eventService.getCategories()
+  } catch {
+    error.value = 'Impossible de charger les catégories. Veuillez recharger la page.'
+  }
 })
 
 const form = ref({
