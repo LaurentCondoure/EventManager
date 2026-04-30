@@ -1,3 +1,4 @@
+using EventManager.Api;
 using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Interfaces;
@@ -6,15 +7,19 @@ using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.Infrastructure.Search;
+using AppRateLimiterOptions = EventManager.Infrastructure.Options.RateLimiterOptions;
 
+using System.Threading.RateLimiting;
 
 using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
+
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +74,24 @@ builder.Services.AddScoped<IDbConnectionFactory>(sp =>
 builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
+//AddRateLimiter does not accept a factory with IServiceProvider.
+//You need to read the configuration directly from builder.Configuration before building the container
+AppRateLimiterOptions rateLimiterConfig = builder.Configuration
+    .GetSection(AppRateLimiterOptions.SectionName)
+    .Get<AppRateLimiterOptions>() ?? new AppRateLimiterOptions();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("fixed", policy =>
+    {
+        policy.PermitLimit          = rateLimiterConfig.PermitLimit;
+        policy.Window               = TimeSpan.FromMinutes(rateLimiterConfig.WindowMinutes);
+        policy.QueueLimit           = rateLimiterConfig.QueueLimit;
+        policy.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 builder.Services.AddScoped<ICommentRepository, MongoDbCommentRepository>();
 builder.Services.AddScoped<IEventSearchService, EventSearchService>();
 builder.Services.AddScoped<IEventService, EventService>();
@@ -76,10 +99,12 @@ builder.Services.AddScoped<IEventService, EventService>();
 WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
+app.UseRateLimiter();
 app.UseSwagger();
 app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1"));
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapMinimalApiEndpoints();
 
 app.Run();
 

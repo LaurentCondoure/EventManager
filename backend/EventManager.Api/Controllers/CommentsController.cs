@@ -1,11 +1,14 @@
 using EventManager.Domain.DTOs;
 using EventManager.Domain.Interfaces;
+
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventManager.Api.Controllers;
 
 [ApiController]
 [Route("api/events/{eventId:guid}/comments")]
+[EnableRateLimiting("fixed")]
 public class CommentsController(IEventService eventService, ILogger<CommentsController> logger) : ControllerBase
 {
     [HttpGet]

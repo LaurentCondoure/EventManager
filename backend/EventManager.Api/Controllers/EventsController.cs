@@ -2,11 +2,13 @@ using EventManager.Domain.DTOs;
 using EventManager.Domain.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("fixed")]
 public class EventsController(IEventService eventService, ILogger<EventsController> logger) : ControllerBase
 {
 
