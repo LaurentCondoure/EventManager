@@ -16,4 +16,5 @@ Categories are added as patterns emerge across decisions.
 | [ADR-005](ADR-005-decorator-pattern-caching.md) | Cache layer implements decorator pattern | Accepted | 2026-04-20 |
 | [ADR-006](ADR-006-redis-list-cache-invalidation.md) | Redis list cache invalidation via versioned key | Accepted | 2026-04-24 |
 | [ADR-007](ADR-007-cross-database-orchestration.md) | Cross-database orchestration for event and comment operations | Accepted | 2026-04-29 |
+| [ADR-008](ADR-008-rate-limiter-algorithm.md) | Rate limiting algorithm selection — fixed window | Accepted | 2026-04-30 |
 
