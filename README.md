@@ -113,7 +113,7 @@ Test endpoint available through Swagger at `https://localhost:{port}/swagger`.
 dotnet test backend/EventManager.slnx
 ```
 
-Current coverage: **45.85%** — tracked via [Codecov](https://codecov.io).
+Current coverage: tracked via [Codecov](https://app.codecov.io/github/laurentcondoure/eventmanager).
 
 Test strategy
 documentation :  [TEST_STRATEGY](documents/technical/TEST_STRATEGY.md)
@@ -129,5 +129,5 @@ documentation :  [TEST_STRATEGY](documents/technical/TEST_STRATEGY.md)
 | [Data Model](documents/technical/DATA_MODEL.md) | Database schema (SQL Server, MongoDB) and key design decisions |
 | [Technical Design](documents/technical/TECHNICAL_DESIGN.md) | Target architecture, planned endpoints, technical decisions |
 | [Architecture](documents/technical/Architecture.md) | Implemented component diagrams, project dependencies, data flows |
-| Deployment | _To be completed_ |
-| AI Usage | _To be completed_ |
+| Deployment | _Next Steps_ |
+| AI Usage | _Next Steps_ |
