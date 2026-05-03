@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "lint": "eslint . --fix"
+    "lint": "eslint src tests --ext .js,.vue"
   },
   "dependencies": {
     "chart.js": "^4.4.0",
