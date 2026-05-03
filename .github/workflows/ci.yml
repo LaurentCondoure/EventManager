@@ -29,8 +29,16 @@ jobs:
         working-directory: frontend/EventManagement.UI
 
       - name: Test
-        run: npm run test:unit -- --run --reporter=verbose
+        run: npm run test:unit -- --run --reporter=verbose --coverage
         working-directory: frontend/EventManagement.UI
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: frontend/EventManagement.UI/coverage
+          flags: frontend
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
@@ -57,6 +65,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           directory: ./coverage
+          flags: backend
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
