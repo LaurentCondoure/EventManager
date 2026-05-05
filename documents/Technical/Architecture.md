@@ -92,20 +92,11 @@ see [POST event sequence diagram](./flows/POST-event.md)
 
 ### PUT /api/events/{id}
 
-Varnish pass-through → `ErrorHandlingMiddleware` → `EventsController.Update` → `EventService.UpdateAsync`:
-1. Load event by id — throws `NotFoundException` if absent
-2. Mutate entity fields
-3. `CachedEventRepository.UpdateAsync` → SQL UPDATE + Redis invalidation (`event:{id}` delete + list version increment)
-4. `TryIndexAsync` → Elasticsearch reindex (swallows failure — search outage never blocks mutation)
-5. Returns updated `EventDto` (HTTP 200)
+see [PUT event sequence diagram](./flows/PUT-event.md)
 
 ### DELETE /api/events/{id}
 
-Varnish pass-through → `ErrorHandlingMiddleware` → `EventsController.Delete` → `EventService.DeleteAsync`:
-1. Load event by id — throws `NotFoundException` if absent
-2. `CachedEventRepository.DeleteAsync` → SQL DELETE + Redis invalidation (`event:{id}` delete + list version increment)
-3. `TryDeleteFromSearchAsync` → Elasticsearch document removal (swallows failure)
-4. Returns HTTP 204 No Content
+see [DELETE event sequence diagram](./flows/DELETE-event.md)
 
 ### GET /api/events/{id}/comments
 
