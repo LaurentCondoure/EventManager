@@ -39,9 +39,9 @@ graph TD
 ```
 events-management/
 ├── backend/
-│   ├── EventsManager.Domain/
-│   ├── EventsManager.Infrastructure/
-│   └── EventsManager.Api/
+│   ├── EventManager.Domain/
+│   ├── EventManager.Infrastructure/
+│   └── EventManager.Api/
 ├── frontend/
 ├── terraform/
 ├── docs/
@@ -61,26 +61,44 @@ events-management/
 ### Prerequisites
 
 - [.NET SDK 8](https://dotnet.microsoft.com/download) or later
-- SQL Server (local instance)
-- Redis (local instance)
-- MongoDB (local instance)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) with WSL 2 backend
+
+### Environment
+
+Create the `.env` file from the example and fill in the passwords:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Description |
+|---|---|
+| `SA_PASSWORD` | SQL Server SA password (used by Docker to initialise the container) |
+| `APP_PASSWORD` | Application user password — must match the password in your user secrets |
+
+Both passwords must meet SQL Server complexity requirements: uppercase, lowercase, digit, special character, minimum 8 characters.
 
 ### Configuration
 
 SQL Server connection string via User Secrets:
 
 ```bash
-cd backend/EventManager.Api
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=EventManager;User Id=sa;Password=<password>;TrustServerCertificate=True"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
+  "Server=localhost,1433;Database=EventManagement;User Id=eventmanagement_user;Password=<APP_PASSWORD>;TrustServerCertificate=True" \
+  --project backend/EventManager.Api
 ```
 
-### Database
+### Infrastructure
 
-Create the `EventManager` database and apply the initial schema:
+Start all services and apply database migrations:
 
 ```bash
-sqlcmd -S localhost -i database/migrations/001_InitialSchema.sql
+docker compose up -d
 ```
+
+The `sql-init` container runs all scripts in `database/migrations/` in order once SQL Server is healthy, then exits.
+
+Once running, the Varnish HTTP cache is available on port `8080` and proxies requests to the API. See [DOCKER.md](documents/Technical/DOCKER.md) for service details and verification commands.
 
 ### Run
 
@@ -99,7 +117,9 @@ dotnet run --project backend/EventManager.Api
 |---|---|---|---|
 | `GET` | `/api/events` | Liste paginée (`page`, `pageSize`) | `200` |
 | `GET` | `/api/events/{id}` | Détail d'un événement | `200`, `404` |
+| `GET` | `/api/events/{id}/full` | Événement + commentaires | `200`, `404` |
 | `POST` | `/api/events` | Créer un événement | `201`, `400` |
+| `GET` | `/api/events/search?q=` | Recherche full-text (Elasticsearch) | `200` |
 | `GET` | `/api/events/{id}/comments` | Liste des commentaires d'un événement | `200` |
 | `POST` | `/api/events/{id}/comments` | Ajouter un commentaire | `201`, `400` |
 
@@ -115,8 +135,12 @@ dotnet test backend/EventManager.slnx
 
 Current coverage: tracked via [Codecov](https://app.codecov.io/github/laurentcondoure/eventmanager).
 
-Test strategy
-documentation :  [TEST_STRATEGY](documents/technical/TEST_STRATEGY.md)
+Test strategy documentation: [TEST_STRATEGY](documents/Technical/TEST_STRATEGY.md)
+
+| Version | Date | Description |
+|---|---|---|
+| v1.0 | 2026-04-27 | Initial strategy — unit and integration tests |
+| v2.0 | 2026-05-05 | Revised — infrastructure tests added (Testcontainers), Varnish fixture, 3-layer strategy |
 
 ---
 
