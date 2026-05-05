@@ -189,6 +189,31 @@ public class EventsControllerTests : IClassFixture<WebApplicationFactory<Program
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    // ── Cache-Control headers ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task GetAll_ShouldSetPublicCacheControlHeader()
+    {
+        var response = await _client.GetAsync("/api/events", TestContext.Current.CancellationToken);
+
+        response.Headers.CacheControl.Should().NotBeNull();
+        response.Headers.CacheControl!.Public.Should().BeTrue();
+        response.Headers.CacheControl.MaxAge.Should().Be(TimeSpan.FromSeconds(300));
+    }
+
+    [Fact]
+    public async Task GetById_ShouldSetPublicCacheControlHeader()
+    {
+        var @event = BuildEvent("Cache-Control Test");
+        _repository.Seed(@event);
+
+        var response = await _client.GetAsync($"/api/events/{@event.Id}", TestContext.Current.CancellationToken);
+
+        response.Headers.CacheControl.Should().NotBeNull();
+        response.Headers.CacheControl!.Public.Should().BeTrue();
+        response.Headers.CacheControl.MaxAge.Should().Be(TimeSpan.FromSeconds(600));
+    }
+
     // ── GET /api/events/{id}/full ────────────────────────────────────────────
 
     [Fact]

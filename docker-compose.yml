@@ -81,6 +81,18 @@ services:
       retries: 10
       start_period: 30s
 
+  varnish:
+    image: varnish:7
+    container_name: eventmanager-varnish
+    ports:
+      - "8080:80"
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl:ro
+    # On Linux, host.docker.internal is not available by default — this maps it to the host gateway.
+    # On Docker Desktop (Windows/Mac), this entry is ignored (already built in).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   sqlserver-data:
   mongodb-data:
