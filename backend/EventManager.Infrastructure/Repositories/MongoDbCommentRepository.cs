@@ -4,6 +4,7 @@ using EventManager.Infrastructure.Options;
 
 using Microsoft.Extensions.Options;
 
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace EventManager.Infrastructure.Repositories;
@@ -34,6 +35,7 @@ public class MongoDbCommentRepository(IMongoClient client, IOptions<MongoDbOptio
     /// <inheritdoc/>
     public async Task<string> CreateAsync(EventComment comment)
     {
+        comment.Id = ObjectId.GenerateNewId().ToString();
         await _collection.InsertOneAsync(comment);
 
         return comment.Id;

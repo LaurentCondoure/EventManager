@@ -16,10 +16,13 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using EventManager.Infrastructure.Mappings;
+
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
 
+MongoDbMappings.Register();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -66,11 +69,7 @@ builder.Services.AddSingleton<ElasticsearchClient>(sp =>
 });
 
 builder.Services.AddScoped<IDbConnectionFactory>(sp =>
-                                                    new DbConnectionFactory(
-                                                        sp.GetRequiredService<IOptions<DatabaseOptions>>(),
-                                                        DbProvider.SqlServer
-                                                    )
-                                                );
+    new DbConnectionFactory(sp.GetRequiredService<IOptions<DatabaseOptions>>()));
 builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
@@ -110,3 +109,5 @@ app.Run();
 
 
 
+// Needed for integration tests
+public partial class Program { }
