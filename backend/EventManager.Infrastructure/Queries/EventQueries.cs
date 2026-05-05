@@ -24,5 +24,22 @@ public class EventQueries
             INSERT INTO Events (Id, Title, Description, Date, Location , Capacity, Price, Category, ArtistName, CreatedAt)
             VALUES (@Id, @Title, @Description, @Date, @Location, @Capacity, @Price, @Category, @ArtistName, @CreatedAt)
             ";
-    
+
+    /// <summary>SQL query to update an existing event record.</summary>
+    internal const string Update = @"
+            UPDATE Events
+            SET Title       = @Title,
+                Description = @Description,
+                Date        = @Date,
+                Location    = @Location,
+                Capacity    = @Capacity,
+                Price       = @Price,
+                Category    = @Category,
+                ArtistName  = @ArtistName,
+                UpdatedAt   = @UpdatedAt
+            WHERE Id = @Id
+            ";
+
+    /// <summary>SQL query to delete an event record by its ID.</summary>
+    internal const string Delete = @"DELETE FROM Events WHERE Id = @Id";
 }

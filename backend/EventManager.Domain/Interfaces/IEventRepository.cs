@@ -20,4 +20,12 @@ public interface IEventRepository
     /// <summary>Inserts a new event and returns its generated ID.</summary>
     /// <param name="event">The event to insert.</param>
     Task<Guid> CreateAsync(Event @event);
+
+    /// <summary>Updates an existing event. Caller is responsible for setting UpdatedAt.</summary>
+    /// <param name="event">The event with updated values.</param>
+    Task UpdateAsync(Event @event);
+
+    /// <summary>Deletes an event by its ID.</summary>
+    /// <param name="id">The event ID.</param>
+    Task DeleteAsync(Guid id);
 }

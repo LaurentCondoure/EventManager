@@ -30,10 +30,21 @@ export const useEventStore = defineStore('event', () => {
     return created
   }
 
+  async function updateEvent(id, data) {
+    const updated = await eventService.update(id, data)
+    events.value = events.value.map(e => e.id === id ? updated : e)
+    return updated
+  }
+
+  async function deleteEvent(id) {
+    await eventService.delete(id)
+    events.value = events.value.filter(e => e.id !== id)
+  }
+
   function loadMore() {
     if (!loading.value && hasMore.value)
       fetchEvents(currentPage.value + 1)
   }
 
-  return { events, loading, error, hasMore, fetchEvents, createEvent, loadMore }
+  return { events, loading, error, hasMore, fetchEvents, createEvent, updateEvent, deleteEvent, loadMore }
 })

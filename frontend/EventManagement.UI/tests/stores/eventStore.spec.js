@@ -6,7 +6,9 @@ import { eventService } from '@/services/apiService'
 vi.mock('@/services/apiService', () => ({
   eventService: {
     getAll:  vi.fn(),
-    create:  vi.fn()
+    create:  vi.fn(),
+    update:  vi.fn(),
+    delete:  vi.fn()
   }
 }))
 
@@ -89,6 +91,42 @@ describe('eventStore', () => {
       const store = useEventStore()
       const result = await store.createEvent({ title: 'New Event' })
       expect(result).toEqual(created)
+    })
+  })
+
+  // ── updateEvent ───────────────────────────────────────────────────────────
+
+  describe('updateEvent', () => {
+    it('replaces the updated event in the list', async () => {
+      const original = { id: '1', title: 'Original' }
+      const updated  = { id: '1', title: 'Updated' }
+      eventService.getAll.mockResolvedValue([original])
+      eventService.update.mockResolvedValue(updated)
+      const store = useEventStore()
+      await store.fetchEvents(1)
+      await store.updateEvent('1', { title: 'Updated' })
+      expect(store.events[0].title).toBe('Updated')
+    })
+
+    it('returns the updated event', async () => {
+      const updated = { id: '1', title: 'Updated' }
+      eventService.update.mockResolvedValue(updated)
+      const store = useEventStore()
+      const result = await store.updateEvent('1', { title: 'Updated' })
+      expect(result).toEqual(updated)
+    })
+  })
+
+  // ── deleteEvent ───────────────────────────────────────────────────────────
+
+  describe('deleteEvent', () => {
+    it('removes the event from the list', async () => {
+      eventService.getAll.mockResolvedValue([{ id: '1', title: 'To Delete' }])
+      eventService.delete.mockResolvedValue(null)
+      const store = useEventStore()
+      await store.fetchEvents(1)
+      await store.deleteEvent('1')
+      expect(store.events).toHaveLength(0)
     })
   })
 

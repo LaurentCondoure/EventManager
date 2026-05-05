@@ -49,6 +49,27 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     public async Task<IActionResult> GetFull(Guid id)
         => Ok(await eventService.GetWithCommentsAsync(id));
 
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(EventDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEventInput request)
+    {
+        var @event = await eventService.UpdateAsync(id, request);
+        logger.LogInformation("Updated event {EventId} - {Title}", @event.Id, @event.Title);
+        return Ok(@event);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await eventService.DeleteAsync(id);
+        logger.LogInformation("Deleted event {EventId}", id);
+        return NoContent();
+    }
+
     [HttpGet("search")]
     [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string q, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)

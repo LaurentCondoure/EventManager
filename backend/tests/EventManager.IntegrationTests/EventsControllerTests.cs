@@ -245,6 +245,74 @@ public class EventsControllerTests : IClassFixture<WebApplicationFactory<Program
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    // ── PUT /api/events/{id} ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task Update_ShouldReturnOk_WhenEventExists()
+    {
+        var @event = BuildEvent("Original Title");
+        _repository.Seed(@event);
+
+        var payload = new UpdateEventInput("Updated Title", "New desc",
+            DateTime.UtcNow.AddDays(20), "Lyon", 150, 35m, "Théâtre", null);
+
+        var response = await _client.PutAsJsonAsync($"/api/events/{@event.Id}", payload,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var dto = await response.Content.ReadFromJsonAsync<EventDto>(TestContext.Current.CancellationToken);
+        dto!.Title.Should().Be("Updated Title");
+        dto.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Update_ShouldReturnNotFound_WhenEventDoesNotExist()
+    {
+        var payload = new UpdateEventInput("T", "D", DateTime.UtcNow.AddDays(1), "L", 1, 0m, "Concert", null);
+
+        var response = await _client.PutAsJsonAsync($"/api/events/{Guid.NewGuid()}", payload,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Update_ShouldReturnBadRequest_WhenInputInvalid()
+    {
+        var @event = BuildEvent("Valid Event");
+        _repository.Seed(@event);
+
+        var payload = new UpdateEventInput("", "D", DateTime.UtcNow.AddDays(1), "L", 1, 0m, "Concert", null);
+
+        var response = await _client.PutAsJsonAsync($"/api/events/{@event.Id}", payload,
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    // ── DELETE /api/events/{id} ───────────────────────────────────────────────
+
+    [Fact]
+    public async Task Delete_ShouldReturnNoContent_WhenEventExists()
+    {
+        var @event = BuildEvent("To Delete");
+        _repository.Seed(@event);
+
+        var response = await _client.DeleteAsync($"/api/events/{@event.Id}",
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task Delete_ShouldReturnNotFound_WhenEventDoesNotExist()
+    {
+        var response = await _client.DeleteAsync($"/api/events/{Guid.NewGuid()}",
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private readonly WebApplicationFactory<Program> _factory;

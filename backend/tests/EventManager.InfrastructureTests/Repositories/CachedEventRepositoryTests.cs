@@ -141,6 +141,63 @@ public class CachedEventRepositoryTests : IClassFixture<SqlServerFixture>, IClas
         id.Should().NotBe(Guid.Empty);
     }
 
+    // ── UpdateAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task UpdateAsync_InvalidatesEventCacheKey()
+    {
+        var id = await _sut.CreateAsync(BuildEvent("Before Update"));
+        await _sut.GetByIdAsync(id); // prime cache
+
+        var @event = (await _inner.GetByIdAsync(id))!;
+        @event.Title     = "After Update";
+        @event.UpdatedAt = DateTime.UtcNow;
+        await _sut.UpdateAsync(@event);
+
+        var cached = await _redis.StringGetAsync($"event:{id}");
+        cached.IsNull.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_IncrementsListVersion()
+    {
+        var versionBefore = (long?)await _redis.StringGetAsync("events:list:version") ?? 0L;
+
+        var id = await _sut.CreateAsync(BuildEvent("Version Test"));
+        var @event = (await _inner.GetByIdAsync(id))!;
+        @event.UpdatedAt = DateTime.UtcNow;
+        await _sut.UpdateAsync(@event);
+
+        var versionAfter = (long?)await _redis.StringGetAsync("events:list:version") ?? 0L;
+        versionAfter.Should().BeGreaterThan(versionBefore);
+    }
+
+    // ── DeleteAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task DeleteAsync_InvalidatesEventCacheKey()
+    {
+        var id = await _sut.CreateAsync(BuildEvent("To Delete"));
+        await _sut.GetByIdAsync(id); // prime cache
+
+        await _sut.DeleteAsync(id);
+
+        var cached = await _redis.StringGetAsync($"event:{id}");
+        cached.IsNull.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_IncrementsListVersion()
+    {
+        var id = await _sut.CreateAsync(BuildEvent("Delete Version"));
+        var versionBefore = (long?)await _redis.StringGetAsync("events:list:version") ?? 0L;
+
+        await _sut.DeleteAsync(id);
+
+        var versionAfter = (long?)await _redis.StringGetAsync("events:list:version") ?? 0L;
+        versionAfter.Should().Be(versionBefore + 1);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(string title = "Test Event") => new()

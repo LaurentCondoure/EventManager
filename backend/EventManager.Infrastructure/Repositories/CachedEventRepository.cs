@@ -96,10 +96,25 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     {
         var id = await _inner.CreateAsync(@event);
 
-        //Incr will set +1 to the version, all pagined list keys will be invalidate 
+        //Incr will set +1 to the version, all pagined list keys will be invalidate
         //next time they are requested
         await _cache.StringIncrementAsync(ListVersionKey);
         return id;
     }
 
+    /// <inheritdoc/>
+    public async Task UpdateAsync(Event @event)
+    {
+        await _inner.UpdateAsync(@event);
+        await _cache.KeyDeleteAsync(EventKey(@event.Id));
+        await _cache.StringIncrementAsync(ListVersionKey);
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(Guid id)
+    {
+        await _inner.DeleteAsync(id);
+        await _cache.KeyDeleteAsync(EventKey(id));
+        await _cache.StringIncrementAsync(ListVersionKey);
+    }
 }

@@ -51,4 +51,15 @@ public interface IEventService
     /// <param name="id">The event ID.</param>
     /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
     Task<EventWithCommentsDto> GetWithCommentsAsync(Guid id);
+
+    /// <summary>Updates an existing event and reindexes it in the search engine.</summary>
+    /// <param name="id">The event ID.</param>
+    /// <param name="request">The update payload.</param>
+    /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
+    Task<EventDto> UpdateAsync(Guid id, UpdateEventInput request);
+
+    /// <summary>Deletes an event and removes it from the search index.</summary>
+    /// <param name="id">The event ID.</param>
+    /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
+    Task DeleteAsync(Guid id);
 }

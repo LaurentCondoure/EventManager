@@ -41,16 +41,15 @@ public class InMemoryEventRepository : IEventRepository
         return Task.FromResult(id);
     }
 
-    public Task<bool> UpdateAsync(Event @event)
+    public Task UpdateAsync(Event @event)
     {
-        if (!_store.ContainsKey(@event.Id)) return Task.FromResult(false);
         _store[@event.Id] = @event;
-        return Task.FromResult(true);
+        return Task.CompletedTask;
     }
 
-    public Task<bool> DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id)
     {
-        var removed = _store.Remove(id);
-        return Task.FromResult(removed);
+        _store.Remove(id);
+        return Task.CompletedTask;
     }
 }

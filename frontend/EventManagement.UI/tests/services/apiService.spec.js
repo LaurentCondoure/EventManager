@@ -74,6 +74,23 @@ describe('apiService', () => {
         body: JSON.stringify(data)
       }))
     })
+
+    it('update sends PUT to correct URL with body', async () => {
+      const data = { title: 'Updated' }
+      await eventService.update('abc', data)
+      expect(fetch).toHaveBeenCalledWith('/api/events/abc', expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify(data)
+      }))
+    })
+
+    it('delete sends DELETE to correct URL', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 204 }))
+      await eventService.delete('abc')
+      expect(fetch).toHaveBeenCalledWith('/api/events/abc', expect.objectContaining({
+        method: 'DELETE'
+      }))
+    })
   })
 
   describe('commentService', () => {

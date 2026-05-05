@@ -4,14 +4,22 @@ import { mount, flushPromises } from '@vue/test-utils'
 import EventDetailView from '@/views/EventDetailView.vue'
 import { eventService, commentService } from '@/services/apiService'
 
+const mockPush = vi.fn()
+const mockDeleteEvent = vi.fn()
+
 vi.mock('vue-router', () => ({
   useRoute:   () => ({ params: { id: 'event-id' } }),
+  useRouter:  () => ({ push: mockPush }),
   RouterLink: { template: '<a><slot /></a>' }
 }))
 
 vi.mock('@/services/apiService', () => ({
-  eventService:  { getFull: vi.fn() },
+  eventService:   { getFull: vi.fn() },
   commentService: { create: vi.fn() }
+}))
+
+vi.mock('@/stores/eventStore', () => ({
+  useEventStore: () => ({ deleteEvent: mockDeleteEvent })
 }))
 
 const fullData = {
@@ -94,5 +102,47 @@ describe('EventDetailView', () => {
     await flushPromises()
 
     expect(wrapper.find('input[placeholder="Votre nom"]').element.value).toBe('')
+  })
+
+  // ── Edit + Delete actions ──────────────────────────────────────────────────
+
+  it('renders edit button linking to edit route', async () => {
+    eventService.getFull.mockResolvedValue(fullData)
+    const wrapper = mountView()
+    await flushPromises()
+    expect(wrapper.text()).toContain('Modifier')
+  })
+
+  it('calls deleteEvent and redirects on confirmed delete', async () => {
+    eventService.getFull.mockResolvedValue(fullData)
+    mockDeleteEvent.mockResolvedValue(undefined)
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(true))
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.find('button.btn-danger').trigger('click')
+    await flushPromises()
+
+    expect(mockDeleteEvent).toHaveBeenCalledWith('event-id')
+    expect(mockPush).toHaveBeenCalledWith('/')
+
+    vi.unstubAllGlobals()
+  })
+
+  it('does not delete when confirm is cancelled', async () => {
+    eventService.getFull.mockResolvedValue(fullData)
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(false))
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.find('button.btn-danger').trigger('click')
+    await flushPromises()
+
+    expect(mockDeleteEvent).not.toHaveBeenCalled()
+    expect(mockPush).not.toHaveBeenCalled()
+
+    vi.unstubAllGlobals()
   })
 })

@@ -392,6 +392,104 @@ public class EventServiceTests
         _repositoryMock.Verify(r => r.GetByIdAsync(id), Times.Once);
     }
 
+    // ── UpdateAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task UpdateAsync_EventFound_ReturnsUpdatedDto()
+    {
+        var id = Guid.NewGuid();
+        var existing = BuildEvent(id, "Old Title", "Concert");
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(existing);
+        _repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Event>())).Returns(Task.CompletedTask);
+
+        var request = new UpdateEventInput("New Title", "New Desc", DateTime.UtcNow.AddDays(5),
+            "Lyon", 200, 30m, "Théâtre", null);
+
+        var result = await _sut.UpdateAsync(id, request);
+
+        result.Title.Should().Be("New Title");
+        result.Category.Should().Be("Théâtre");
+        result.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_EventNotFound_ThrowsNotFoundException()
+    {
+        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Event?)null);
+
+        var act = () => _sut.UpdateAsync(Guid.NewGuid(), new UpdateEventInput(
+            "T", "D", DateTime.UtcNow.AddDays(1), "L", 1, 0m, "Concert", null));
+
+        await act.Should().ThrowAsync<NotFoundException>();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_CallsRepositoryUpdateAndReindex()
+    {
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "T", "Concert"));
+        _repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Event>())).Returns(Task.CompletedTask);
+
+        await _sut.UpdateAsync(id, new UpdateEventInput(
+            "T", "D", DateTime.UtcNow.AddDays(1), "L", 1, 0m, "Concert", null));
+
+        _repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Event>()), Times.Once);
+        _searchMock.Verify(s => s.IndexAsync(It.IsAny<Event>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_SearchIndexFailure_DoesNotThrow()
+    {
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "T", "Concert"));
+        _repositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Event>())).Returns(Task.CompletedTask);
+        _searchMock.Setup(s => s.IndexAsync(It.IsAny<Event>())).ThrowsAsync(new Exception("ES down"));
+
+        var act = () => _sut.UpdateAsync(id, new UpdateEventInput(
+            "T", "D", DateTime.UtcNow.AddDays(1), "L", 1, 0m, "Concert", null));
+
+        await act.Should().NotThrowAsync();
+    }
+
+    // ── DeleteAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task DeleteAsync_EventFound_CallsRepositoryAndSearch()
+    {
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "T", "Concert"));
+        _repositoryMock.Setup(r => r.DeleteAsync(id)).Returns(Task.CompletedTask);
+        _searchMock.Setup(s => s.DeleteAsync(id)).Returns(Task.CompletedTask);
+
+        await _sut.DeleteAsync(id);
+
+        _repositoryMock.Verify(r => r.DeleteAsync(id), Times.Once);
+        _searchMock.Verify(s => s.DeleteAsync(id), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_EventNotFound_ThrowsNotFoundException()
+    {
+        _repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Event?)null);
+
+        var act = () => _sut.DeleteAsync(Guid.NewGuid());
+
+        await act.Should().ThrowAsync<NotFoundException>();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_SearchDeleteFailure_DoesNotThrow()
+    {
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "T", "Concert"));
+        _repositoryMock.Setup(r => r.DeleteAsync(id)).Returns(Task.CompletedTask);
+        _searchMock.Setup(s => s.DeleteAsync(id)).ThrowsAsync(new Exception("ES down"));
+
+        var act = () => _sut.DeleteAsync(id);
+
+        await act.Should().NotThrowAsync();
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(Guid id, string title, string category) => new()

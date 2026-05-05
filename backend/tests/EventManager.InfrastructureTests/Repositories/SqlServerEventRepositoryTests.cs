@@ -157,6 +157,49 @@ public class SqlServerEventRepositoryTests : IClassFixture<SqlServerFixture>
         id1.Should().NotBe(id2);
     }
 
+    // ── UpdateAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task UpdateAsync_ExistingEvent_PersistsAllFields()
+    {
+        var id = await _sut.CreateAsync(BuildEvent("Original"));
+
+        var @event = await _sut.GetByIdAsync(id);
+        @event!.Title       = "Updated Title";
+        @event.Description  = "Updated Description";
+        @event.Location     = "Marseille";
+        @event.Capacity     = 500;
+        @event.Price        = 99m;
+        @event.Category     = "Théâtre";
+        @event.ArtistName   = "Nouveau Artiste";
+        @event.UpdatedAt    = DateTime.UtcNow;
+
+        await _sut.UpdateAsync(@event);
+
+        var result = await _sut.GetByIdAsync(id);
+        result!.Title.Should().Be("Updated Title");
+        result.Description.Should().Be("Updated Description");
+        result.Location.Should().Be("Marseille");
+        result.Capacity.Should().Be(500);
+        result.Price.Should().Be(99m);
+        result.Category.Should().Be("Théâtre");
+        result.ArtistName.Should().Be("Nouveau Artiste");
+        result.UpdatedAt.Should().NotBeNull();
+    }
+
+    // ── DeleteAsync ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task DeleteAsync_ExistingEvent_RemovesFromDatabase()
+    {
+        var id = await _sut.CreateAsync(BuildEvent("To Delete"));
+
+        await _sut.DeleteAsync(id);
+
+        var result = await _sut.GetByIdAsync(id);
+        result.Should().BeNull();
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(string title, string? artistName = null, int daysFromNow = 30) => new()

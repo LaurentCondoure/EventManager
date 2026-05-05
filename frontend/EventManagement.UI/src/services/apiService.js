@@ -21,6 +21,8 @@ export const eventService = {
   getFull:       (id)                      => request(`/events/${id}/full`),
   search:        (q, page = 1)             => request(`/events/search?q=${encodeURIComponent(q)}&page=${page}`),
   create:        (data)                    => request('/events', { method: 'POST', body: JSON.stringify(data) }),
+  update:        (id, data)                => request(`/events/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete:        (id)                      => request(`/events/${id}`, { method: 'DELETE' }),
   getCategories: ()                        => request('/events/categories'),
 }
 

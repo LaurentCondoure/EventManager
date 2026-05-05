@@ -94,6 +94,38 @@ public class EventService(
     }
 
     /// <inheritdoc/>
+    public async Task<EventDto> UpdateAsync(Guid id, UpdateEventInput request)
+    {
+        var @event = await _eventRepository.GetByIdAsync(id)
+            ?? throw new NotFoundException(nameof(Event), id);
+
+        @event.Title       = request.Title;
+        @event.Description = request.Description;
+        @event.Date        = request.Date;
+        @event.Location    = request.Location;
+        @event.Capacity    = request.Capacity;
+        @event.Price       = request.Price;
+        @event.Category    = request.Category;
+        @event.ArtistName  = request.ArtistName;
+        @event.UpdatedAt   = DateTime.UtcNow;
+
+        await _eventRepository.UpdateAsync(@event);
+        await TryIndexAsync(@event);
+
+        return MapToDto(@event);
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(Guid id)
+    {
+        _ = await _eventRepository.GetByIdAsync(id)
+            ?? throw new NotFoundException(nameof(Event), id);
+
+        await _eventRepository.DeleteAsync(id);
+        await TryDeleteFromSearchAsync(id);
+    }
+
+    /// <inheritdoc/>
     public async Task<EventWithCommentsDto> GetWithCommentsAsync(Guid id)
     {
         var @event = await _eventRepository.GetByIdAsync(id)
@@ -129,6 +161,16 @@ public class EventService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Search indexing failed for event {EventId} — search index may be stale", @event.Id);
+        }
+    }
+
+    /// <summary>Removes the event from Elasticsearch. Logs and swallows any failure so a search outage never blocks deletion.</summary>
+    private async Task TryDeleteFromSearchAsync(Guid id)
+    {
+        try { await searchService.DeleteAsync(id); }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Search deletion failed for event {EventId} — search index may be stale", id);
         }
     }
 }

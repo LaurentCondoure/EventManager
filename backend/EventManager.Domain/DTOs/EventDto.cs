@@ -47,7 +47,7 @@ public record CreateEventInput(
 );
 
 /// <summary>Payload used to update an existing event.</summary>
-public record UpdateEvent(
+public record UpdateEventInput(
     /// <summary>Display title of the event.</summary>
     string Title,
     /// <summary>Full description of the event.</summary>

@@ -61,4 +61,30 @@ public class SqlServerEventRepository(IDbConnectionFactory dbConnectionFactory) 
 
         return id;
     }
+
+    /// <inheritdoc/>
+    public async Task UpdateAsync(Event @event)
+    {
+        using var connection = CreateConnection();
+        await connection.ExecuteAsync(EventQueries.Update, new
+        {
+            @event.Id,
+            @event.Title,
+            @event.Description,
+            @event.Date,
+            @event.Location,
+            @event.Capacity,
+            @event.Price,
+            @event.Category,
+            @event.ArtistName,
+            @event.UpdatedAt
+        });
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(Guid id)
+    {
+        using var connection = CreateConnection();
+        await connection.ExecuteAsync(EventQueries.Delete, new { Id = id });
+    }
 }

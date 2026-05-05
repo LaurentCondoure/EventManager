@@ -5,8 +5,10 @@ import EventFormView from '@/views/EventFormView.vue'
 import { eventService } from '@/services/apiService'
 
 const mockPush = vi.fn()
+let mockRouteParams = {}
 
 vi.mock('vue-router', () => ({
+  useRoute:   () => ({ params: mockRouteParams }),
   useRouter:  () => ({ push: mockPush }),
   RouterLink: { template: '<a><slot /></a>' }
 }))
@@ -15,7 +17,9 @@ vi.mock('@/services/apiService', () => ({
   eventService: {
     getCategories: vi.fn(),
     getAll:        vi.fn().mockResolvedValue([]),
-    create:        vi.fn()
+    create:        vi.fn(),
+    getById:       vi.fn(),
+    update:        vi.fn()
   }
 }))
 
@@ -26,7 +30,10 @@ const mountForm = () => mount(EventFormView, {
 })
 
 describe('EventFormView', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRouteParams = {}
+  })
 
   // ── Category loading ───────────────────────────────────────────────────────
 
@@ -60,11 +67,17 @@ describe('EventFormView', () => {
     })
   })
 
-  // ── Form submission ────────────────────────────────────────────────────────
+  // ── Create mode ────────────────────────────────────────────────────────────
 
-  describe('form submission', () => {
+  describe('create mode', () => {
     beforeEach(() => {
       eventService.getCategories.mockResolvedValue(categories)
+    })
+
+    it('shows create title', async () => {
+      const wrapper = mountForm()
+      await flushPromises()
+      expect(wrapper.text()).toContain('Créer un événement')
     })
 
     it('redirects to new event on success', async () => {
@@ -91,6 +104,74 @@ describe('EventFormView', () => {
       await flushPromises()
 
       expect(wrapper.text()).toContain('Erreur serveur')
+    })
+  })
+
+  // ── Edit mode ──────────────────────────────────────────────────────────────
+
+  describe('edit mode', () => {
+    const existingEvent = {
+      id: 'event-123',
+      title: 'Jazz Night',
+      description: 'A great show',
+      date: '2026-06-15T20:00:00Z',
+      location: 'Paris',
+      category: 'Concert',
+      artistName: 'Miles Davis',
+      capacity: 200,
+      price: 25
+    }
+
+    beforeEach(() => {
+      mockRouteParams = { id: 'event-123' }
+      eventService.getCategories.mockResolvedValue(categories)
+      eventService.getById.mockResolvedValue(existingEvent)
+    })
+
+    it('shows edit title', async () => {
+      const wrapper = mountForm()
+      await flushPromises()
+      expect(wrapper.text()).toContain("Modifier l'événement")
+    })
+
+    it('pre-fills form with existing event data', async () => {
+      const wrapper = mountForm()
+      await flushPromises()
+      const titleInput = wrapper.find('input[maxlength="200"]')
+      expect(titleInput.element.value).toBe('Jazz Night')
+    })
+
+    it('calls update on submit and redirects to event detail', async () => {
+      eventService.update.mockResolvedValue(existingEvent)
+      const wrapper = mountForm()
+      await flushPromises()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(eventService.update).toHaveBeenCalledWith(
+        'event-123',
+        expect.objectContaining({ title: 'Jazz Night' })
+      )
+      expect(mockPush).toHaveBeenCalledWith('/events/event-123')
+    })
+
+    it('does not call create in edit mode', async () => {
+      eventService.update.mockResolvedValue(existingEvent)
+      const wrapper = mountForm()
+      await flushPromises()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(eventService.create).not.toHaveBeenCalled()
+    })
+
+    it('shows error when event fails to load', async () => {
+      eventService.getById.mockRejectedValue(new Error('Not found'))
+      const wrapper = mountForm()
+      await flushPromises()
+      expect(wrapper.text()).toContain("Impossible de charger l'événement")
     })
   })
 })

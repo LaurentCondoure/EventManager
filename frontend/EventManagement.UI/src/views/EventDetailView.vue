@@ -16,7 +16,18 @@
         <span>{{ data.event.capacity }} places</span>
       </div>
       <p class="description">{{ data.event.description }}</p>
+
+      <div class="event-actions">
+        <RouterLink :to="`/events/${route.params.id}/edit`" class="btn btn-secondary">
+          Modifier
+        </RouterLink>
+        <button @click="confirmDelete" :disabled="deleting" class="btn btn-danger">
+          {{ deleting ? 'Suppression...' : 'Supprimer' }}
+        </button>
+      </div>
     </article>
+
+    <div v-if="deleteError" class="error">{{ deleteError }}</div>
 
     <section class="comments">
       <h2>Commentaires ({{ data.comments.length }})</h2>
@@ -52,15 +63,21 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { eventService, commentService } from '@/services/apiService'
+import { useEventStore } from '@/stores/eventStore'
 import { useFormatters } from '@/composables/useFormatters'
 
-const route     = useRoute()
-const data      = ref(null)
-const loading   = ref(false)
-const error     = ref(null)
-const submitting = ref(false)
+const route   = useRoute()
+const router  = useRouter()
+const store   = useEventStore()
+
+const data        = ref(null)
+const loading     = ref(false)
+const error       = ref(null)
+const submitting  = ref(false)
+const deleting    = ref(false)
+const deleteError = ref(null)
 
 const form = ref({ userName: '', rating: 5, text: '' })
 
@@ -75,11 +92,26 @@ onMounted(async () => {
   }
 })
 
+async function confirmDelete() {
+  if (!confirm(`Supprimer définitivement "${data.value.event.title}" ? Cette action est irréversible.`))
+    return
+
+  deleting.value    = true
+  deleteError.value = null
+  try {
+    await store.deleteEvent(route.params.id)
+    router.push('/')
+  } catch (e) {
+    deleteError.value = e.message
+  } finally {
+    deleting.value = false
+  }
+}
+
 async function submitComment() {
   submitting.value = true
   try {
     await commentService.create(route.params.id, form.value)
-    //call 
     data.value = await eventService.getFull(route.params.id)
     form.value = { userName: '', rating: 5, text: '' }
   } finally {
