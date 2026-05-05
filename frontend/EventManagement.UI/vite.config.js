@@ -23,8 +23,10 @@ export default defineConfig({
     globals: true,
     coverage: {
       provider: 'v8',
-      reporter: ['lcov'],
-      reportsDirectory: './coverage'
+      reporter: ['lcov', 'text'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{js,vue}'],
+      exclude: ['src/main.js', 'src/router/**', 'src/App.vue']
     }
   }
 })

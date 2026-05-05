@@ -4,7 +4,6 @@ import { eventService } from '@/services/apiService'
 
 export const useEventStore = defineStore('event', () => {
   const events      = ref([])
-  const current     = ref(null)
   const loading     = ref(false)
   const error       = ref(null)
   const currentPage = ref(1)
@@ -25,18 +24,6 @@ export const useEventStore = defineStore('event', () => {
     }
   }
 
-  async function fetchById(id) {
-    loading.value = true
-    error.value   = null
-    try {
-      current.value = await eventService.getById(id)
-    } catch (e) {
-      error.value = e.message
-    } finally {
-      loading.value = false
-    }
-  }
-
   async function createEvent(data) {
     const created = await eventService.create(data)
     events.value = [created, ...events.value]
@@ -48,5 +35,5 @@ export const useEventStore = defineStore('event', () => {
       fetchEvents(currentPage.value + 1)
   }
 
-  return { events, current, loading, error, hasMore, fetchEvents, fetchById, createEvent, loadMore }
+  return { events, loading, error, hasMore, fetchEvents, createEvent, loadMore }
 })
