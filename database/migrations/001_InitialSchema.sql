@@ -1,30 +1,14 @@
 -- ============================================================
 -- Migration 001 - Initial schema
--- Run this script against your SQL Server Express instance
--- Database files will be created on D:\
 -- ============================================================
 
 USE master;
 GO
 
--- Create database with data files on D:\
-CREATE DATABASE EventManagement
-ON PRIMARY
-(
-    NAME = 'EventManagement',
-    FILENAME = 'D:\SqlData\EventManagement.mdf',
-    SIZE = 64MB,
-    MAXSIZE = UNLIMITED,
-    FILEGROWTH = 64MB
-)
-LOG ON
-(
-    NAME = 'EventManagement_log',
-    FILENAME = 'D:\SqlData\EventManagement_log.ldf',
-    SIZE = 16MB,
-    MAXSIZE = 2048MB,
-    FILEGROWTH = 16MB
-);
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'EventManagement')
+BEGIN
+    CREATE DATABASE EventManagement;
+END
 GO
 
 USE EventManagement;

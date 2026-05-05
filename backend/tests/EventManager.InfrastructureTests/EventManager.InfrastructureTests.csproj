@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.9.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Testcontainers" Version="4.11.0" />
+    <PackageReference Include="Testcontainers.Elasticsearch" Version="4.11.0" />
+    <PackageReference Include="Testcontainers.MongoDb" Version="4.11.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.11.0" />
+    <PackageReference Include="Testcontainers.Redis" Version="4.11.0" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EventManager.Api\EventManager.Api.csproj" />
+    <ProjectReference Include="..\..\EventManager.Domain\EventManager.Domain.csproj" />
+    <ProjectReference Include="..\..\EventManager.Infrastructure\EventManager.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+</Project>

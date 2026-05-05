@@ -8,7 +8,6 @@
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.3.5" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
     <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.12.14" />

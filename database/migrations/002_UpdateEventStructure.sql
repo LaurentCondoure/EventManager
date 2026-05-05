@@ -7,8 +7,8 @@ USE  EventManagement
 GO
 
 ALTER TABLE Events
-ADD Location TEXT NOT NULL Default '';
+ADD Location NVARCHAR(200) NOT NULL DEFAULT '';
 ALTER TABLE Events
-ADD ArtisteName TEXT NULL;
+ADD ArtistName NVARCHAR(200) NULL;
 
 GO

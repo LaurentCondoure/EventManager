@@ -1,0 +1,87 @@
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eventmanager-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${SA_PASSWORD}"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./database/migrations:/scripts/migrations:ro
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1", "-C", "-No"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  sql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eventmanager-sql-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./database/migrations:/scripts/migrations:ro
+    environment:
+      SA_PASSWORD: "${SA_PASSWORD}"
+      APP_PASSWORD: "${APP_PASSWORD}"
+    entrypoint: >
+      /bin/bash -c "
+        for f in $(ls /scripts/migrations/*.sql | sort); do
+          echo \"Running $$f\";
+          /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P \"$$SA_PASSWORD\" -v APP_PASSWORD=\"$$APP_PASSWORD\" -i \"$$f\" -C -No;
+        done
+      "
+    restart: "no"
+
+  redis:
+    image: redis:7-alpine
+    container_name: eventmanager-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    container_name: eventmanager-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ping:1})"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: eventmanager-elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  sqlserver-data:
+  mongodb-data:
+  elasticsearch-data:

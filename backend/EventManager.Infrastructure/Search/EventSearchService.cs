@@ -77,6 +77,10 @@ public class EventSearchService(ElasticsearchClient client) : IEventSearchServic
             )
         );
 
+        if (!response.IsValidResponse)
+            throw new InvalidOperationException(
+                $"Elasticsearch search unavailable: {response.ElasticsearchServerError?.Error?.Reason}");
+
         return response.Documents.Select(d => new SearchResultDto(
             d.Id, 
             d.Title, 

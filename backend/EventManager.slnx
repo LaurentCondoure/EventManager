@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/tests/">
     <Project Path="tests/EventManager.Tests/EventManager.Tests.csproj" />
+    <Project Path="tests/EventManager.IntegrationTests/EventManager.IntegrationTests.csproj" />
+    <Project Path="tests/EventManager.InfrastructureTests/EventManager.InfrastructureTests.csproj" />
   </Folder>
   <Project Path="EventManager.Api/EventManager.Api.csproj" />
   <Project Path="EventManager.Domain/EventManager.Domain.csproj" />
