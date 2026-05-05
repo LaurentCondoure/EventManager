@@ -43,6 +43,12 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
         return CreatedAtAction(nameof(GetById), new { id = @event.Id }, @event);
     }
 
+    [HttpGet("{id:guid}/full")]
+    [ProducesResponseType(typeof(EventWithCommentsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetFull(Guid id)
+        => Ok(await eventService.GetWithCommentsAsync(id));
+
     [HttpGet("search")]
     [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string q, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)

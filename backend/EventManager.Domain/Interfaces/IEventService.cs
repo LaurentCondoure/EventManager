@@ -46,4 +46,9 @@ public interface IEventService
     /// <param name="input">The comment creation payload.</param>
     /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
     Task<CommentDto> AddCommentAsync(Guid eventId, CreateCommentInput input);
+
+    /// <summary>Returns an event combined with its comments in a single call.</summary>
+    /// <param name="id">The event ID.</param>
+    /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
+    Task<EventWithCommentsDto> GetWithCommentsAsync(Guid id);
 }

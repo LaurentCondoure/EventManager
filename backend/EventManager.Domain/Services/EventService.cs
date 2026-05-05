@@ -93,6 +93,17 @@ public class EventService(
         return MapToCommentDto(comment);
     }
 
+    /// <inheritdoc/>
+    public async Task<EventWithCommentsDto> GetWithCommentsAsync(Guid id)
+    {
+        var @event = await _eventRepository.GetByIdAsync(id)
+            ?? throw new NotFoundException(nameof(Event), id);
+
+        var comments = await commentRepository.GetByEventIdAsync(id);
+
+        return new EventWithCommentsDto(MapToDto(@event), comments.Select(MapToCommentDto));
+    }
+
     /// <summary>Maps a domain <see cref="Event"/> to its read DTO.</summary>
     private static EventDto MapToDto(Event e) => new(
         e.Id,

@@ -321,6 +321,77 @@ public class EventServiceTests
         _commentMock.Verify(c => c.CreateAsync(It.IsAny<EventComment>()), Times.Never);
     }
 
+    // ── GetWithCommentsAsync ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task GetWithCommentsAsync_ShouldReturnEventAndComments_WhenBothExist()
+    {
+        Guid id = Guid.NewGuid();
+        var @event   = BuildEvent(id, "Festival Jazz", "Concert");
+        var comments = new List<EventComment>
+        {
+            BuildComment("id1", id, "Alice", 5),
+            BuildComment("id2", id, "Bob",   3)
+        };
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(@event);
+        _commentMock.Setup(c => c.GetByEventIdAsync(id)).ReturnsAsync(comments);
+
+        var result = await _sut.GetWithCommentsAsync(id);
+
+        result.Event.Id.Should().Be(id);
+        result.Event.Title.Should().Be("Festival Jazz");
+        result.Comments.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task GetWithCommentsAsync_ShouldReturnEmptyComments_WhenNoneExist()
+    {
+        Guid id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "Test", "Concert"));
+        _commentMock.Setup(c => c.GetByEventIdAsync(id)).ReturnsAsync([]);
+
+        var result = await _sut.GetWithCommentsAsync(id);
+
+        result.Event.Id.Should().Be(id);
+        result.Comments.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetWithCommentsAsync_ShouldThrowNotFoundException_WhenEventDoesNotExist()
+    {
+        Guid id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Event?)null);
+
+        var act = async () => await _sut.GetWithCommentsAsync(id);
+
+        await act.Should().ThrowAsync<NotFoundException>()
+            .WithMessage($"*Event*{id}*");
+    }
+
+    [Fact]
+    public async Task GetWithCommentsAsync_ShouldNotCallCommentRepository_WhenEventDoesNotExist()
+    {
+        Guid id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Event?)null);
+
+        var act = async () => await _sut.GetWithCommentsAsync(id);
+        await act.Should().ThrowAsync<NotFoundException>();
+
+        _commentMock.Verify(c => c.GetByEventIdAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetWithCommentsAsync_ShouldQueryEventRepositoryExactlyOnce()
+    {
+        Guid id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(BuildEvent(id, "Test", "Concert"));
+        _commentMock.Setup(c => c.GetByEventIdAsync(id)).ReturnsAsync([]);
+
+        await _sut.GetWithCommentsAsync(id);
+
+        _repositoryMock.Verify(r => r.GetByIdAsync(id), Times.Once);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(Guid id, string title, string category) => new()

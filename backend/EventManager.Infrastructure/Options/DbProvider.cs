@@ -5,7 +5,5 @@ namespace EventManager.Infrastructure.Options;
 /// </summary>
 public enum DbProvider
 {
-    SqlServer,
-    Sqlite,
-    InMemorySqlite
+    SqlServer
 }
