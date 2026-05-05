@@ -19,4 +19,5 @@ Categories are added as patterns emerge across decisions.
 | [ADR-008](ADR-008-rate-limiter-algorithm.md) | Rate limiting algorithm selection — fixed window | Accepted | 2026-04-30 |
 | [ADR-009](ADR-009-category-list-source-of-truth.md) | Category list — single source of truth via dedicated endpoint | Accepted | 2026-04-30 |
 | [ADR-010](ADR-010-test-database-strategy.md) | Test database strategy — Testcontainers over SQLite | Accepted | 2026-05-04 |
+| [ADR-011](ADR-011-cache-invalidation-on-mutation.md) | Cache invalidation strategy for PUT and DELETE mutations | Accepted | 2026-05-05 |
 

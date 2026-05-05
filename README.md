@@ -113,15 +113,17 @@ dotnet run --project backend/EventManager.Api
 ## API Endpoints
 
 
-| HTTP VERB | Endpoint | Description | HTTP Status |
+| HTTP Verb | Endpoint | Description | HTTP Status |
 |---|---|---|---|
-| `GET` | `/api/events` | Liste paginée (`page`, `pageSize`) | `200` |
-| `GET` | `/api/events/{id}` | Détail d'un événement | `200`, `404` |
-| `GET` | `/api/events/{id}/full` | Événement + commentaires | `200`, `404` |
-| `POST` | `/api/events` | Créer un événement | `201`, `400` |
-| `GET` | `/api/events/search?q=` | Recherche full-text (Elasticsearch) | `200` |
-| `GET` | `/api/events/{id}/comments` | Liste des commentaires d'un événement | `200` |
-| `POST` | `/api/events/{id}/comments` | Ajouter un commentaire | `201`, `400` |
+| `GET` | `/api/events` | Paginated list (`page`, `pageSize`) | `200` |
+| `GET` | `/api/events/{id}` | Event detail | `200`, `404` |
+| `GET` | `/api/events/{id}/full` | Event + comments | `200`, `404` |
+| `POST` | `/api/events` | Create an event | `201`, `400` |
+| `PUT` | `/api/events/{id}` | Update an event | `200`, `400`, `404` |
+| `DELETE` | `/api/events/{id}` | Delete an event | `204`, `404` |
+| `GET` | `/api/events/search?q=` | Full-text search (Elasticsearch) | `200` |
+| `GET` | `/api/events/{id}/comments` | List comments for an event | `200` |
+| `POST` | `/api/events/{id}/comments` | Add a comment | `201`, `400` |
 
 Test endpoint available through Swagger at `https://localhost:{port}/swagger`.
 

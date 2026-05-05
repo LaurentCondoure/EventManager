@@ -6,8 +6,8 @@
 
 ```mermaid
 graph TD
-    Client["HTTP Client"]
-    Varnish["Varnish (:8080)"]
+    Vue["Vue.js 3 + Pinia (SPA)"]
+    Varnish["Varnish (:8080) — HTTP cache"]
     EH["ErrorHandlingMiddleware"]
     API["EventsController"]
     CommentsAPI["CommentsController"]
@@ -21,22 +21,32 @@ graph TD
     Mongo[("MongoDB")]
     ES[("Elasticsearch")]
 
-    Client --> Varnish
+    Vue --> Varnish
     Varnish -->|"cached: GET /events, GET /events/{id}"| EH
-    Varnish -->|"pass-through: GET /search, GET /full, POST"| EH
+    Varnish -->|"pass-through: GET /search, GET /full, POST, PUT, DELETE"| EH
     EH --> API
     EH --> CommentsAPI
     API --> Service
     CommentsAPI --> Service
     Service --> Cache
     Service --> CommentRepo
-    Service -->|TryIndexAsync| SearchService
+    Service -->|TryIndexAsync / TryDeleteFromSearchAsync| SearchService
     Cache -->|Cache hit| Redis
     Cache -->|Cache miss| Repo
+    Cache -->|Invalidate on POST/PUT/DELETE| Redis
     Repo --> SQL
     CommentRepo --> Mongo
     SearchService --> ES
 ```
+
+### Cache layers
+
+| Layer | Scope | Invalidation on mutation |
+|---|---|---|
+| Pinia | Client — SPA session | `updateEvent` / `deleteEvent` update store in-place immediately |
+| Varnish | Network edge — full HTTP response | Passive TTL expiry (5 min lists, 10 min detail) — see ADR-011 |
+| Redis | Application — deserialized objects | `event:{id}` deleted + `events:list:version` incremented — see ADR-006 |
+| SQL Server | Source of truth | Always consistent |
 
 ### Clean Architecture layers
 
@@ -72,9 +82,30 @@ see [Get event sequence diagram](./flows/GET-event.md)
 
 see [Get event with comments sequence diagram](./flows/GET-full.md)
 
+### GET /api/events/search?q=
+
+see [Search events sequence diagram](./flows/GET-search.md)
+
 ### POST /api/events
 
 see [POST event sequence diagram](./flows/POST-event.md)
+
+### PUT /api/events/{id}
+
+Varnish pass-through → `ErrorHandlingMiddleware` → `EventsController.Update` → `EventService.UpdateAsync`:
+1. Load event by id — throws `NotFoundException` if absent
+2. Mutate entity fields
+3. `CachedEventRepository.UpdateAsync` → SQL UPDATE + Redis invalidation (`event:{id}` delete + list version increment)
+4. `TryIndexAsync` → Elasticsearch reindex (swallows failure — search outage never blocks mutation)
+5. Returns updated `EventDto` (HTTP 200)
+
+### DELETE /api/events/{id}
+
+Varnish pass-through → `ErrorHandlingMiddleware` → `EventsController.Delete` → `EventService.DeleteAsync`:
+1. Load event by id — throws `NotFoundException` if absent
+2. `CachedEventRepository.DeleteAsync` → SQL DELETE + Redis invalidation (`event:{id}` delete + list version increment)
+3. `TryDeleteFromSearchAsync` → Elasticsearch document removal (swallows failure)
+4. Returns HTTP 204 No Content
 
 ### GET /api/events/{id}/comments
 
@@ -95,53 +126,44 @@ see [POST comment sequence diagram](./flows/POST-comment.md)
 | MongoDB | Comments | Semi-structured data, free text |
 | Elasticsearch | Search | Full-text, per-field boost, relevance scoring |
 | Varnish | HTTP cache | Transparent caching of full GET responses at HTTP layer |
+| Vue.js 3 + Pinia | SPA frontend | Composition API, reactive store with immediate mutation sync |
 
 ---
 
 ## Target
 
-Next planned evolution: `PUT /api/events/{id}` and `DELETE /api/events/{id}` endpoints, with cache invalidation on mutation.
+Next planned evolution: IIS deployment, CI/CD pipelines (Azure DevOps), Infrastructure as Code (Terraform), and Azure cloud deployment.
 
 ### Components
 
 ```mermaid
 graph TD
-    Client["HTTP Client"]
-    Varnish["Varnish (HTTP Cache, :8080)"]
-    EH["ErrorHandlingMiddleware"]
-    API["EventsController"]
-    CommentsAPI["CommentsController"]
-    Service["EventService (Domain)"]
-    Cache["CachedEventRepository (Decorator)"]
-    Repo["SqlServerEventRepository (Dapper)"]
-    CommentRepo["MongoDbCommentRepository"]
-    SearchService["EventSearchService"]
+    Vue["Vue.js 3 + Pinia (SPA)"]
+    IIS_FE["IIS — Frontend (:8080)"]
+    IIS_API["IIS — API (:5000)"]
+    Varnish["Varnish (:80) — HTTP cache"]
+    API["ASP.NET Core API"]
     Redis[("Redis")]
-    SQL[("SQL Server")]
-    Mongo[("MongoDB")]
-    ES[("Elasticsearch")]
+    SQL[("SQL Server / Azure SQL")]
+    Mongo[("MongoDB / CosmosDB")]
+    ES[("Elasticsearch / Azure AI Search")]
 
-    Client --> Varnish
-    Varnish -->|"cached: GET /events, GET /events/{id}"| EH
-    Varnish -->|"pass-through: GET /search, GET /full, POST, PUT, DELETE"| EH
-    EH --> API
-    EH --> CommentsAPI
-    API --> Service
-    CommentsAPI --> Service
-    Service --> Cache
-    Service --> CommentRepo
-    Service -->|TryIndexAsync| SearchService
-    Cache -->|Cache hit| Redis
-    Cache -->|Cache miss| Repo
-    Cache -->|Invalidate on PUT/DELETE| Redis
-    Repo --> SQL
-    CommentRepo --> Mongo
-    SearchService --> ES
+    Vue --> IIS_FE
+    IIS_FE --> Varnish
+    Varnish --> IIS_API
+    IIS_API --> API
+    API --> Redis
+    API --> SQL
+    API --> Mongo
+    API --> ES
 ```
 
-### Changes from current state
+### Planned additions
 
-| Endpoint | Action | Cache impact |
-|---|---|---|
-| `PUT /api/events/{id}` | Update event in SQL Server + reindex in ES | Invalidate `event:{id}` and list version in Redis — Varnish TTL expires naturally |
-| `DELETE /api/events/{id}` | Delete from SQL Server + remove from ES | Invalidate `event:{id}` and list version in Redis — Varnish TTL expires naturally |
+| Component | Description |
+|---|---|
+| IIS hosting | API published via `dotnet publish`, frontend SPA with URL Rewrite for client-side routing |
+| Azure DevOps pipelines | 3 path-scoped pipelines: `backend/**`, `frontend/**`, `terraform/**` — build, test, publish artifacts |
+| Terraform (local) | null provider — validates resource structure and naming without touching Azure |
+| Terraform (Azure) | azurerm provider — 9 resources: App Service, Azure SQL, CosmosDB, Redis Cache, AI Search, Storage, App Insights |
+| Azure deployment | Full stack deployed, tested, then destroyed (`terraform destroy`) |

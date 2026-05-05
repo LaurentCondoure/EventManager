@@ -24,25 +24,53 @@ Test **real infrastructure behaviour** using Testcontainers — each test class 
 
 ## Tests implemented
 
+### Backend — `EventManager.*`
+
 | Class / Feature | Level | Containers | Tests |
 |---|---|---|---|
-| `CreateEventInputValidator` | Unit | — | 18 |
-| `CreateCommentInputValidator` | Unit | — | 6 |
-| `EventService` | Unit | — | 30 |
-| `CachedEventRepository` | Unit | — | 11 |
-| `EventCategories` | Unit | — | 4 |
+| `CreateEventInputValidator` | Unit | — | 23 |
+| `CreateCommentInputValidator` | Unit | — | 13 |
+| `UpdateEventInputValidator` | Unit | — | — ¹ |
+| `EventService` | Unit | — | 32 |
+| `CachedEventRepository` | Unit | — | 8 |
+| `EventCategories` | Unit | — | 8 |
 | `MongoDbCommentRepository` | Unit | — | 2 |
-| `EventsController` | Integration | — | 15 |
-| `CommentsController` | Integration | — | 8 |
-| `SqlServerEventRepository` | Infrastructure | SQL Server | 6 |
-| `MongoDbCommentRepository` | Infrastructure | MongoDB | 5 |
-| `CachedEventRepository` | Infrastructure | SQL Server + Redis | 8 |
+| `EventsController` | Unit | — | 13 |
+| `CommentsController` | Unit | — | 8 |
+| `EventsController` | Integration | — | 18 |
+| `CommentsController` | Integration | — | 10 |
+| `SqlServerEventRepository` | Infrastructure | SQL Server | 13 |
+| `MongoDbCommentRepository` | Infrastructure | MongoDB | 7 |
+| `CachedEventRepository` | Infrastructure | SQL Server + Redis | 12 |
 | `EventService` (cross-DB) | Infrastructure | SQL Server + MongoDB | 12 |
 | `EventSearchService` | Infrastructure | Elasticsearch | 3 |
-| `VarnishCacheTests` | Infrastructure | Varnish + nginx | 6 |
-| **Total** | | | **134+** |
+| `VarnishCacheTests` | Infrastructure | Varnish + nginx | 7 |
+| **Backend total** | | | **189** |
 
-Coverage: **86%**
+¹ `UpdateEventInputValidator` shares identical rules with `CreateEventInputValidator` and is covered by `EventsController` integration tests (`Update_ReturnsBadRequest`). Dedicated unit tests are a known gap.
+
+### Frontend — `EventManagement.UI`
+
+| Class / Feature | Tests |
+|---|---|
+| `apiService` | 14 |
+| `useFormatters` | 5 |
+| `eventStore` | 13 |
+| `EventCard` | 9 |
+| `EventSearch` | 6 |
+| `HomeView` | 6 |
+| `EventDetailView` | 10 |
+| `EventFormView` | 12 |
+| **Frontend total** | **75** |
+
+### Summary
+
+| | Backend | Frontend | Total |
+|---|---|---|---|
+| v1.0 — 2026-04-27 | 134 | — | 134 |
+| v2.0 — 2026-05-05 | 189 | 75 | **264** |
+
+Backend coverage: **94%** — Frontend coverage: **97.63%**
 
 ---
 
