@@ -3,7 +3,6 @@ import { nextTick } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import HomeView from '@/views/HomeView.vue'
-import { useEventStore } from '@/stores/eventStore'
 import { eventService } from '@/services/apiService'
 
 vi.mock('@/services/apiService', () => ({
