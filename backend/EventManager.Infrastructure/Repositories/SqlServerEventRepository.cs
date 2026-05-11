@@ -1,11 +1,13 @@
 using EventManager.Domain.Entities;
 using EventManager.Domain.Interfaces;
-using EventManager.Infrastructure.Factories;
+using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Queries;
 
 using System.Data;
 
 using Dapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
 
 
 namespace EventManager.Infrastructure.Repositories;
@@ -14,12 +16,9 @@ namespace EventManager.Infrastructure.Repositories;
 /// <remarks>
 /// This repository uses raw SQL queries defined in <see cref="EventQueries"/> for better performance and maintainability.
 /// </remarks>
-/// <param name="options">Database connection options injected via IOptions pattern.</param>
-public class SqlServerEventRepository(IDbConnectionFactory dbConnectionFactory) : IEventRepository
+public class SqlServerEventRepository(IOptions<DatabaseOptions> options) : IEventRepository
 {
-
-    /// <summary>Creates and returns a new DB connection using the configured factory.</summary>
-    private IDbConnection CreateConnection() => dbConnectionFactory.CreateConnection();
+    private IDbConnection CreateConnection() => new SqlConnection(options.Value.DefaultConnection);
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Event>> GetAllAsync(int page = 1, int pageSize = 20)

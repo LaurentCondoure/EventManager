@@ -1,5 +1,4 @@
 using EventManager.Domain.Entities;
-using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.InfrastructureTests.Fixtures;
@@ -20,10 +19,8 @@ public class SqlServerEventRepositoryTests : IClassFixture<SqlServerFixture>
 
     public SqlServerEventRepositoryTests(SqlServerFixture fixture)
     {
-        var factory = new DbConnectionFactory(
+        _sut = new SqlServerEventRepository(
             Options.Create(new DatabaseOptions { DefaultConnection = fixture.ConnectionString }));
-
-        _sut = new SqlServerEventRepository(factory);
     }
 
     // ── GetByIdAsync ─────────────────────────────────────────────────────────

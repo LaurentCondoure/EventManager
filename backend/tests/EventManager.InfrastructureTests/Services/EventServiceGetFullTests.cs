@@ -4,7 +4,6 @@ using EventManager.Domain.Exceptions;
 using EventManager.Domain.Interfaces;
 using EventManager.Domain.Services;
 
-using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.InfrastructureTests.Fixtures;
@@ -29,10 +28,8 @@ public class EventServiceGetFullTests : IClassFixture<SqlServerFixture>, IClassF
 
     public EventServiceGetFullTests(SqlServerFixture sqlFixture, MongoDbFixture mongoFixture)
     {
-        var connectionFactory = new DbConnectionFactory(
+        _eventRepository = new SqlServerEventRepository(
             Options.Create(new DatabaseOptions { DefaultConnection = sqlFixture.ConnectionString }));
-
-        _eventRepository = new SqlServerEventRepository(connectionFactory);
 
         var mongoOptions = Options.Create(new MongoDbOptions
         {

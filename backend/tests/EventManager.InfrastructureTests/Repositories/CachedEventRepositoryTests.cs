@@ -1,5 +1,4 @@
 using EventManager.Domain.Entities;
-using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.InfrastructureTests.Fixtures;
@@ -23,10 +22,8 @@ public class CachedEventRepositoryTests : IClassFixture<SqlServerFixture>, IClas
 
     public CachedEventRepositoryTests(SqlServerFixture sqlFixture, RedisFixture redisFixture)
     {
-        var connectionFactory = new DbConnectionFactory(
+        _inner = new SqlServerEventRepository(
             Options.Create(new DatabaseOptions { DefaultConnection = sqlFixture.ConnectionString }));
-
-        _inner = new SqlServerEventRepository(connectionFactory);
 
         var redisOptions = Options.Create(new RedisOptions
         {
