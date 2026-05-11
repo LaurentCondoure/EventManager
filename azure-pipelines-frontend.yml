@@ -1,0 +1,89 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - frontend/**
+
+pool:
+  name: Default
+
+variables:
+  workingDirectory: frontend/EventManagement.UI
+  artifactName: ui
+
+stages:
+
+- stage: Lint
+  displayName: Lint
+  jobs:
+
+  - job: Lint
+    displayName: npm ci · lint
+    steps:
+
+    - task: NodeTool@0
+      displayName: Use Node.js 20
+      inputs:
+        versionSpec: 20.x
+
+    - script: npm ci
+      displayName: Install dependencies
+      workingDirectory: $(workingDirectory)
+
+    - script: npm run lint
+      displayName: Lint
+      workingDirectory: $(workingDirectory)
+
+- stage: Test
+  displayName: Test
+  dependsOn: Lint
+  condition: succeeded()
+  jobs:
+
+  - job: Test
+    displayName: npm ci · test (coverage)
+    steps:
+
+    - task: NodeTool@0
+      displayName: Use Node.js 20
+      inputs:
+        versionSpec: 20.x
+
+    - script: npm ci
+      displayName: Install dependencies
+      workingDirectory: $(workingDirectory)
+
+    - script: npm run test:unit -- --reporter=verbose --coverage
+      displayName: Unit tests
+      workingDirectory: $(workingDirectory)
+
+- stage: Build
+  displayName: Build Artifact
+  dependsOn: Test
+  condition: succeeded()
+  jobs:
+
+  - job: Build
+    displayName: npm ci · build → dist/
+    steps:
+
+    - task: NodeTool@0
+      displayName: Use Node.js 20
+      inputs:
+        versionSpec: 20.x
+
+    - script: npm ci
+      displayName: Install dependencies
+      workingDirectory: $(workingDirectory)
+
+    - script: npm run build
+      displayName: Build
+      workingDirectory: $(workingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: Upload Artifact
+      inputs:
+        pathToPublish: $(workingDirectory)/dist
+        artifactName: $(artifactName)

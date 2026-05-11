@@ -1,0 +1,88 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - terraform/**
+
+pool:
+  name: Default
+
+variables:
+  terraformDirectory: terraform/azure
+  # ARM_* variables are injected from an Azure DevOps variable group linked to a
+  # service principal. Mark them as secret in the variable group.
+  # ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID, ARM_SUBSCRIPTION_ID
+
+stages:
+
+- stage: Validate
+  displayName: Init · Validate
+  jobs:
+
+  - job: Validate
+    displayName: terraform init + validate
+    steps:
+
+    - script: terraform init -input=false
+      displayName: terraform init
+      workingDirectory: $(terraformDirectory)
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+
+    - script: terraform validate
+      displayName: terraform validate
+      workingDirectory: $(terraformDirectory)
+
+- stage: Plan
+  displayName: Plan
+  dependsOn: Validate
+  condition: succeeded()
+  jobs:
+
+  - job: Plan
+    displayName: terraform plan
+    steps:
+
+    - script: terraform init -input=false
+      displayName: terraform init
+      workingDirectory: $(terraformDirectory)
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+
+    - script: |
+        terraform plan -input=false -out=tfplan \
+          -var="sql_admin_username=$(SQL_ADMIN_USERNAME)" \
+          -var="sql_admin_password=$(SQL_ADMIN_PASSWORD)" \
+          -var="storage_name=$(STORAGE_NAME)"
+      displayName: terraform plan
+      workingDirectory: $(terraformDirectory)
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        SQL_ADMIN_USERNAME: $(SQL_ADMIN_USERNAME)
+        SQL_ADMIN_PASSWORD: $(SQL_ADMIN_PASSWORD)
+        STORAGE_NAME: $(STORAGE_NAME)
+
+    - script: terraform show -json tfplan > tfplan.json
+      displayName: Export plan as JSON
+      workingDirectory: $(terraformDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: Upload tfplan.json
+      inputs:
+        pathToPublish: $(terraformDirectory)/tfplan.json
+        artifactName: terraform-plan
+
+  # Apply is handled by the CD pipeline (azure-pipelines-cd.yml).
+  # Separating plan (CI) from apply (CD) ensures infrastructure changes
+  # go through the same artifact + approval flow as application deployments.

@@ -1,0 +1,119 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - backend/**
+
+pool:
+  name: Default
+
+variables:
+  buildConfiguration: Release
+  projectPath: backend/EventManager.Api
+  solutionPath: backend/EventManager.slnx
+  artifactName: api
+
+stages:
+
+- stage: Build
+  displayName: Build
+  jobs:
+
+  - job: Build
+    displayName: Restore · Build
+    steps:
+
+    - task: UseDotNet@2
+      displayName: Use .NET SDK 8
+      inputs:
+        version: 8.0.x
+
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: $(solutionPath)
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: build
+        projects: $(solutionPath)
+        arguments: --configuration $(buildConfiguration) --no-restore
+
+    - task: PublishBuildArtifacts@1
+      displayName: Upload Build Output
+      inputs:
+        pathToPublish: $(Build.SourcesDirectory)
+        artifactName: build-output
+
+- stage: Test
+  displayName: Test
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+
+  - job: Test
+    displayName: Test (coverage ≥ 80%)
+    steps:
+
+    - task: DownloadBuildArtifacts@1
+      displayName: Download Build Output
+      inputs:
+        artifactName: build-output
+        downloadPath: $(Build.SourcesDirectory)
+
+    - task: UseDotNet@2
+      displayName: Use .NET SDK 8
+      inputs:
+        version: 8.0.x
+
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: $(solutionPath)
+        arguments: >
+          --configuration $(buildConfiguration)
+          --no-build
+          /p:CollectCoverage=true
+          /p:CoverageThreshold=80
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput=$(Agent.TempDirectory)/coverage/
+
+    - task: PublishCodeCoverageResults@2
+      displayName: Publish Coverage
+      inputs:
+        summaryFileLocation: $(Agent.TempDirectory)/coverage/**/*.cobertura.xml
+
+- stage: Publish
+  displayName: Publish Artifact
+  dependsOn: Test
+  condition: succeeded()
+  jobs:
+
+  - job: Publish
+    displayName: dotnet publish → drop
+    steps:
+
+    - task: UseDotNet@2
+      displayName: Use .NET SDK 8
+      inputs:
+        version: 8.0.x
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: $(projectPath)
+        arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(artifactName)
+        zipAfterPublish: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: Upload Artifact
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: $(artifactName)

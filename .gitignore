@@ -20,6 +20,9 @@ logs/
 # ASP.NET
 appsettings.Development.json
 
+# Publish artifacts
+publish/
+
 # Test results
 TestResults/
 coverage/
@@ -42,11 +45,16 @@ Thumbs.db
 
 # Terraform
 terraform/.terraform/
+terraform/**/.terraform/
 terraform/*.tfstate
+terraform/**/*.tfstate
 terraform/*.tfstate.backup
+terraform/**/*.tfstate.backup
 terraform/*.tfplan
 terraform/tfplan.json
 terraform/.terraform.lock.hcl
+terraform/**/.terraform.lock.hcl
+terraform/**/.generated/
 
 # Node (frontend)
 node_modules/
