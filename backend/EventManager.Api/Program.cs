@@ -3,7 +3,6 @@ using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Interfaces;
 using EventManager.Domain.Services;
-using EventManager.Infrastructure.Factories;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.Infrastructure.Search;
@@ -14,6 +13,7 @@ using System.Threading.RateLimiting;
 using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using EventManager.Infrastructure.Mappings;
@@ -43,6 +43,15 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API de gestion d'événements culturels"
     });
 });
+builder.Services.AddCors(options =>
+{
+    var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins(origins)
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEventInputValidator>();
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
@@ -68,8 +77,6 @@ builder.Services.AddSingleton<ElasticsearchClient>(sp =>
     return new ElasticsearchClient(settings);
 });
 
-builder.Services.AddScoped<IDbConnectionFactory>(sp =>
-    new DbConnectionFactory(sp.GetRequiredService<IOptions<DatabaseOptions>>()));
 builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
 builder.Services.Decorate<IEventRepository, CachedEventRepository>();
 
@@ -97,10 +104,21 @@ builder.Services.AddScoped<IEventService, EventService>();
 
 WebApplication app = builder.Build();
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 app.UseExceptionHandler();
+app.UseCors("Frontend");
 app.UseRateLimiter();
-app.UseSwagger();
-app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1"));
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API v1"));
+}
+
 app.UseHttpsRedirection();
 app.MapControllers();
 app.MapMinimalApiEndpoints();
