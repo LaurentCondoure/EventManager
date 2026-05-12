@@ -1,18 +1,21 @@
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
+
 using EventManager.Domain.Entities;
 using EventManager.Domain.DTOs;
 using EventManager.Domain.Interfaces;
 
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
+
 namespace EventManager.Infrastructure.Search;
 
 /// <summary>
-/// 
+/// Implements business logic for event search using Elasticsearch.
 /// </summary>
 public class EventSearchService(ElasticsearchClient client) : IEventSearchService
 {
     private const string IndexName = "events";
 
+    /// <inheritdoc/>
     public async Task IndexAsync(Event @event)
     {
         var document = new EventSearchDocument
@@ -30,11 +33,13 @@ public class EventSearchService(ElasticsearchClient client) : IEventSearchServic
         await client.IndexAsync(document, i => i.Index(IndexName).Id(@event.Id.ToString()));
     }
 
+    /// <inheritdoc/>
     public async Task DeleteAsync(Guid eventId)
     {
         await client.DeleteAsync(IndexName, eventId.ToString());
     }
 
+    /// <inheritdoc/>
     public async Task ReindexAllAsync(IEnumerable<Event> events)
     {
         await client.DeleteByQueryAsync<EventSearchDocument>(IndexName, d => d
@@ -57,6 +62,7 @@ public class EventSearchService(ElasticsearchClient client) : IEventSearchServic
             .IndexMany(documents));
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<SearchResultDto>> SearchAsync(string query, int page = 1, int pageSize = 20)
     {
         var response = await client.SearchAsync<EventSearchDocument>(s => s
@@ -68,7 +74,7 @@ public class EventSearchService(ElasticsearchClient client) : IEventSearchServic
                     .Query(query)
                     .Fields(new[]
                     {
-                        "title^2",       // boosted title x2
+                        "title^2",       // boosted title x2 to increase relevance in BM25 relevance algorithm
                         "description",
                         "category",
                         "artistName"

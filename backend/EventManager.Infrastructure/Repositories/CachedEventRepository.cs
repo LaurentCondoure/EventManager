@@ -15,12 +15,7 @@ namespace EventManager.Infrastructure.Repositories;
 /// Reads check the cache first (cache-aside pattern); writes invalidate the relevant keys.
 /// </summary>
 public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexer redis, IOptions<RedisOptions> options) : IEventRepository
-{
-    /// <summary>
-    /// Repository that performs data access operations.
-    /// </summary>
-    private readonly IEventRepository _inner = inner;
-    
+{    
     /// <summary>
     /// Redis database instance for cache operations.
     /// </summary>
@@ -29,7 +24,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     /// <summary>
     /// Default time to live for cached items.
     /// </summary>
-    private readonly TimeSpan Ttl = TimeSpan.FromMinutes(options.Value.TimeToLive);
+    private readonly TimeSpan _ttl = TimeSpan.FromMinutes(options.Value.TimeToLive);
 
     /// <summary>
     /// Key to track the version of the events list. 
@@ -66,8 +61,8 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
         if (cached.HasValue)
             return JsonSerializer.Deserialize<IEnumerable<Event>>(cached!)!;
 
-        IEnumerable<Event> events = await _inner.GetAllAsync(page, pageSize);
-        await _cache.StringSetAsync(key, JsonSerializer.Serialize(events), Ttl);
+        IEnumerable<Event> events = await inner.GetAllAsync(page, pageSize);
+        await _cache.StringSetAsync(key, JsonSerializer.Serialize(events), _ttl);
 
         return events;
     }
@@ -81,10 +76,10 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
         if (cached.HasValue)
             return JsonSerializer.Deserialize<Event>(cached!);
 
-        Event? @event = await _inner.GetByIdAsync(id);
+        Event? @event = await inner.GetByIdAsync(id);
 
         if (@event is not null)
-            await _cache.StringSetAsync(key, JsonSerializer.Serialize(@event), Ttl);
+            await _cache.StringSetAsync(key, JsonSerializer.Serialize(@event), _ttl);
 
         return @event;
     }
@@ -94,9 +89,9 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     /// <inheritdoc/>
     public async Task<Guid> CreateAsync(Event @event)
     {
-        var id = await _inner.CreateAsync(@event);
+        var id = await inner.CreateAsync(@event);
 
-        //Incr will set +1 to the version, all pagined list keys will be invalidate
+        //Incr will set +1 to the version, all paginated list keys will be invalidated
         //next time they are requested
         await _cache.StringIncrementAsync(ListVersionKey);
         return id;
@@ -105,7 +100,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     /// <inheritdoc/>
     public async Task UpdateAsync(Event @event)
     {
-        await _inner.UpdateAsync(@event);
+        await inner.UpdateAsync(@event);
         await _cache.KeyDeleteAsync(EventKey(@event.Id));
         await _cache.StringIncrementAsync(ListVersionKey);
     }
@@ -113,7 +108,7 @@ public class CachedEventRepository(IEventRepository inner, IConnectionMultiplexe
     /// <inheritdoc/>
     public async Task DeleteAsync(Guid id)
     {
-        await _inner.DeleteAsync(id);
+        await inner.DeleteAsync(id);
         await _cache.KeyDeleteAsync(EventKey(id));
         await _cache.StringIncrementAsync(ListVersionKey);
     }

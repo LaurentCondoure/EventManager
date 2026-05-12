@@ -1,7 +1,7 @@
 ﻿namespace EventManager.Infrastructure.Queries;
 
 /// <summary>Centralized storage for all SQL queries related to event management.</summary>
-public class EventQueries
+internal class EventQueries
 {
     /// <summary>SQL query to retrieve a paginated list of upcoming events.</summary>
     internal const string GetAll = @"

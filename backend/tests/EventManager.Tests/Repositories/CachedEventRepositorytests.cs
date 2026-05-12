@@ -2,15 +2,13 @@
 using EventManager.Domain.Interfaces;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
+
+using System.Text.Json;
+
 using FluentAssertions;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
-using System.Security.Cryptography;
-using System.Text.Json;
-using System.Xml.Linq;
 
 namespace EventManager.UnitTests.Repositories;
 
@@ -235,9 +233,6 @@ public class CachedEventRepositoryTests
             It.IsAny<CommandFlags>()))
         .ReturnsAsync(value);
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <remarks>
     /// StackExchange.Redis 2.12.x introduced a new priority overload:     /// it is the one that the compiler chooses for StringSetAsync(key, value, Ttl)
     /// Task<bool> StringSetAsync(RedisKey key, RedisValue value, Expiration expiry = default, ValueCondition when = default, CommandFlags flags = CommandFlags.None);

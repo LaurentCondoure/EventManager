@@ -13,8 +13,6 @@ namespace EventManager.Api.ExceptionHandlers;
 /// <param name="logger">The logger instance.</param>
 public sealed class NotFoundExceptionHandler(ILogger<NotFoundExceptionHandler> logger) : IExceptionHandler
 {
-    private readonly ILogger<NotFoundExceptionHandler> _logger = logger;
-
     /// <inheritdoc/>
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -26,7 +24,7 @@ public sealed class NotFoundExceptionHandler(ILogger<NotFoundExceptionHandler> l
 
         var requestId = httpContext.TraceIdentifier;
 
-        _logger.LogWarning(
+        logger.LogWarning(
             "Resource not found [{RequestId}] on {Method} {Path}: {Message}",
             requestId,
             httpContext.Request.Method,

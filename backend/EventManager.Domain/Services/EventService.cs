@@ -15,19 +15,17 @@ public class EventService(
     IEventSearchService searchService,
     ILogger<EventService> logger) : IEventService
 {
-    private readonly IEventRepository _eventRepository = eventRepository;
-
     /// <inheritdoc/>
     public async Task<IEnumerable<EventDto>> GetAllAsync(int page = 1, int pageSize = 20)
     {
-        var events = await _eventRepository.GetAllAsync(page, pageSize);
+        var events = await eventRepository.GetAllAsync(page, pageSize);
         return events.Select(MapToDto);
     }
 
     /// <inheritdoc/>
     public async Task<EventDto> GetByIdAsync(Guid id)
     {
-        var @event = await _eventRepository.GetByIdAsync(id)
+        var @event = await eventRepository.GetByIdAsync(id)
             ?? throw new NotFoundException(nameof(Event), id);
 
         return MapToDto(@event);
@@ -49,7 +47,7 @@ public class EventService(
             CreatedAt   = DateTime.UtcNow
         };
 
-        var id = await _eventRepository.CreateAsync(@event);
+        var id = await eventRepository.CreateAsync(@event);
         @event.Id = id;
 
         await TryIndexAsync(@event);
@@ -64,7 +62,7 @@ public class EventService(
     /// <inheritdoc/>
     public async Task<IEnumerable<CommentDto>> GetCommentsAsync(Guid eventId)
     {
-        _ = await _eventRepository.GetByIdAsync(eventId)
+        _ = await eventRepository.GetByIdAsync(eventId)
             ?? throw new NotFoundException(nameof(Event), eventId);
 
         var comments = await commentRepository.GetByEventIdAsync(eventId);
@@ -74,7 +72,7 @@ public class EventService(
     /// <inheritdoc/>
     public async Task<CommentDto> AddCommentAsync(Guid eventId, CreateCommentInput input)
     {
-        _ = await _eventRepository.GetByIdAsync(eventId)
+        _ = await eventRepository.GetByIdAsync(eventId)
             ?? throw new NotFoundException(nameof(Event), eventId);
 
         var comment = new EventComment
@@ -96,7 +94,7 @@ public class EventService(
     /// <inheritdoc/>
     public async Task<EventDto> UpdateAsync(Guid id, UpdateEventInput request)
     {
-        var @event = await _eventRepository.GetByIdAsync(id)
+        var @event = await eventRepository.GetByIdAsync(id)
             ?? throw new NotFoundException(nameof(Event), id);
 
         @event.Title       = request.Title;
@@ -109,7 +107,7 @@ public class EventService(
         @event.ArtistName  = request.ArtistName;
         @event.UpdatedAt   = DateTime.UtcNow;
 
-        await _eventRepository.UpdateAsync(@event);
+        await eventRepository.UpdateAsync(@event);
         await TryIndexAsync(@event);
 
         return MapToDto(@event);
@@ -118,17 +116,17 @@ public class EventService(
     /// <inheritdoc/>
     public async Task DeleteAsync(Guid id)
     {
-        _ = await _eventRepository.GetByIdAsync(id)
+        _ = await eventRepository.GetByIdAsync(id)
             ?? throw new NotFoundException(nameof(Event), id);
 
-        await _eventRepository.DeleteAsync(id);
+        await eventRepository.DeleteAsync(id);
         await TryDeleteFromSearchAsync(id);
     }
 
     /// <inheritdoc/>
     public async Task<EventWithCommentsDto> GetWithCommentsAsync(Guid id)
     {
-        var @event = await _eventRepository.GetByIdAsync(id)
+        var @event = await eventRepository.GetByIdAsync(id)
             ?? throw new NotFoundException(nameof(Event), id);
 
         var comments = await commentRepository.GetByEventIdAsync(id);
@@ -172,5 +170,13 @@ public class EventService(
         {
             logger.LogError(ex, "Search deletion failed for event {EventId} — search index may be stale", id);
         }
+    }
+
+    /// <inheritdoc/>
+    public async Task ReindexAsync()
+    {
+        // GetAllAsync is paginated — all event are read for reindex
+        var events = await eventRepository.GetAllAsync(page: 1, pageSize: int.MaxValue);
+        await searchService.ReindexAllAsync(events);
     }
 }

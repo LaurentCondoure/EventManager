@@ -3,7 +3,7 @@ namespace EventManager.Infrastructure.Options;
 /// <summary>Strongly-typed configuration for database connection settings.</summary>
 public sealed class RedisOptions
 {
-    /// <summary>The configuration section name this class binds to (<c>ConnectionStrings</c>).</summary>
+    /// <summary>The configuration section name this class binds to (<c>Redis</c>).</summary>
     public const string SectionName = "Redis";
 
     /// <summary>Gets or sets the Redis connection string.</summary>

@@ -11,8 +11,6 @@ namespace EventManager.Api.ExceptionHandlers;
 /// <param name="logger">The logger instance.</param>
 public sealed class BadRequestExceptionHandler(ILogger<BadRequestExceptionHandler> logger) : IExceptionHandler
 {
-    private readonly ILogger<BadRequestExceptionHandler> _logger = logger;
-
     /// <inheritdoc/>
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -24,7 +22,7 @@ public sealed class BadRequestExceptionHandler(ILogger<BadRequestExceptionHandle
 
         var requestId = httpContext.TraceIdentifier;
 
-        _logger.LogWarning(
+        logger.LogWarning(
             "Bad request [{RequestId}] on {Method} {Path}: {Message}",
             requestId,
             httpContext.Request.Method,

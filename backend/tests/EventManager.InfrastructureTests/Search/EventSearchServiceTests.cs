@@ -3,7 +3,7 @@ using EventManager.Infrastructure.Search;
 using EventManager.InfrastructureTests.Fixtures;
 using FluentAssertions;
 
-namespace EventManagement.InfrastructureTests.Search;
+namespace EventManager.InfrastructureTests.Search;
 
 public class EventSearchServiceTests : IClassFixture<ElasticsearchFixture>, IAsyncLifetime
 {

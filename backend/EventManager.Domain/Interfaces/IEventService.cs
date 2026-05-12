@@ -1,4 +1,5 @@
 using EventManager.Domain.DTOs;
+using EventManager.Domain.Entities;
 
 namespace EventManager.Domain.Interfaces;
 
@@ -22,8 +23,7 @@ public interface IEventService
     /// Creates a new event and returns its full representation.
     /// </summary>
     /// <param name="request">The creation payload.</param>
-    Task<EventDto> CreateAsync(CreateEventInput
-        request);
+    Task<EventDto> CreateAsync(CreateEventInput request);
 
     /// <summary>
     /// Searches events by full-text query across title, description, category and artist name.
@@ -62,4 +62,7 @@ public interface IEventService
     /// <param name="id">The event ID.</param>
     /// <exception cref="EventManager.Domain.Exceptions.NotFoundException">Thrown when the event does not exist.</exception>
     Task DeleteAsync(Guid id);
+
+    /// <summary>Rebuilds the Elasticsearch index from SQL Server — use when the two stores diverge.</summary>
+    Task ReindexAsync();
 }

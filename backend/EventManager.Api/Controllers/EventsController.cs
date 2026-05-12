@@ -11,13 +11,13 @@ namespace EventManager.Api.Controllers;
 [EnableRateLimiting("fixed")]
 public class EventsController(IEventService eventService, ILogger<EventsController> logger) : ControllerBase
 {
-
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        logger.LogInformation("Retrieved events page {Page} with page size {PageSize}", page, pageSize);
         IEnumerable<EventDto> events = await eventService.GetAllAsync(page, pageSize);
+        //Log after service call to ensure any errors are not misinterpreted after retrieval confirmation
+        logger.LogInformation("Retrieved events page {Page} with page size {PageSize}", page, pageSize);
         Response.Headers.CacheControl = "public, max-age=300";
         return Ok(events);
     }
@@ -27,8 +27,9 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        logger.LogInformation("Retrieved event for {EventId}", id);
         EventDto @event = await eventService.GetByIdAsync(id);
+        //Log after service call to ensure any errors are not misinterpreted after retrieval confirmation
+        logger.LogInformation("Retrieved event for {EventId}", id);
         Response.Headers.CacheControl = "public, max-age=600";
         return Ok(@event);
     }
@@ -55,7 +56,7 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEventInput request)
     {
-        var @event = await eventService.UpdateAsync(id, request);
+        EventDto @event = await eventService.UpdateAsync(id, request);
         logger.LogInformation("Updated event {EventId} - {Title}", @event.Id, @event.Title);
         return Ok(@event);
     }
@@ -71,10 +72,10 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     }
 
     [HttpGet("search")]
-    [ProducesResponseType(typeof(IEnumerable<EventDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<SearchResultDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string q, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var results = await eventService.SearchAsync(q, page, pageSize);
+        IEnumerable<SearchResultDto> results = await eventService.SearchAsync(q, page, pageSize);
         return Ok(results);
     }
 }

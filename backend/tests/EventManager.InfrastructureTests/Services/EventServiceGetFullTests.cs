@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace EventManagement.InfrastructureTests.Services;
+namespace EventManager.InfrastructureTests.Services;
 
 /// <summary>
 /// Infrastructure tests for EventService methods that coordinate SQL Server and MongoDB.

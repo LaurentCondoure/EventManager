@@ -1,5 +1,4 @@
 using EventManager.Domain.Entities;
-using EventManager.Domain.DTOs;
 using EventManager.Domain.Interfaces;
 
 namespace EventManager.IntegrationTests.Fakes;

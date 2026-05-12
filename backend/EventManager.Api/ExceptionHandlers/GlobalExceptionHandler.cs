@@ -14,8 +14,6 @@ public sealed class GlobalExceptionHandler(
     ILogger<GlobalExceptionHandler> logger,
     IHostEnvironment environment) : IExceptionHandler
 {
-    private readonly ILogger<GlobalExceptionHandler> _logger = logger;
-    private readonly IHostEnvironment _environment = environment;
 
     /// <inheritdoc/>
     public async ValueTask<bool> TryHandleAsync(
@@ -25,7 +23,7 @@ public sealed class GlobalExceptionHandler(
     {
         var requestId = httpContext.TraceIdentifier;
 
-        _logger.LogError(
+        logger.LogError(
             exception,
             "Unhandled exception [{RequestId}] on {Method} {Path}",
             requestId,
@@ -41,9 +39,8 @@ public sealed class GlobalExceptionHandler(
             Extensions = { ["requestId"] = requestId }
         };
 
-        // En développement uniquement : exposer les détails techniques pour faciliter le débogage.
-        // Ne jamais activer en production — cela exposerait la structure interne de l'application.
-        if (_environment.IsDevelopment())
+        // In dev environment only expose technical failure to facilitate debug.
+        if (environment.IsDevelopment())
         {
             problemDetails.Extensions["exceptionType"]    = exception.GetType().FullName;
             problemDetails.Extensions["exceptionMessage"] = exception.Message;

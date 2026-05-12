@@ -20,7 +20,7 @@ public class CreateEventInputValidator : AbstractValidator<CreateEventInput>
             .NotEmpty().WithMessage("La description est obligatoire.")
             .MaximumLength(2000).WithMessage("La description ne peut pas dépasser 2000 caractères.");
 
-        //_ represents the current CreateEventInput  object being validated
+        //_ : represents the current CreateEventInput  object being validated
         RuleFor(x => x.Date)
             .GreaterThanOrEqualTo(_ => DateTime.UtcNow.Date)
             .WithMessage("La date de l'événement doit être aujourd'hui ou dans le futur.");

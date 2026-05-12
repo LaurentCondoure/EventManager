@@ -57,8 +57,6 @@ public class MongoDbCommentRepositoryTests
             .Returns(Task.CompletedTask);
     }
 
-    // ── GetByEventIdAsync ─────────────────────────────────────────────────
-
     // ── CreateAsync ───────────────────────────────────────────────────────
 
     [Fact]

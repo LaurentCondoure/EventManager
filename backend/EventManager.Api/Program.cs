@@ -125,7 +125,5 @@ app.MapMinimalApiEndpoints();
 
 app.Run();
 
-
-
 // Needed for integration tests
 public partial class Program { }
