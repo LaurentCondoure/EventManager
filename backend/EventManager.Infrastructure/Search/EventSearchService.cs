@@ -43,7 +43,8 @@ public class EventSearchService(ElasticsearchClient client) : IEventSearchServic
     public async Task ReindexAllAsync(IEnumerable<Event> events)
     {
         await client.DeleteByQueryAsync<EventSearchDocument>(IndexName, d => d
-            .Query(q => q.MatchAll(new MatchAllQuery())));
+            .Query(q => q.MatchAll(new MatchAllQuery()))
+            .Refresh(true));
 
         var documents = events.Select(e => new EventSearchDocument
         {

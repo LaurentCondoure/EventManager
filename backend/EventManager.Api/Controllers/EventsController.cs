@@ -48,8 +48,11 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     [ProducesResponseType(typeof(EventWithCommentsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetFull(Guid id)
-        => Ok(await eventService.GetWithCommentsAsync(id));
-
+    {
+        EventWithCommentsDto @event = await eventService.GetWithCommentsAsync(id);
+        logger.LogInformation("Retrieved full event for {EventId}", id);
+        return Ok(@event);
+    }
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(EventDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,6 +79,7 @@ public class EventsController(IEventService eventService, ILogger<EventsControll
     public async Task<IActionResult> Search([FromQuery] string q, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         IEnumerable<SearchResultDto> results = await eventService.SearchAsync(q, page, pageSize);
+        logger.LogInformation("Search events with {searchQuery} page {Page} with page size {PageSize}", q, page, pageSize);
         return Ok(results);
     }
 }

@@ -313,6 +313,16 @@ public class EventsControllerTests : IClassFixture<WebApplicationFactory<Program
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    // ── POST /admin/search/reindex ───────────────────────────────────────────
+
+    [Fact]
+    public async Task Reindex_ShouldReturnOk()
+    {
+        var response = await _client.PostAsync("/admin/search/reindex", null, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private readonly WebApplicationFactory<Program> _factory;

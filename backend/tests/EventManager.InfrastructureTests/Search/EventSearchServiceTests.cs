@@ -67,6 +67,20 @@ public class EventSearchServiceTests : IClassFixture<ElasticsearchFixture>, IAsy
         results.Should().ContainSingle(e => e.Title == "Opéra de Paris");
     }
 
+    [Fact]
+    public async Task ReindexAllAsync_ShouldRemoveExistingEvents_BeforeIndexing()
+    {
+        var stale = BuildEvent("ObsoleteJazzNight");
+        await _sut.IndexAsync(stale);
+        await _fixture.Client.Indices.RefreshAsync("events", TestContext.Current.CancellationToken);
+
+        await _sut.ReindexAllAsync([BuildEvent("RockFestivalParis")]);
+        await _fixture.Client.Indices.RefreshAsync("events", TestContext.Current.CancellationToken);
+
+        var results = await _sut.SearchAsync("ObsoleteJazzNight");
+        results.Should().BeEmpty();
+    }
+
     private static Event BuildEvent(string title) => new()
     {
         Id          = Guid.NewGuid(),

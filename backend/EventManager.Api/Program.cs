@@ -3,6 +3,7 @@ using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Interfaces;
 using EventManager.Domain.Services;
+using EventManager.Infrastructure.Mappings;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.Infrastructure.Search;
@@ -16,8 +17,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
-using EventManager.Infrastructure.Mappings;
-
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;

@@ -490,6 +490,31 @@ public class EventServiceTests
         await act.Should().NotThrowAsync();
     }
 
+    // ── ReindexAsync ─────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task ReindexAsync_ShouldFetchAllEvents_WithMaxPageSize()
+    {
+        _repositoryMock.Setup(r => r.GetAllAsync(1, int.MaxValue)).ReturnsAsync([]);
+        _searchMock.Setup(s => s.ReindexAllAsync(It.IsAny<IEnumerable<Event>>())).Returns(Task.CompletedTask);
+
+        await _sut.ReindexAsync();
+
+        _repositoryMock.Verify(r => r.GetAllAsync(1, int.MaxValue), Times.Once);
+    }
+
+    [Fact]
+    public async Task ReindexAsync_ShouldPassAllEventsToSearchService()
+    {
+        var events = new List<Event> { BuildEvent(Guid.NewGuid(), "Concert Jazz", "Concert") };
+        _repositoryMock.Setup(r => r.GetAllAsync(1, int.MaxValue)).ReturnsAsync(events);
+        _searchMock.Setup(s => s.ReindexAllAsync(It.IsAny<IEnumerable<Event>>())).Returns(Task.CompletedTask);
+
+        await _sut.ReindexAsync();
+
+        _searchMock.Verify(s => s.ReindexAllAsync(events), Times.Once);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static Event BuildEvent(Guid id, string title, string category) => new()
