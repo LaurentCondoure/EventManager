@@ -90,7 +90,7 @@ Then it's also a lack in Dev/Prod parity. Varnish points to the hostname of the 
 
 #### What was planned
 Structured logs indexed in Elasticsearch, queryable via Kibana for observability dashboards.
-This was described in `TECHNICAL_CHOISES.md` as a direct observability axis.
+This was described in `TECHNICAL_CHOICES.md` as a direct observability axis.
 
 #### What was implemented
 Serilog writes to console and rolling file only. The Elasticsearch sink (`Elastic.Serilog.Sinks`) is not configured. Application Insights receives telemetry on Azure.
