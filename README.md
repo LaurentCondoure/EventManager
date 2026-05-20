@@ -207,7 +207,7 @@ dotnet test backend/EventManager.slnx
 
 Current coverage: tracked via [Codecov](https://app.codecov.io/github/laurentcondoure/eventmanager).
 
-Test strategy documentation: [TEST_STRATEGY](documents/technical/TEST_STRATEGY.md)
+Test strategy documentation: [TEST_STRATEGY](documents/03-technical/TEST_STRATEGY.md)
 
 | Version | Date | Description |
 |---|---|---|
@@ -224,11 +224,11 @@ Test strategy documentation: [TEST_STRATEGY](documents/technical/TEST_STRATEGY.m
 | [V0 Closure](V0_CLOSURE.md) | closure decision, remaining work |
 | [Roadmap](ROADMAP.md) | Next Step |
 | [Specifications](documents/01-functional/) | Project definition, user stories, acceptance criteria and business rules |
-| [Technical Choices](documents/technical/TECHNICAL_CHOISES.md) | Technology comparisons — why each technology was chosen over alternatives |
-| [ADR Index](documents/02-adr/00-index.md) | Architecture decision records (12 ADRs) |
-| [Architecture](documents/03-technical/Architecture.md) | Implemented component diagrams, data flows (all endpoints) |
+| [Technical Choices](documents/03-technical/TECHNICAL_CHOISES.md) | Technology comparisons — why each technology was chosen over alternatives |
 | [Technical Design](documents/03-technical/TECHNICAL_DESIGN.md) | Initial design intent — written before implementation |
 | [Data Model](documents/03-technical/DATA_MODEL.md) | Database schema (SQL Server, MongoDB) and key design decisions |
+| [ADR Index](documents/02-adr/00-index.md) | Architecture decision records (12 ADRs) |
+| [Architecture](documents/03-technical/Architecture.md) | Implemented component diagrams, data flows (all endpoints) |
 | [Pipelines](documents/03-technical/PIPELINES.md) | Azure DevOps CI/CD pipeline setup and configuration |
 | [Pipeline Workflow](documents/03-technical/PIPELINE_WORKFLOW.md) | Deployment workflow and operator checklist |
 | [AI Usage](AI_USAGE.md) | Transparency statement — how AI was used in this project |

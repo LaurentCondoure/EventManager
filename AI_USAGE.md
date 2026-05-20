@@ -1,4 +1,4 @@
-# AI Usage — Transparency Statement
+# AI Usage — Concrete usage
 
 ## Context
 
