@@ -240,6 +240,10 @@ a new consumer, no changes to existing producers.
 - Microservices decomposition
 - New functional features (TBD)
 - ReindexAllAsync : current implementation match with the current target volume. Bulk calls to Elasticsearch would be consider to avoid single oversized bulk request at scale later
+- Elasticsearch index mapping — currently created implicitly via ES dynamic mapping
+  on first document write, no explicit mapping/analyzer defined in code. Needs an
+  explicit mapping (controlled field types, French-text analyzer) before V1 to avoid
+  an unversioned, order-dependent schema.
 - Azure DevOps pipelines
 - Terraform (Azure)
 - Cloud

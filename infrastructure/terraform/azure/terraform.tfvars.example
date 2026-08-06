@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars (gitignored) and fill in real values.
+# Never commit terraform.tfvars — it holds the SQL admin password.
+
+sql_admin_username = "sqladmin"
+sql_admin_password = "REPLACE_WITH_A_STRONG_PASSWORD"
+
+# Must be globally unique across all of Azure — 3-24 chars, lowercase letters and digits only
+storage_name = "stevtmgmtprod001"
