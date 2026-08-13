@@ -5,7 +5,7 @@ Accepted
 
 ## Context
 
-As documented in [TEST_STRATEGY.md](../technical/TEST_STRATEGY.md), `SqlServerEventRepository` was tested against an in-memory SQLite database as a temporary measure while the Docker infrastructure was being set up. This allowed the repository layer to be validated quickly via component tests without requiring a running SQL Server instance.
+As documented in [test-strategy.md](../../../governance/test-strategy.md), `SqlServerEventRepository` was tested against an in-memory SQLite database as a temporary measure while the Docker infrastructure was being set up. This allowed the repository layer to be validated quickly via component tests without requiring a running SQL Server instance.
 
 The trade-offs were accepted knowingly:
 - A `GuidTypeHandler` was introduced to bridge the SQLite/SQL Server type difference (GUID stored as TEXT in SQLite).
@@ -14,7 +14,7 @@ The trade-offs were accepted knowingly:
 
 In a production context, this approach would be justified when multiple repositories are developed in parallel before Docker infrastructure is available. In this training project, it served the same purpose: validate the repository layer incrementally while the full stack was being built.
 
-Now that Docker is operational, the temporary SQLite path is replaced by SQL Server integration tests via Testcontainers, as planned in TEST_STRATEGY.md.
+Now that Docker is operational, the temporary SQLite path is replaced by SQL Server integration tests via Testcontainers, as planned in test-strategy.md.
 
 ## Decision
 
@@ -39,5 +39,5 @@ Now that Docker is operational, the temporary SQLite path is replaced by SQL Ser
 
 ## Related Decisions
 
-- [TEST_STRATEGY.md](../technical/TEST_STRATEGY.md) — full test level definitions and scope
+- [test-strategy.md](../../../governance/test-strategy.md) — full test level definitions and scope
 - ADR-003: Clean Architecture

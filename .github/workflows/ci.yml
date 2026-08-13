@@ -8,6 +8,18 @@ on:
 
 jobs:
 
+  # ── Documentation ─────────────────────────────────────────────────────────
+  docs-link-check:
+    name: Documentation Link Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check documentation links
+        shell: pwsh
+        run: ./scripts/Check-DocLinks.ps1
+
   # ── Frontend ──────────────────────────────────────────────────────────────
   test-frontend:
     name: Frontend Tests

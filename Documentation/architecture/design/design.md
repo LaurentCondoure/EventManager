@@ -5,7 +5,7 @@
 **Status:** Design intent document — written before implementation
 
 > This document captures the initial design decisions, data flows, and API contracts as specified before development began. It is not updated to reflect implementation details.  
-> For the implemented architecture, see [Architecture.md](./Architecture.md) and [flows/](./flows/).
+> For the implemented architecture, see [overview.md](../overview.md) and [flows/](../flows/).
 
 ---
 
@@ -595,7 +595,7 @@ sequenceDiagram
 4. ✅ Multi-technology architecture operational (SQL Server + MongoDB + Redis + Elasticsearch + Varnish)
 5. ✅ Test coverage minimum 80%
 6. ✅ Application deployable locally via `docker-compose up`
-7. ✅ Documentation complete (TECHNICAL_DESIGN.md, ARCHITECTURE.md, README.md)
+7. ✅ Documentation complete (design.md, overview.md, README.md)
 
 **Bonus:**
 - ✅ Statistics chart by category (Chart.js)

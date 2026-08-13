@@ -519,4 +519,4 @@ searchMock.Setup(s => s.SearchAsync("jazz", 1, 20)).ReturnsAsync([...]);
 
 ### EventSearchService belongs to component tests
 
-`EventSearchService` is tested at the **component level** using a real Elasticsearch instance (via Testcontainers or a shared dev instance). See `TEST_STRATEGY.md`.
+`EventSearchService` is tested at the **component level** using a real Elasticsearch instance (via Testcontainers or a shared dev instance). See [test-strategy.md](../governance/test-strategy.md).

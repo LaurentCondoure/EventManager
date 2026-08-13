@@ -145,6 +145,6 @@ see [POST reindex sequence diagram](./flows/POST-reindex.md)
 | Azure DevOps pipelines | Code complete | 4 pipeline files present and path-scoped; not connected to a live organisation — V2 |
 | Terraform local | Done | `terraform/local/` — null provider, validated (`terraform plan` passes) |
 | Terraform Azure | Code complete | `terraform/azure/` — azurerm provider, 9 resources; not applied|
-| Azure deployment | Deferred | Architecture gap: Elasticsearch and Varnish require containers incompatible with basic Azure managed services — see V0_CLOSURE.md |
+| Azure deployment | Deferred | Architecture gap: Elasticsearch and Varnish require containers incompatible with basic Azure managed services — see [v0-closure.md](../releases/v0-closure.md) |
 
 The components diagram above represents the **implemented local stack** for for a development workstation.

@@ -4,7 +4,7 @@
 
 Two .NET 8 features have been added to the project: **Minimal APIs** and **Rate Limiting**. Both are built into the ASP.NET Core framework — no additional packages required.
 
-Output Caching (also a .NET 8 feature) was explicitly rejected in favour of Redis — see [TECHNICAL_CHOICES.md](../03-technical/TECHNICAL_CHOICES.md).
+Output Caching (also a .NET 8 feature) was explicitly rejected in favour of Redis — see [choices.md](../architecture/choices.md).
 
 ---
 

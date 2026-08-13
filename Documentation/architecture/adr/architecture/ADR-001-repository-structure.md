@@ -30,7 +30,7 @@ EventManager/
 │   └── EventManager.Api/
 ├── frontend/
 ├── terraform/
-├── documents/
+├── documentation/
 │   ├── adr/
 │   ├── functional/
 │   └── technical/

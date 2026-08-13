@@ -180,7 +180,7 @@ Deliberately excluded to limit complexity:
 
 ## Data Model
 
-See [DATA_MODEL.md](../technical/DATA_MODEL.md)
+See [data-model.md](../architecture/data-model.md)
 
 ---
 
