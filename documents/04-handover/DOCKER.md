@@ -1,7 +1,7 @@
 # Docker — Local Development Environment
 
 **Author:** Laurent Condoure
-**Date:** 2026-06-03  
+**Date:** 2026-08-10  
 **Status:** Draft
 **Project:** EventManager — Cultural Events Management Application  
 **Objective:** Introduces Docker and describes how it's used in the application.
@@ -40,6 +40,32 @@ healthcheck:
 ```
 
 `sql-init` declares `depends_on: sqlserver: condition: service_healthy` — Docker Compose blocks `sql-init` from starting until that healthcheck passes. That is the actual mechanism behind "SQL Server takes ~30 seconds to be ready, `sql-init` waits for it" — not a fixed sleep, but a real readiness check. `redis`, `mongodb`, and `elasticsearch` each have their own healthcheck for the same reason: `docker compose ps` can report genuine readiness, not just "container running."
+
+#### The four parameters
+
+- **`test`** — the command run inside the container. Exit code `0` = healthy, anything else = unhealthy for that attempt.
+- **`interval`** — how long Docker waits between two check attempts.
+- **`timeout`** — how long a single attempt is allowed to run before it's counted as a failure (protects against a hung command, not just a wrong exit code).
+- **`retries`** — how many *consecutive* failures are needed before Docker marks the container `unhealthy`.
+- **`start_period`** *(optional)* — an initial grace window during which failures don't count against `retries`. Needed for services whose engine takes longer to accept connections than one `interval` — without it, a slow-starting SQL Server or Elasticsearch would rack up its `retries` failures and flip `unhealthy` before it ever had a real chance to come up.
+
+#### Per-service breakdown
+
+| Service | Test command | interval | timeout | retries | start_period | What it actually checks |
+|---|---|---|---|---|---|---|
+| `sqlserver` | `sqlcmd -Q "SELECT 1"` | 10s | 5s | 10 | 30s | The SQL engine accepts a connection and executes a query — not just that the process is running |
+| `redis` | `redis-cli PING` | 5s | 3s | 5 | — | Redis replies `PONG` on its client protocol |
+| `mongodb` | `mongosh --eval "db.runCommand({ping:1})"` | 10s | 5s | 5 | — | The `mongod` process answers the standard MongoDB ping admin command |
+| `elasticsearch` | `curl .../_cluster/health \| grep 'green\|yellow'` | 15s | 10s | 10 | 30s | Cluster status is at least `yellow` (single-node setup can never reach `green`, since that requires replica shards on another node) |
+| `varnish` | *(none declared)* | — | — | — | — | See below |
+
+`elasticsearch` is the only one using `CMD-SHELL` instead of `CMD` — its check pipes `curl` into `grep`, which needs a shell to interpret the pipe. The others use the exec form (`CMD` with an argv array): no shell involved, so no quoting/globbing surprises.
+
+`sqlserver` and `elasticsearch` are also the two slowest-starting engines here, which is why they're the only ones with a `start_period`: without it, the first 2-3 check attempts (at 10s/15s intervals) would fail before the engine is actually up, exhausting the `retries` budget and marking the container `unhealthy` even though it was only ever "still starting."
+
+**Varnish has no healthcheck at all.** Nothing in `docker-compose.yml` needs to block on Varnish being ready — no other service declares `depends_on: varnish`, and Varnish itself starts almost instantly (it's a thin cache layer, no data engine to warm up). `docker compose ps` will show it as `running` (no health column), which is the correct and sufficient signal here.
+
+**What actually gets blocked by a health check:** only `sql-init`, via its explicit `depends_on: sqlserver: condition: service_healthy`. The `redis`, `mongodb`, and `elasticsearch` healthchecks exist purely for observability — `docker compose ps` reporting genuine readiness — since nothing else in this compose file declares a `depends_on` against them. In particular, **the API itself is not containerized** (it runs via `dotnet run` on the host), so it never waits on any of these healthchecks automatically — check `docker compose ps` yourself before starting the API if you want to be sure the databases are actually ready, not just running.
 
 ### Networking — service name vs `host.docker.internal`
 
