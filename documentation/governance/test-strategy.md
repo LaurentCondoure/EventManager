@@ -102,4 +102,4 @@ Each fixture manages the Docker container lifecycle (`IAsyncLifetime`) and is sh
 
 `IAsyncLifetime` implemented on the **test class** (not the fixture) handles per-test cleanup (e.g. deleting the Elasticsearch index before each test). The container itself stays alive for the entire class — starting a Docker container for each test would be prohibitively slow.
 
-See [xunit.md](../technical/xunit.md) for the detailed explanation of xUnit v3 lifecycle and isolation patterns.
+See [xunit.md](../technical/tech-xunit.md) for the detailed explanation of xUnit v3 lifecycle and isolation patterns.
