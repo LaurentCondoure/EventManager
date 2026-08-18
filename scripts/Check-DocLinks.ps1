@@ -18,7 +18,7 @@ $ErrorActionPreference = 'Stop'
 $root = Join-Path $PSScriptRoot '..\documentation' | Resolve-Path
 $processDir = Join-Path $root.Path 'process'
 $files = Get-ChildItem -Path $root -Recurse -Filter '*.md' |
-    Where-Object { $_.FullName -notlike "$processDir\*" }
+    Where-Object { -not $_.FullName.StartsWith($processDir + [System.IO.Path]::DirectorySeparatorChar) }
 $pattern = '\[([^\]]+)\]\(([^)]+\.md)\)'
 $codeFencePattern = '(?s)```.*?```'
 $broken = @()
