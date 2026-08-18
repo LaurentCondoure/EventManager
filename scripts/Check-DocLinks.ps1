@@ -8,13 +8,17 @@
     Links inside fenced code blocks (``` ... ```) are skipped too, since those are
     illustrative examples (the Superseded-status template in the ADR index),
     not real cross-references meant to be validated.
+    The documentation/process/ folder is skipped entirely: its files are document
+    templates that illustrate links to fictitious documents, not real cross-references.
     Exits with code 1 if any broken link is found, so it can be used as a CI gate.
 #>
 
 $ErrorActionPreference = 'Stop'
 
 $root = Join-Path $PSScriptRoot '..\documentation' | Resolve-Path
-$files = Get-ChildItem -Path $root -Recurse -Filter '*.md'
+$processDir = Join-Path $root.Path 'process'
+$files = Get-ChildItem -Path $root -Recurse -Filter '*.md' |
+    Where-Object { $_.FullName -notlike "$processDir\*" }
 $pattern = '\[([^\]]+)\]\(([^)]+\.md)\)'
 $codeFencePattern = '(?s)```.*?```'
 $broken = @()
