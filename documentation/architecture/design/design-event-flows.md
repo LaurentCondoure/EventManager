@@ -7,8 +7,8 @@
 
 > This document captures the technical flows and architecture diagrams for the Event Management domain.
 > It describes how components interact on critical paths.
-> For technology choice justifications, see the ADRs referenced in [dat-eventmanager.md](../tad-eventmanager.md).
-> For API contracts, see [api-v0-events.md](../../api/api-events.md).
+> For technology choices, see the ADRs referenced in [index.md](../adr/index.md).
+> For API contracts, see [api-events.md](../../api/api-events.md).
 
 ---
 

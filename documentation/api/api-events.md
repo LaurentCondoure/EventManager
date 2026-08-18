@@ -6,8 +6,8 @@
 **Date:** 2026-04-19
 
 > This document describes the API contracts for the Event Management domain.
-> For technical flows and architecture diagrams, see [design-v0-event-flows.md](../architecture/design/design-event-flows.md).
-> For technology choices, see the ADRs referenced in [dat-eventmanager.md](../architecture/tad-eventmanager.md).
+> For technical flows and architecture diagrams, see [design-event-flows.md](../architecture/design/design-event-flows.md).
+> For technology choices, see the ADRs referenced in [index.md](../architecture/adr/index.md).
 
 ---
 
