@@ -19,8 +19,12 @@ This document defines the branching strategy, release process, and release gates
 ```
 main
   └── develop
-        └── feature-[slug]
-              └── [optional] subtask-[slug]
+        ├── feature-[slug]
+        │     └── [optional] subtask-[slug]
+        └── release-vX
+              └── stabilisation bug fixes
+                    ├── merge into main (tag vX.Y.Z)
+                    └── merge back into develop
 ```
 
 ### 1.2 Branch definitions
@@ -28,9 +32,11 @@ main
 | Branch | Purpose | Created from | Merged into |
 |---|---|---|---|
 | `main` | Stable production code. Every commit on `main` represents a released version. | — | — |
-| `develop` | Integration branch. Accumulates completed features for the current version. | `main` | `main` (at release) |
+| `develop` | Integration branch. Accumulates completed features for the current version. | `main` | — |
 | `feature-[slug]` | Implements a user story or a group of related tasks. | `develop` | `develop` |
 | `subtask-[slug]` | Implements a single task or technical task within a feature. | `feature-[slug]` | `feature-[slug]` |
+| `release-vX` | Stabilisation branch for the version. Isolates release preparation from ongoing development. | `develop` | `main` + `develop` |
+| `hotfix-[slug]` | Addresses a critical defect in production that cannot wait for the next version. | `main` | `main` + `develop` |
 
 ### 1.3 Naming conventions
 
@@ -38,13 +44,17 @@ main
 |---|---|---|
 | Feature | `feature-[slug]` | `feature-superadmin-login` |
 | Subtask | `subtask-[slug]` | `subtask-identity-setup` |
+| Release | `release-vX` | `release-v1` |
 | Hotfix | `hotfix-[slug]` | `hotfix-login-redirect` |
 
 ### 1.4 Rules
 
-- `main` is protected — no direct commit. Only merge from `develop` (release) or `hotfix-*` (urgent fix).
+- `main` is protected — no direct commit. Only merge from `release-vX` or `hotfix-*`.
 - `develop` is protected — no direct commit. Only merge from `feature-*` branches via pull request.
 - A `feature-[slug]` branch maps to one user story. If a story requires subtasks, each subtask gets its own branch created from the feature branch.
+- A `release-vX` branch is created from `develop` when development is complete for the version. Only stabilisation bug fixes are committed on this branch — no new features.
+- After merge into `main`, `release-vX` must be merged back into `develop` to keep branches in sync.
+- `release-vX` is deleted after both merges are done.
 - A `feature-[slug]` branch is deleted after merge into `develop`.
 - A `subtask-[slug]` branch is deleted after merge into its parent `feature-[slug]`.
 - Branch names are in kebab-case.
@@ -53,15 +63,20 @@ main
 
 ```
 [V1 development]
-  develop ←── feature-superadmin-login
+  develop <── feature-superadmin-login
                   └── subtask-identity-setup
                   └── subtask-ef-core-migration
 
-[V1 release]
-  develop ──► main   (version tag: v1.0.0)
-```
+[V1 stabilisation]
+  develop ──► release-v1
+                  └── bug-001-login-redirect (fix)
+                  └── changelog-v1.md committed
 
-A version is closed when `develop` is merged into `main`. The merge commit on `main` is tagged with the version number.
+[V1 release]
+  release-v1 ──► main    (tag: v1.0.0)
+  release-v1 ──► develop (sync)
+  release-v1   ──► deleted
+```
 
 ---
 
@@ -71,35 +86,52 @@ A version is closed when `develop` is merged into `main`. The merge commit on `m
 
 ```
 Development complete on develop
-  └── Release gates verified (Section 3)
-        └── develop merged into main
-              └── Version tag created on main
-                    └── Deployment to production
-                          └── Version declared stable
+  └── release-vX created from develop
+        └── Stabilisation (bug fixes, changelog)
+              └── Release gates verified (Section 3)
+                    └── release-vX merged into main (tag vX.Y.Z)
+                          └── release-vX merged back into develop
+                                └── Deployment to production
+                                      └── Version declared stable
 ```
 
 ### 2.2 Step-by-step procedure
 
-**Step 1 — Verify release gates**
+**Step 1 — Create the release branch**
 
-All release gates defined in Section 3 must be satisfied before initiating the release. Do not proceed if any gate fails.
-
-**Step 2 — Prepare the changelog**
-
-Write or finalize `documentation/changelog/changelog-vX.md`. The changelog must be committed to `develop` before the release merge.
-
-**Step 3 — Merge develop into main**
-
+```bash
+git checkout develop
+git checkout -b release-vX
+git push origin release-vX
 ```
+
+From this point, no new feature is merged into `release-vX`. Only stabilisation bug fixes and the changelog are committed here.
+
+**Step 2 — Stabilise**
+
+Fix any blocking bugs discovered during validation directly on `release-vX`. Document each fix as a `bug-[NNN]-[slug].md` file in the relevant functional domain subfolder.
+
+**Step 3 — Prepare the changelog**
+
+Write or finalize `documentation/changelog/changelog-vX.md` and commit it to `release-vX`.
+
+**Step 4 — Verify release gates**
+
+All release gates defined in Section 3 must be satisfied before proceeding. Do not proceed if any gate fails.
+
+**Step 5 — Merge into main**
+
+```bash
 git checkout main
-git merge --no-ff develop -m "release: vX.Y.Z"
+git merge --no-ff release-vX -m "release: vX.Y.Z"
+git push origin main
 ```
 
 The `--no-ff` flag preserves the merge commit and makes the release boundary explicit in the history.
 
-**Step 4 — Tag the release**
+**Step 6 — Tag the release**
 
-```
+```bash
 git tag -a vX.Y.Z -m "Release vX.Y.Z — [Version name]"
 git push origin main --tags
 ```
@@ -109,15 +141,30 @@ Versioning follows semantic versioning (semver):
 - `Y` — minor version (new features, no breaking change)
 - `Z` — patch version (bug fix or hotfix)
 
-**Step 5 — Deploy to production**
+**Step 7 — Merge back into develop**
+
+```bash
+git checkout develop
+git merge --no-ff release-vX -m "chore: sync release-vX back into develop"
+git push origin develop
+```
+
+**Step 8 — Delete the release branch**
+
+```bash
+git branch -d release-vX
+git push origin --delete release-vX
+```
+
+**Step 9 — Deploy to production**
 
 Follow the deployment procedure defined in `documentation/runbooks/runbook-vX.md`.
 
-**Step 6 — Verify production**
+**Step 10 — Verify production**
 
 Validate that the deployment is successful using the verification steps defined in the runbook. If verification fails, execute the rollback procedure immediately.
 
-**Step 7 — Declare the version stable**
+**Step 11 — Declare the version stable**
 
 Once production is verified, update the TAD and the scoping note status to `Validated`. The version is now stable and the next version scoping can begin.
 
@@ -128,8 +175,8 @@ A hotfix addresses a critical defect discovered in production that cannot wait f
 ```
 main ──► hotfix-[slug]
               └── fix committed
-                    └── merged into main (tag: vX.Y.Z+1)
-                          └── merged back into develop
+                    ├── merged into main (tag: vX.Y.Z+1)
+                    └── merged back into develop
 ```
 
 **Rules:**
@@ -155,21 +202,35 @@ These gates are enforced automatically on every push and pull request to `main`.
 | Documentation link integrity | 0 broken links | CI — `Check-DocLinks.ps1` |
 | Build | Successful | CI — build job |
 
-### 3.2 Security gate
+### 3.2 Manual gates (human validation)
+
+These gates require explicit human sign-off before the release merge is authorized.
+
+| Gate | Artifact |
+|---|---|---|
+| All version DoD criteria met | `dod-vX-[name].md` fully checked |
+| All stories in scope closed |  All `story-[NNN]-*.md` in the version subfolder marked done |
+| All tasks and technical tasks closed | All `task-*` and `tech-*` files in the version subfolder marked done |
+| No open bugs blocking release |  No `bug-[NNN]-*.md` with status `to do` or `in progress` |
+| TAD updated and validated |  `tat-eventmanager.md` version section complete |
+| Runbook written and validated |  `runbook-vX.md` complete |
+| Changelog written | `changelog-vX.md` complete |
+
+### 3.3 Security gate
 
 > **Status: Deferred**
 > Security gates will be defined and added to this section once the authentication ADR is validated.
 > They will be integrated as part of the CI pipeline at the end of the version that introduces authentication.
 
-### 3.3 Release authorization
+### 3.4 Release authorization
 
 ```
-All automated gates green  : ☐
-All manual gates validated  : ☐
-Security gate               : ☐ Deferred to end of version
+All automated gates green   : ☐
+All manual gates validated   : ☐
+Security gate                : ☐ Deferred to end of version
 
-Release authorized          : ☐
-Authorized by               : _______________  Date: _______________
+Release authorized           : ☐
+Authorized by                : _______________  Date: _______________
 ```
 
 ---
@@ -195,3 +256,4 @@ CD (Continuous Deployment) covers the local environment only at this stage. Prod
 | Version | Date | Changes |
 |---|---|---|
 | 1.0 | 2026-08-17 | Document created |
+| 1.1 | 2026-08-17 | Added release branch to branching strategy and release process |
