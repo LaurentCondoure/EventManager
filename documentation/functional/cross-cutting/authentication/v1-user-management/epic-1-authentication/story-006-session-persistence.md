@@ -1,4 +1,4 @@
-# STORY-006 — Session Persistence on Page Refresh
+﻿# STORY-006 â€” Session Persistence on Page Refresh
 
 **Type:** Story
 **Version:** V1
@@ -19,20 +19,20 @@ so that **I do not lose my session due to a normal navigation action**.
 
 ## Acceptance Criteria
 
-- [ ] On every page load or refresh → SPA calls `GET /auth/me` automatically
-- [ ] Valid session → role and `mustResetPassword` restored in `authStore`, user lands on appropriate interface
-- [ ] `mustResetPassword = true` → redirect to reset screen, not to login
-- [ ] No valid session → redirect to login
-- [ ] Rate limit exceeded (3/min/user) → 429 with `Retry-After` header, no redirect to login
-- [ ] If access token expired but refresh token valid → server rotates tokens silently and returns 200
+- [ ] On every page load or refresh â†’ SPA calls `GET /auth/me` automatically
+- [ ] Valid session â†’ role and `mustResetPassword` restored in `authStore`, user lands on appropriate interface
+- [ ] `mustResetPassword = true` â†’ redirect to reset screen, not to login
+- [ ] No valid session â†’ redirect to login
+- [ ] Rate limit exceeded (3/min/user) â†’ 429 with `Retry-After` header, no redirect to login
+- [ ] If access token expired but refresh token valid â†’ server rotates tokens silently and returns 200
 
 ---
 
 ## Edge Cases
 
-- [ ] Page refresh during password reset flow → `mustResetPassword = true` restored, user stays on reset screen
-- [ ] 429 on `/auth/me` → user sees error, session state unchanged, no redirect
-- [ ] Access token expired + refresh token expired → 401 → redirect to login
+- [ ] Page refresh during password reset flow â†’ `mustResetPassword = true` restored, user stays on reset screen
+- [ ] 429 on `/auth/me` â†’ user sees error, session state unchanged, no redirect
+- [ ] Access token expired + refresh token expired â†’ 401 â†’ redirect to login
 
 ---
 
@@ -56,9 +56,9 @@ so that **I do not lose my session due to a normal navigation action**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-018](../tasks/task-018-auth-me-back.md) | back | Implement `GET /auth/me` endpoint |
-| [TASK-019](../tasks/task-019-auth-me-front.md) | front | Implement session restoration on page load |
-| [TASK-020](../tasks/task-020-auth-me-test.md) | test | Unit tests — `/auth/me` endpoint and session restoration |
+| [TASK-018](task/task-018-auth-me-back.md) | back | Implement `GET /auth/me` endpoint |
+| [TASK-019](task/task-019-auth-me-front.md) | front | Implement session restoration on page load |
+| [TASK-020](task/task-020-auth-me-test.md) | test | Unit tests â€” `/auth/me` endpoint and session restoration |
 
 ---
 
@@ -77,6 +77,6 @@ so that **I do not lose my session due to a normal navigation action**.
 
 ## Notes
 
-- `GET /auth/me` must be called before any route guard runs — app must not render until session is known.
-- Token rotation on this endpoint must reuse `ITokenService` — no duplicated rotation logic.
-- 429 must not redirect to login — display error only.
+- `GET /auth/me` must be called before any route guard runs â€” app must not render until session is known.
+- Token rotation on this endpoint must reuse `ITokenService` â€” no duplicated rotation logic.
+- 429 must not redirect to login â€” display error only.

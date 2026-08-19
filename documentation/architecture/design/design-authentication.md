@@ -7,10 +7,12 @@
 **Last updated:** 2026-08-18
 
 **Architectural references:**
-- [ADR-014 — Authentication mechanism](../../adr/adr-014-authentication-mechanism.md)
-- [ADR-015 — Identity schema isolation](../../adr/adr-015-identity-schema-isolation.md)
-- [ADR-016 — Authorisation model](../../adr/adr-016-authorisation-model.md)
-- [ADR-017 — First super admin provisioning](../../adr/adr-017-superadmin-provisioning.md)
+- [ADR-014 — Authentication mechanism](../adr/security/adr-014-authentication-mechanism.md)
+- [ADR-015 — Identity schema isolation](../adr/architecture/adr-015-identity-schema-isolation.md)
+- [ADR-016 — Authorisation model](../adr/security/adr-016-authorisation-model.md)
+- [ADR-017 — First super admin provisioning](../adr/security/adr-017-first-super-admin-provisioning.md)
+- [ADR-019 — Rate limiting on authentication endpoints](../adr/security/adr-019-rate-limiting-auth-endpoints.md)
+- [ADR-020 — Session restoration endpoint (GET /auth/me)](../adr/architecture/adr-020-session-restoration-endpoint.md)
 
 ---
 

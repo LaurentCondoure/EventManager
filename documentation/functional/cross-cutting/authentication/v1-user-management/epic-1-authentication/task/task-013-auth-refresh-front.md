@@ -1,11 +1,11 @@
-# TASK-013 — Cross-Cutting / Authentication / front
+﻿# TASK-013 â€” Cross-Cutting / Authentication / front
 
 **Type:** Task
 **Version:** V1
 **Domain:** Cross-Cutting
 **Feature:** Authentication
 **Layer:** `front`
-**Parent story:** [STORY-004](../stories/story-004-silent-session-renewal.md)
+**Parent story:** [STORY-004](../story-004-silent-session-renewal.md)
 **Priority:** `high`
 **Status:** `to do`
 
@@ -16,10 +16,10 @@
 Implement Axios interceptor for silent session renewal.
 
 - Intercept 401 responses caused by expired access token
-- If refresh already in progress → queue the original request
-- If no refresh in progress → trigger `POST /auth/refresh`
-- Refresh succeeds → retry all queued requests transparently
-- Refresh fails → clear `authStore`, clear cookies, redirect to login with session expiry message
+- If refresh already in progress â†’ queue the original request
+- If no refresh in progress â†’ trigger `POST /auth/refresh`
+- Refresh succeeds â†’ retry all queued requests transparently
+- Refresh fails â†’ clear `authStore`, clear cookies, redirect to login with session expiry message
 
 ---
 

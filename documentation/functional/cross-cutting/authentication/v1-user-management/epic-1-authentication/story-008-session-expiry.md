@@ -1,4 +1,4 @@
-# STORY-008 — Session Expiry
+﻿# STORY-008 â€” Session Expiry
 
 **Type:** Story
 **Version:** V1
@@ -20,15 +20,15 @@ so that **abandoned sessions do not remain valid indefinitely**.
 ## Acceptance Criteria
 
 - [ ] Refresh token TTL = 8 hours
-- [ ] On renewal attempt after TTL elapsed → 401, cookies cleared, redirect to login
+- [ ] On renewal attempt after TTL elapsed â†’ 401, cookies cleared, redirect to login
 - [ ] Login page displays session expiry message on redirect from expired session
 
 ---
 
 ## Edge Cases
 
-- [ ] User is active at hour 7h59 → next action triggers renewal → renewal fails → redirect to login with expiry message
-- [ ] Multiple tabs open → expiry in one tab triggers redirect, other tabs redirect on next request
+- [ ] User is active at hour 7h59 â†’ next action triggers renewal â†’ renewal fails â†’ redirect to login with expiry message
+- [ ] Multiple tabs open â†’ expiry in one tab triggers redirect, other tabs redirect on next request
 
 ---
 
@@ -51,9 +51,9 @@ so that **abandoned sessions do not remain valid indefinitely**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-024](../tasks/task-024-auth-expiry-back.md) | back | Configure refresh token TTL to 8 hours |
-| [TASK-025](../tasks/task-025-auth-expiry-front.md) | front | Implement session expiry message on login redirect |
-| [TASK-026](../tasks/task-026-auth-expiry-test.md) | test | Unit tests — session expiry via renewal failure |
+| [TASK-024](task/task-024-auth-expiry-back.md) | back | Configure refresh token TTL to 8 hours |
+| [TASK-025](task/task-025-auth-expiry-front.md) | front | Implement session expiry message on login redirect |
+| [TASK-026](task/task-026-auth-expiry-test.md) | test | Unit tests â€” session expiry via renewal failure |
 
 ---
 
@@ -72,5 +72,5 @@ so that **abandoned sessions do not remain valid indefinitely**.
 
 ## Notes
 
-- TTL must be configurable via environment variable `REFRESH_TOKEN_TTL_HOURS` — not hardcoded.
-- Expiry message must not appear on a fresh visit to the login page — only on redirect from expired session.
+- TTL must be configurable via environment variable `REFRESH_TOKEN_TTL_HOURS` â€” not hardcoded.
+- Expiry message must not appear on a fresh visit to the login page â€” only on redirect from expired session.

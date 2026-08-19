@@ -57,3 +57,5 @@ a conscious decision, not an implicit one.
 | [adr-016](security/adr-016-authorisation-model.md) | Authorisation Model | Accepted | `security` | V1 |
 | [adr-017](security/adr-017-first-super-admin-provisioning.md) | First Super Admin Provisioning | Accepted | `security` | V1 |
 | [adr-018](persistence/adr-018-migration-dapper-to-ef-core.md) | Migration from Dapper to Entity Framework Core | Accepted | `persistence` `architecture` | V1 |
+| [adr-019](security/adr-019-rate-limiting-auth-endpoints.md) | Rate limiting on authentication endpoints | Accepted | `security` | V1 |
+| [adr-020](architecture/adr-020-session-restoration-endpoint.md) | Session restoration endpoint — GET /auth/me | Accepted | `architecture` `security` | V1 |
