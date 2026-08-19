@@ -180,7 +180,7 @@ Deliberately excluded to limit complexity:
 
 ## Data Model
 
-See [data-model.md](../architecture/data-model.md)
+See [eventmanager-mld.md](../architecture/data/eventmanager-mld.md)
 
 ---
 

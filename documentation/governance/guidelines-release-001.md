@@ -37,6 +37,7 @@ main
 | `subtask-[slug]` | Implements a single task or technical task within a feature. | `feature-[slug]` | `feature-[slug]` |
 | `release-vX` | Stabilisation branch for the version. Isolates release preparation from ongoing development. | `develop` | `main` + `develop` |
 | `hotfix-[slug]` | Addresses a critical defect in production that cannot wait for the next version. | `main` | `main` + `develop` |
+| `docs-[slug]` | Adds or updates transversal documentation (TAD, ADR, design, guidelines, runbook, changelog). | `develop` | `develop` |
 
 ### 1.3 Naming conventions
 
@@ -46,6 +47,7 @@ main
 | Subtask | `subtask-[slug]` | `subtask-identity-setup` |
 | Release | `release-vX` | `release-v1` |
 | Hotfix | `hotfix-[slug]` | `hotfix-login-redirect` |
+| Documentation | `docs-[slug]` | `docs-tat-v1` |
 
 ### 1.4 Rules
 
@@ -58,6 +60,8 @@ main
 - A `feature-[slug]` branch is deleted after merge into `develop`.
 - A `subtask-[slug]` branch is deleted after merge into its parent `feature-[slug]`.
 - Branch names are in kebab-case.
+- A `docs-[slug]` branch is used for transversal documentation that does not belong to a specific feature (TAD, ADR, design, guidelines, runbook, changelog). Feature-specific documentation (scoping note, DoD, stories, tasks) is committed on the corresponding `feature-[slug]` branch.
+- A `docs-[slug]` branch is deleted after merge into `develop`.
 
 ### 1.5 Version lifecycle on branches
 
@@ -206,15 +210,15 @@ These gates are enforced automatically on every push and pull request to `main`.
 
 These gates require explicit human sign-off before the release merge is authorized.
 
-| Gate | Artifact |
+| Gate | Validated by | Artifact |
 |---|---|---|
-| All version DoD criteria met | `dod-vX-[name].md` fully checked |
-| All stories in scope closed |  All `story-[NNN]-*.md` in the version subfolder marked done |
-| All tasks and technical tasks closed | All `task-*` and `tech-*` files in the version subfolder marked done |
-| No open bugs blocking release |  No `bug-[NNN]-*.md` with status `to do` or `in progress` |
-| TAD updated and validated |  `tat-eventmanager.md` version section complete |
-| Runbook written and validated |  `runbook-vX.md` complete |
-| Changelog written | `changelog-vX.md` complete |
+| All version DoD criteria met | PM + Tech Lead | `dod-vX-[name].md` fully checked |
+| All stories in scope closed | PM | All `story-[NNN]-*.md` in the version subfolder marked done |
+| All tasks and technical tasks closed | Tech Lead | All `task-*` and `tech-*` files in the version subfolder marked done |
+| No open bugs blocking release | Tech Lead | No `bug-[NNN]-*.md` with status `to do` or `in progress` |
+| TAD updated and validated | CTO | `tat-eventmanager.md` version section complete |
+| Runbook written and validated | Tech Lead | `runbook-vX.md` complete |
+| Changelog written | Tech Lead / PM | `changelog-vX.md` complete |
 
 ### 3.3 Security gate
 
@@ -257,3 +261,37 @@ CD (Continuous Deployment) covers the local environment only at this stage. Prod
 |---|---|---|
 | 1.0 | 2026-08-17 | Document created |
 | 1.1 | 2026-08-17 | Added release branch to branching strategy and release process |
+| 1.2 | 2026-08-17 | Added docs branch convention. Added GitHub repository configuration section. |
+
+---
+
+## 5. GitHub Repository Configuration
+
+### 5.1 Branch protection rules
+
+Both `main` and `develop` are protected branches. The following rules apply to both.
+
+| Rule | Value |
+|---|---|
+| Require pull request before merging | ✅ |
+| Required reviewers | 0 — solo project, status checks are the real gate |
+| Require status checks to pass | ✅ — `build`, `test`, `docs-link-check` |
+| Do not allow bypassing | ✅ |
+
+> No direct commit is permitted on `main` or `develop` under any circumstance, including for the sole contributor.
+> All changes must go through a pull request, which ensures the CI pipeline runs before any merge.
+
+### 5.2 CI trigger configuration
+
+The CI pipeline must be triggered on pull requests targeting `main` and `develop` to enable status check enforcement.
+
+```yaml
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+```
+
+Without the `pull_request` trigger, GitHub cannot block a merge on CI failure.
+
