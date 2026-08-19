@@ -1,0 +1,52 @@
+# TECH-003 — Cross-Cutting / Authentication / back
+
+**Type:** Technical task
+**Version:** V1
+**Domain:** Cross-Cutting
+**Feature:** Authentication
+**Layer:** `back`
+**Parent story:** [STORY-001](../stories/story-001-login.md)
+**Priority:** `high`
+**Status:** `to do`
+
+---
+
+> **Placement rule:** First super admin provisioning → attached to the first story that requires authentication to be testable end-to-end.
+
+---
+
+## Purpose
+
+Without a super admin account in the database, no login can be tested end-to-end. This task ensures the first super admin is provisioned automatically at startup on a fresh database.
+
+**Architectural reference:** [ADR-017](../../../architecture/adr/adr-017-superadmin-provisioning.md)
+
+---
+
+## Description
+
+- On application startup, check if a super admin account exists in `EventManager_Identity`
+- If none exists, create one from environment variables (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`)
+- Account is created with `MustResetPassword = true` and role `super_admin`
+- If account already exists, provisioning is skipped silently
+- Provisioning runs after migrations are applied
+
+---
+
+## Acceptance Criteria
+
+- [ ] On fresh database startup, super admin account is created automatically
+- [ ] Credentials are read exclusively from environment variables
+- [ ] `MustResetPassword = true` is set on the provisioned account
+- [ ] Role `super_admin` is assigned correctly
+- [ ] Provisioning is idempotent — running twice does not create a duplicate or throw
+
+---
+
+## Implementation Notes
+
+- Provisioning must run after migrations are applied — order of startup operations is critical
+- Use `IHostedService` or startup filter, not a controller endpoint
+- Log provisioning outcome (created / skipped) at `Information` level — never log the password
+
+> **ISO dev/prod rule:** Credentials must come from environment variables. No hardcoded defaults, not even for local development.
