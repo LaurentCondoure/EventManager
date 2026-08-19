@@ -1,4 +1,4 @@
-# STORY-002 — Forced Password Reset Gate
+﻿# STORY-002 â€” Forced Password Reset Gate
 
 **Type:** Story
 **Version:** V1
@@ -19,8 +19,8 @@ so that **I cannot access any other feature until I have changed my password**.
 
 ## Acceptance Criteria
 
-- [ ] Any request to a protected route with `mustResetPassword = true` in token → 403 `PASSWORD_RESET_REQUIRED`
-- [ ] SPA intercepts 403 `PASSWORD_RESET_REQUIRED` → redirect to reset screen regardless of role
+- [ ] Any request to a protected route with `mustResetPassword = true` in token â†’ 403 `PASSWORD_RESET_REQUIRED`
+- [ ] SPA intercepts 403 `PASSWORD_RESET_REQUIRED` â†’ redirect to reset screen regardless of role
 - [ ] No other route is accessible until reset is completed
 - [ ] After reset, user lands on role-appropriate interface without going through login again
 
@@ -28,8 +28,8 @@ so that **I cannot access any other feature until I have changed my password**.
 
 ## Edge Cases
 
-- [ ] User manually navigates to another route while reset is pending → route guard redirects to reset screen
-- [ ] User with `mustResetPassword = true` attempts to call an API route directly → 403 `PASSWORD_RESET_REQUIRED`
+- [ ] User manually navigates to another route while reset is pending â†’ route guard redirects to reset screen
+- [ ] User with `mustResetPassword = true` attempts to call an API route directly â†’ 403 `PASSWORD_RESET_REQUIRED`
 
 ---
 
@@ -52,9 +52,9 @@ so that **I cannot access any other feature until I have changed my password**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-006](../tasks/task-006-auth-reset-gate-back.md) | back | Implement `must_reset_password` middleware |
-| [TASK-007](../tasks/task-007-auth-reset-gate-front.md) | front | Implement route guard for `PASSWORD_RESET_REQUIRED` |
-| [TASK-008](../tasks/task-008-auth-reset-gate-test.md) | test | Unit tests — reset gate middleware and route guard |
+| [TASK-006](task/task-006-auth-reset-gate-back.md) | back | Implement `must_reset_password` middleware |
+| [TASK-007](task/task-007-auth-reset-gate-front.md) | front | Implement route guard for `PASSWORD_RESET_REQUIRED` |
+| [TASK-008](task/task-008-auth-reset-gate-test.md) | test | Unit tests â€” reset gate middleware and route guard |
 
 ---
 
@@ -73,5 +73,5 @@ so that **I cannot access any other feature until I have changed my password**.
 
 ## Notes
 
-- `must_reset_password` is read from the JWT claim — no database call required at the middleware level.
-- The access token carries the claim for up to 10 min after flag is set — accepted limitation documented in the architecture decision.
+- `must_reset_password` is read from the JWT claim â€” no database call required at the middleware level.
+- The access token carries the claim for up to 10 min after flag is set â€” accepted limitation documented in the architecture decision.

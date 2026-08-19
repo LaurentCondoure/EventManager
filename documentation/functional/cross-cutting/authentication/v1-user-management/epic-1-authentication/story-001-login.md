@@ -1,4 +1,4 @@
-# STORY-001 — Login
+﻿# STORY-001 â€” Login
 
 **Type:** Story
 **Version:** V1
@@ -19,23 +19,23 @@ so that **I can access the features corresponding to my role**.
 
 ## Acceptance Criteria
 
-- [ ] Valid credentials → access token (10 min) + refresh token (8h) issued as httpOnly cookies
-- [ ] Valid credentials → role and `mustResetPassword` returned in JSON response body
-- [ ] `mustResetPassword = true` → redirect to password reset screen
-- [ ] Organizer → redirect to event management interface
-- [ ] Admin / super admin → redirect to administration section
-- [ ] Invalid credentials → 401 with generic error message (no information leakage)
-- [ ] Deactivated account → 401 with specific `ACCOUNT_DEACTIVATED` error code
-- [ ] Rate limit exceeded (5/min/IP or 5/min/email) → 429 with `Retry-After` header
+- [ ] Valid credentials â†’ access token (10 min) + refresh token (8h) issued as httpOnly cookies
+- [ ] Valid credentials â†’ role and `mustResetPassword` returned in JSON response body
+- [ ] `mustResetPassword = true` â†’ redirect to password reset screen
+- [ ] Organizer â†’ redirect to event management interface
+- [ ] Admin / super admin â†’ redirect to administration section
+- [ ] Invalid credentials â†’ 401 with generic error message (no information leakage)
+- [ ] Deactivated account â†’ 401 with specific `ACCOUNT_DEACTIVATED` error code
+- [ ] Rate limit exceeded (5/min/IP or 5/min/email) â†’ 429 with `Retry-After` header
 
 ---
 
 ## Edge Cases
 
-- [ ] Account exists but password is wrong → same generic 401 as non-existent account
-- [ ] Both rate limits triggered simultaneously (IP + email) → single 429 response
-- [ ] Login attempt on account with `mustResetPassword = true` → login succeeds, redirect to reset screen (not blocked at login)
-- [ ] Concurrent login attempts from same IP across different accounts → IP rate limit applies globally
+- [ ] Account exists but password is wrong â†’ same generic 401 as non-existent account
+- [ ] Both rate limits triggered simultaneously (IP + email) â†’ single 429 response
+- [ ] Login attempt on account with `mustResetPassword = true` â†’ login succeeds, redirect to reset screen (not blocked at login)
+- [ ] Concurrent login attempts from same IP across different accounts â†’ IP rate limit applies globally
 
 ---
 
@@ -51,9 +51,9 @@ so that **I can access the features corresponding to my role**.
 
 | Depends on | Type | Reason |
 |---|---|---|
-| [TECH-001](../tech/tech-001-identity-setup-back.md) | Tech | ASP.NET Core Identity must be configured before any authentication endpoint can be implemented |
-| [TECH-002](../tech/tech-002-efcore-migrations-db.md) | Tech | EF Core + Identity schema migrations must be applied before user data can be read |
-| [TECH-003](../tech/tech-003-superadmin-provisioning-back.md) | Tech | First super admin must be provisioned before any login can be tested end-to-end |
+| [TECH-001](tech/tech-001-identity-setup-back.md) | Tech | ASP.NET Core Identity must be configured before any authentication endpoint can be implemented |
+| [TECH-002](tech/tech-002-efcore-migrations-db.md) | Tech | EF Core + Identity schema migrations must be applied before user data can be read |
+| [TECH-003](tech/tech-003-superadmin-provisioning-back.md) | Tech | First super admin must be provisioned before any login can be tested end-to-end |
 
 ---
 
@@ -61,14 +61,14 @@ so that **I can access the features corresponding to my role**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TECH-001](../tech/tech-001-identity-setup-back.md) | back | Configure ASP.NET Core Identity |
-| [TECH-002](../tech/tech-002-efcore-migrations-db.md) | db | EF Core setup + initial Identity schema migrations |
-| [TECH-003](../tech/tech-003-superadmin-provisioning-back.md) | back | First super admin provisioning at startup |
-| [TASK-001](../tasks/task-001-auth-login-back.md) | back | Implement POST /auth/login endpoint |
-| [TASK-002](../tasks/task-002-auth-ratelimit-back.md) | back | Implement IP + email rate limiting on POST /auth/login |
-| [TASK-003](../tasks/task-003-auth-login-front.md) | front | Implement login page + form validation |
-| [TASK-004](../tasks/task-004-auth-redirect-front.md) | front | Implement role-based redirect post-login |
-| [TASK-005](../tasks/task-005-auth-login-test.md) | test | Unit tests — login service |
+| [TECH-001](tech/tech-001-identity-setup-back.md) | back | Configure ASP.NET Core Identity |
+| [TECH-002](tech/tech-002-efcore-migrations-db.md) | db | EF Core setup + initial Identity schema migrations |
+| [TECH-003](tech/tech-003-superadmin-provisioning-back.md) | back | First super admin provisioning at startup |
+| [TASK-001](task/task-001-auth-login-back.md) | back | Implement POST /auth/login endpoint |
+| [TASK-002](task/task-002-auth-ratelimit-back.md) | back | Implement IP + email rate limiting on POST /auth/login |
+| [TASK-003](task/task-003-auth-login-front.md) | front | Implement login page + form validation |
+| [TASK-004](task/task-004-auth-redirect-front.md) | front | Implement role-based redirect post-login |
+| [TASK-005](task/task-005-auth-login-test.md) | test | Unit tests â€” login service |
 
 ---
 

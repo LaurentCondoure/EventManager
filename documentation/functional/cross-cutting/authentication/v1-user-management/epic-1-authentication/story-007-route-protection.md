@@ -1,4 +1,4 @@
-# STORY-007 — Route Protection
+﻿# STORY-007 â€” Route Protection
 
 **Type:** Story
 **Version:** V1
@@ -22,15 +22,15 @@ so that **the application is never accessible without authentication**.
 - [ ] Every protected route returns 401 if no valid session exists
 - [ ] `POST /auth/login` is the only fully public route
 - [ ] Auth routes (`/auth/refresh`, `/auth/logout`, `/auth/me`, `/auth/reset-password`) accept requests with cookies but do not require a valid access token
-- [ ] RBAC enforced on all protected routes — role mismatch → 403
+- [ ] RBAC enforced on all protected routes â€” role mismatch â†’ 403
 - [ ] SPA route guards prevent navigation to protected views without a valid `authStore` session
 
 ---
 
 ## Edge Cases
 
-- [ ] Direct URL navigation to a protected route without session → 401 from API, redirect to login from SPA
-- [ ] Authenticated user navigates to a route outside their role → 403 from API, SPA guard blocks navigation
+- [ ] Direct URL navigation to a protected route without session â†’ 401 from API, redirect to login from SPA
+- [ ] Authenticated user navigates to a route outside their role â†’ 403 from API, SPA guard blocks navigation
 
 ---
 
@@ -53,9 +53,9 @@ so that **the application is never accessible without authentication**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-021](../tasks/task-021-auth-rbac-back.md) | back | Configure RBAC policies on all protected routes |
-| [TASK-022](../tasks/task-022-auth-guards-front.md) | front | Implement SPA route guards |
-| [TASK-023](../tasks/task-023-auth-rbac-test.md) | test | Unit tests — RBAC enforcement and route guard behavior |
+| [TASK-021](task/task-021-auth-rbac-back.md) | back | Configure RBAC policies on all protected routes |
+| [TASK-022](task/task-022-auth-guards-front.md) | front | Implement SPA route guards |
+| [TASK-023](task/task-023-auth-rbac-test.md) | test | Unit tests â€” RBAC enforcement and route guard behavior |
 
 ---
 
@@ -74,5 +74,5 @@ so that **the application is never accessible without authentication**.
 
 ## Notes
 
-- No endpoint is left without an authorization attribute — opt-in to public, not opt-out.
-- `super_admin` inherits all `admin` permissions, `admin` inherits all `organizer` permissions — model explicitly in policy definitions.
+- No endpoint is left without an authorization attribute â€” opt-in to public, not opt-out.
+- `super_admin` inherits all `admin` permissions, `admin` inherits all `organizer` permissions â€” model explicitly in policy definitions.

@@ -7,8 +7,8 @@
 **Last updated:** 2026-08-18
 
 **Architectural references:**
-- [ADR-016 — Authorisation model](../../adr/adr-016-authorisation-model.md)
-- [ADR-017 — First super admin provisioning](../../adr/adr-017-superadmin-provisioning.md)
+- [ADR-016 — Authorisation model](../adr/security/adr-016-authorisation-model.md)
+- [ADR-017 — First super admin provisioning](../adr/security/adr-017-first-super-admin-provisioning.md)
 
 **Related design documents:**
 - [design-authentication.md](design-authentication.md) — session lifecycle, force reset flow

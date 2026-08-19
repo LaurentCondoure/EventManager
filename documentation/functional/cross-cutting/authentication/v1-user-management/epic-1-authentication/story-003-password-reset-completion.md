@@ -1,4 +1,4 @@
-# STORY-003 — Password Reset Completion
+﻿# STORY-003 â€” Password Reset Completion
 
 **Type:** Story
 **Version:** V1
@@ -19,18 +19,18 @@ so that **I can recover full access to my account**.
 
 ## Acceptance Criteria
 
-- [ ] Current password must be provided and verified → 400 if incorrect
-- [ ] New password must comply with the password policy → 400 with policy error if not
-- [ ] New password must not be one of the last 5 passwords → 400 `PASSWORD_REUSE` if it is
-- [ ] On success → `must_reset_password` flag cleared, fresh token pair issued, redirect to role-appropriate interface
+- [ ] Current password must be provided and verified â†’ 400 if incorrect
+- [ ] New password must comply with the password policy â†’ 400 with policy error if not
+- [ ] New password must not be one of the last 5 passwords â†’ 400 `PASSWORD_REUSE` if it is
+- [ ] On success â†’ `must_reset_password` flag cleared, fresh token pair issued, redirect to role-appropriate interface
 
 ---
 
 ## Edge Cases
 
-- [ ] User submits same password as current → rejected as reuse (last 5 check)
-- [ ] User submits valid new password but current password is wrong → 400, no change applied
-- [ ] Token expires during reset form interaction → silent renewal handles it (STORY-004)
+- [ ] User submits same password as current â†’ rejected as reuse (last 5 check)
+- [ ] User submits valid new password but current password is wrong â†’ 400, no change applied
+- [ ] Token expires during reset form interaction â†’ silent renewal handles it (STORY-004)
 
 ---
 
@@ -54,9 +54,9 @@ so that **I can recover full access to my account**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-009](../tasks/task-009-auth-reset-completion-back.md) | back | Implement `POST /auth/reset-password` endpoint |
-| [TASK-010](../tasks/task-010-auth-reset-completion-front.md) | front | Implement password reset form |
-| [TASK-011](../tasks/task-011-auth-reset-completion-test.md) | test | Unit tests — password reset service |
+| [TASK-009](task/task-009-auth-reset-completion-back.md) | back | Implement `POST /auth/reset-password` endpoint |
+| [TASK-010](task/task-010-auth-reset-completion-front.md) | front | Implement password reset form |
+| [TASK-011](task/task-011-auth-reset-completion-test.md) | test | Unit tests â€” password reset service |
 
 ---
 
@@ -75,5 +75,5 @@ so that **I can recover full access to my account**.
 
 ## Notes
 
-- Password policy is configured in TECH-001 via `IdentityOptions` — must be defined before this story is developed.
+- Password policy is configured in TECH-001 via `IdentityOptions` â€” must be defined before this story is developed.
 - `POST /auth/reset-password` must be exempt from the `must_reset_password` middleware (TASK-006).

@@ -1,17 +1,17 @@
-# TECH-002 — Cross-Cutting / Authentication / db
+﻿# TECH-002 â€” Cross-Cutting / Authentication / db
 
 **Type:** Technical task
 **Version:** V1
 **Domain:** Cross-Cutting
 **Feature:** Authentication
 **Layer:** `db`
-**Parent story:** [STORY-001](../stories/story-001-login.md)
+**Parent story:** [STORY-001](../story-001-login.md)
 **Priority:** `high`
 **Status:** `to do`
 
 ---
 
-> **Placement rule:** EF Core migration → attached to the first story that reads or writes to the database.
+> **Placement rule:** EF Core migration â†’ attached to the first story that reads or writes to the database.
 
 ---
 
@@ -19,7 +19,7 @@
 
 Without the Identity schema applied to the database, no user data can be read or written. This task creates the initial migrations and establishes the `EventManager_Identity` schema.
 
-**Architectural reference:** [ADR-015](../../../architecture/adr/adr-015-identity-schema-isolation.md)
+**Architectural reference:** [ADR-015](../../../../../../architecture/adr/architecture/adr-015-identity-schema-isolation.md)
 
 ---
 
@@ -48,7 +48,7 @@ Without the Identity schema applied to the database, no user data can be read or
 ## Implementation Notes
 
 - `ConsumedAt` on `RefreshTokens` is required for token reuse detection (STORY-004)
-- `PasswordHistory` retains the last 5 hashed passwords per user — hashing must use the same algorithm as ASP.NET Core Identity (`PBKDF2`)
-- Schema must be isolated — no cross-schema foreign keys
+- `PasswordHistory` retains the last 5 hashed passwords per user â€” hashing must use the same algorithm as ASP.NET Core Identity (`PBKDF2`)
+- Schema must be isolated â€” no cross-schema foreign keys
 
 > **ISO dev/prod rule:** Connection string must be passed via environment variable. No hardcoded values.

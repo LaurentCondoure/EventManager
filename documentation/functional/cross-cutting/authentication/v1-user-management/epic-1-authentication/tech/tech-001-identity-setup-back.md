@@ -1,17 +1,17 @@
-# TECH-001 — Cross-Cutting / Authentication / back
+﻿# TECH-001 â€” Cross-Cutting / Authentication / back
 
 **Type:** Technical task
 **Version:** V1
 **Domain:** Cross-Cutting
 **Feature:** Authentication
 **Layer:** `back`
-**Parent story:** [STORY-001](../stories/story-001-login.md)
+**Parent story:** [STORY-001](../story-001-login.md)
 **Priority:** `high`
 **Status:** `to do`
 
 ---
 
-> **Placement rule:** ASP.NET Core Identity setup → attached to the first story that requires authentication.
+> **Placement rule:** ASP.NET Core Identity setup â†’ attached to the first story that requires authentication.
 
 ---
 
@@ -19,7 +19,7 @@
 
 Without ASP.NET Core Identity configured, no authentication endpoint can be implemented. This task establishes the identity framework that all authentication stories in V1 depend on.
 
-**Architectural reference:** [ADR-014](../../../architecture/adr/adr-014-authentication-mechanism.md)
+**Architectural reference:** [ADR-014](../../../../../../architecture/adr/security/adr-014-authentication-mechanism.md)
 
 ---
 
@@ -48,8 +48,8 @@ Without ASP.NET Core Identity configured, no authentication endpoint can be impl
 
 ## Implementation Notes
 
-- Password policy must be defined here and applied via `IdentityOptions` — this unblocks STORY-003
-- `IIdentityService` is the only interface exposed to business code — no leakage of Identity internals
+- Password policy must be defined here and applied via `IdentityOptions` â€” this unblocks STORY-003
+- `IIdentityService` is the only interface exposed to business code â€” no leakage of Identity internals
 - Cookie configuration: `HttpOnly`, `Secure`, `SameSite=Strict`
 
 > **ISO dev/prod rule:** JWT secret and token TTLs must be passed via environment variables. No hardcoded values.

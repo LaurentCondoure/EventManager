@@ -1,4 +1,4 @@
-# STORY-005 — Logout
+﻿# STORY-005 â€” Logout
 
 **Type:** Story
 **Version:** V1
@@ -19,7 +19,7 @@ so that **my session is terminated securely**.
 
 ## Acceptance Criteria
 
-- [ ] `POST /auth/logout` → refresh token revoked server-side
+- [ ] `POST /auth/logout` â†’ refresh token revoked server-side
 - [ ] Cookies cleared on response
 - [ ] `authStore` cleared client-side
 - [ ] User redirected to login page
@@ -28,8 +28,8 @@ so that **my session is terminated securely**.
 
 ## Edge Cases
 
-- [ ] Logout called with already-expired refresh token → server still returns 200, cookies cleared
-- [ ] Logout called with no cookie → 200, no error surfaced to user
+- [ ] Logout called with already-expired refresh token â†’ server still returns 200, cookies cleared
+- [ ] Logout called with no cookie â†’ 200, no error surfaced to user
 
 ---
 
@@ -51,9 +51,9 @@ so that **my session is terminated securely**.
 
 | Reference | Layer | Description |
 |---|---|---|
-| [TASK-015](../tasks/task-015-auth-logout-back.md) | back | Implement `POST /auth/logout` endpoint |
-| [TASK-016](../tasks/task-016-auth-logout-front.md) | front | Implement logout action and redirect |
-| [TASK-017](../tasks/task-017-auth-logout-test.md) | test | Unit tests — logout service |
+| [TASK-015](task/task-015-auth-logout-back.md) | back | Implement `POST /auth/logout` endpoint |
+| [TASK-016](task/task-016-auth-logout-front.md) | front | Implement logout action and redirect |
+| [TASK-017](task/task-017-auth-logout-test.md) | test | Unit tests â€” logout service |
 
 ---
 
@@ -72,5 +72,5 @@ so that **my session is terminated securely**.
 
 ## Notes
 
-- Revocation must happen before cookies are cleared — order of operations is critical.
-- `authStore` must be cleared even if the API call fails — client-side session must always be terminated.
+- Revocation must happen before cookies are cleared â€” order of operations is critical.
+- `authStore` must be cleared even if the API call fails â€” client-side session must always be terminated.
