@@ -4,9 +4,38 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
+
+  # ── Branch policy ────────────────────────────────────────────────────────
+  check-source-branch:
+    name: Validate source branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check source branch for main
+        if: github.base_ref == 'main'
+        run: |
+          SOURCE="${{ github.head_ref }}"
+          if [[ "$SOURCE" != release-* && "$SOURCE" != hotfix-* ]]; then
+            echo "❌ Branch '$SOURCE' is not allowed to merge into main."
+            echo "Only release-* and hotfix-* branches can target main."
+            exit 1
+          fi
+          echo "✅ Source branch '$SOURCE' is authorized to target main."
+
+      - name: Check source branch for develop
+        if: github.base_ref == 'develop'
+        run: |
+          SOURCE="${{ github.head_ref }}"
+          if [[ "$SOURCE" != feature-* && "$SOURCE" != docs-* && "$SOURCE" != release-* && "$SOURCE" != hotfix-* ]]; then
+            echo "❌ Branch '$SOURCE' is not allowed to merge into develop."
+            echo "Only feature-*, docs-*, release-* and hotfix-* branches can target develop."
+            exit 1
+          fi
+          echo "✅ Source branch '$SOURCE' is authorized to target develop."
 
   # ── Documentation ─────────────────────────────────────────────────────────
   docs-link-check:
