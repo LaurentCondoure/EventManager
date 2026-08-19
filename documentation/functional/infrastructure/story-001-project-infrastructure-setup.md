@@ -3,7 +3,7 @@
 **Type:** Story — Technical
 **Version:** V1
 **Domain:** infrastructure
-**Scoping note:** [scoping-v1-user-management.md](../scoping-v1-user-management.md)
+**Scoping note:** [scoping-v1-user-management.md](../cross-cutting/authentication/scoping-v1-user-management.md)
 **Priority:** `high`
 **Status:** `in progress`
 
