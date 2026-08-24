@@ -8,4 +8,7 @@ public sealed class DatabaseOptions
 
     /// <summary>Connection string for the primary SQL Server database.</summary>
     public string DefaultConnection { get; set; } = string.Empty;
+
+    /// <summary>Connection string for the <c>EventManager_Identity</c> database (ADR-015).</summary>
+    public string IdentityConnection { get; set; } = string.Empty;
 }

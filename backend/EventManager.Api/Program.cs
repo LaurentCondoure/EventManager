@@ -1,25 +1,35 @@
 using EventManager.Api;
+using EventManager.Api.Auth;
 using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Events.Interfaces;
 using EventManager.Domain.Events.Services;
+using EventManager.Domain.Identity.Interfaces;
+using EventManager.Infrastructure.Identity;
 using EventManager.Infrastructure.Mappings;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.Infrastructure.Search;
 using AppRateLimiterOptions = EventManager.Infrastructure.Options.RateLimiterOptions;
 
+using System.Text;
 using System.Threading.RateLimiting;
 
 using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
+
 
 
 MongoDbMappings.Register();
@@ -63,6 +73,85 @@ builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(Dat
 builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection(RedisOptions.SectionName));
 builder.Services.Configure<MongoDbOptions>(builder.Configuration.GetSection(MongoDbOptions.SectionName));
 builder.Services.Configure<ElasticsearchOptions>(builder.Configuration.GetSection(ElasticsearchOptions.SectionName));
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+
+// Options are resolved from the built container (not read eagerly off builder.Configuration) so that
+// test hosts overriding configuration via WithWebHostBuilder(...) are honoured — an eager read here
+// would capture configuration as it stood before those overrides are spliced in.
+builder.Services.AddDbContext<EventManagerIdentityDbContext>((sp, options) =>
+    options.UseSqlServer(sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.IdentityConnection));
+
+// TECH-002 adds the RefreshTokens/PasswordHistory tables and the initial migration on this context.
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+{
+    // Password policy — minimal complexity per scoping-v1-user-management.md.
+    options.Password.RequiredLength         = 8;
+    options.Password.RequireDigit           = true;
+    options.Password.RequireLowercase       = true;
+    options.Password.RequireUppercase       = false;
+    options.Password.RequireNonAlphanumeric = false;
+
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan  = TimeSpan.FromMinutes(5);
+    options.Lockout.AllowedForNewUsers      = true;
+
+    options.User.RequireUniqueEmail = true;
+})
+    .AddEntityFrameworkStores<EventManagerIdentityDbContext>()
+    .AddDefaultTokenProviders();
+
+// AddIdentity() defaults the authentication scheme to its own cookie scheme (IdentityConstants.ApplicationScheme).
+// ADR-014 uses JWT in httpOnly cookies instead, so JWT Bearer must be forced as the default scheme here.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme             = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer()
+    // Static system key (ADR-021) — lets an automated caller authenticate without the human
+    // login/cookie flow. Not the default scheme: routes opt in explicitly alongside JWT Bearer.
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+        ApiKeyAuthenticationDefaults.AuthenticationScheme, _ => { });
+
+builder.Services.Configure<ApiKeyOptions>(builder.Configuration.GetSection(ApiKeyOptions.SectionName));
+
+// Post-configure (rather than the AddJwtBearer(options => ...) delegate) so JwtOptions is resolved
+// from the built container, honouring test-host configuration overrides — see the comment above
+// AddDbContext<EventManagerIdentityDbContext> for why an eager builder.Configuration read is avoided.
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IOptions<JwtOptions>>((options, jwtOptions) =>
+    {
+        var jwtConfig = jwtOptions.Value;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidIssuer              = jwtConfig.Issuer,
+            ValidateAudience         = true,
+            ValidAudience            = jwtConfig.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret)),
+            ValidateLifetime         = true,
+            ClockSkew                = TimeSpan.Zero
+        };
+
+        // The access token travels in an httpOnly cookie, never in the Authorization header (ADR-014).
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue(AuthCookieNames.AccessToken, out var accessToken))
+                    context.Token = accessToken;
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(sp.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString));
@@ -111,6 +200,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseExceptionHandler();
 app.UseCors("Frontend");
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())

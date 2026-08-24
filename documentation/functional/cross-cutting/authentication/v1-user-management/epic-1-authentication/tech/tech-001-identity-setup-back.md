@@ -1,4 +1,4 @@
-﻿# TECH-001 â€” Cross-Cutting / Authentication / back
+﻿# TECH-001 Cross-Cutting / Authentication / back
 
 **Type:** Technical task
 **Version:** V1
@@ -48,8 +48,8 @@ Without ASP.NET Core Identity configured, no authentication endpoint can be impl
 
 ## Implementation Notes
 
-- Password policy must be defined here and applied via `IdentityOptions` â€” this unblocks STORY-003
-- `IIdentityService` is the only interface exposed to business code â€” no leakage of Identity internals
+- Password policy must be defined here and applied via `IdentityOptions`, this unblocks STORY-003
+- `IIdentityService` is the only interface exposed to business code, no leakage of Identity internals
 - Cookie configuration: `HttpOnly`, `Secure`, `SameSite=Strict`
 
 > **ISO dev/prod rule:** JWT secret and token TTLs must be passed via environment variables. No hardcoded values.
