@@ -1,4 +1,4 @@
-﻿using EventManager.Infrastructure.Options;
+using EventManager.Infrastructure.Options;
 using EventManager.Domain.Events.Entities;
 using EventManager.Domain.Events.Interfaces;
 using EventManager.Infrastructure.Repositories;
@@ -46,14 +46,14 @@ public class CachedEventRepositoryTests
         _sut = new CachedEventRepository(_innerMock.Object, redisMock.Object, options);
     }
 
-    // ── GetAllAsync ──────────────────────────────────────────────────────────
+    // -- GetAllAsync ----------------------------------------------------------
 
     [Fact]
     public async Task GetAllAsync_CacheMiss_CallsInnerAndStoresResultWithVersionedKey()
     {
         // Arrange
         var events = new List<Event> { BuildEvent() };
-        SetupVersionKey(RedisValue.Null);         // version absent → defaults to 0
+        SetupVersionKey(RedisValue.Null);         // version absent ? defaults to 0
         SetupPageKey(RedisValue.Null);            // page key miss
         _innerMock.Setup(r => r.GetAllAsync(1, 20)).ReturnsAsync(events);
         SetupStringSet();
@@ -102,13 +102,13 @@ public class CachedEventRepositoryTests
         // Act
         await _sut.GetAllAsync();
 
-        // Assert — the page lookup must use the version returned by Redis
+        // Assert � the page lookup must use the version returned by Redis
         _dbMock.Verify(d => d.StringGetAsync(
             It.Is<RedisKey>(k => ((string)k!).Contains(":v5")),
             It.IsAny<CommandFlags>()), Times.Once);
     }
 
-    // ── GetByIdAsync ─────────────────────────────────────────────────────────
+    // -- GetByIdAsync ---------------------------------------------------------
 
     [Fact]
     public async Task GetByIdAsync_CacheHit_ReturnsFromCacheWithoutCallingInner()
@@ -173,7 +173,7 @@ public class CachedEventRepositoryTests
         result.Should().BeNull();
     }
 
-    // ── CreateAsync ──────────────────────────────────────────────────────────
+    // -- CreateAsync ----------------------------------------------------------
 
     [Fact]
     public async Task CreateAsync_DelegatesToInnerAndReturnsId()
@@ -207,7 +207,7 @@ public class CachedEventRepositoryTests
             It.IsAny<CommandFlags>()), Times.Once);
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // -- Helpers --------------------------------------------------------------
 
     private static Event BuildEvent() => new()
     {
@@ -236,7 +236,7 @@ public class CachedEventRepositoryTests
     /// <remarks>
     /// StackExchange.Redis 2.12.x introduced a new priority overload:     /// it is the one that the compiler chooses for StringSetAsync(key, value, Ttl)
     /// Task<bool> StringSetAsync(RedisKey key, RedisValue value, Expiration expiry = default, ValueCondition when = default, CommandFlags flags = CommandFlags.None);
-    /// TimeSpan implicitly converts to Expiration.The old overloads with TimeSpan? no longer have default values — so they can no longer be resolved with 3 arguments.
+    /// TimeSpan implicitly converts to Expiration.The old overloads with TimeSpan? no longer have default values � so they can no longer be resolved with 3 arguments.
     /// </remarks>
     private void SetupStringSet() =>
         _dbMock.Setup(d => d.StringSetAsync(
