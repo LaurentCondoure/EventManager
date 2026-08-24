@@ -5,9 +5,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- SignInManager/UserManager pull in ASP.NET Core Http/Auth types not available to a plain class library. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.3.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.7" />
     <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
