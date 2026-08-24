@@ -135,12 +135,23 @@ Both passwords must meet SQL Server complexity requirements: uppercase, lowercas
 
 ### Configuration
 
-SQL Server connection string via User Secrets:
+SQL Server connection strings via User Secrets — one per database (ADR-015):
 
 ```bash
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
   "Server=localhost,1433;Database=EventManagement;User Id=eventmanagement_user;Password=<APP_PASSWORD>;TrustServerCertificate=True" \
   --project backend/EventManager.Api
+
+dotnet user-secrets set "ConnectionStrings:IdentityConnection" \
+  "Server=localhost,1433;Database=EventManager_Identity;User Id=eventmanagement_user;Password=<APP_PASSWORD>;TrustServerCertificate=True" \
+  --project backend/EventManager.Api
+```
+
+JWT signing secret and the system API key (ADR-014, ADR-021) — never hardcoded, local-only values here:
+
+```bash
+dotnet user-secrets set "Jwt:Secret" "<a random string, 32+ characters>" --project backend/EventManager.Api
+dotnet user-secrets set "ApiKey:Value" "<a random string>" --project backend/EventManager.Api
 ```
 
 ### Infrastructure
@@ -158,7 +169,7 @@ Once running, the Varnish HTTP cache is available on port `8080` and proxies req
 ### Run
 
 ```bash
-dotnet run --project backend/EventManager.Api
+dotnet run --project backend/EventManager.Api --launch-profile https
 ```
 
 
@@ -192,7 +203,7 @@ dotnet run --project backend/EventManager.Api
 
 | HTTP Verb | Endpoint | Description | HTTP Status |
 |---|---|---|---|
-| `GET` | `/health` | Health check | `200` |
+| `GET` | `/health` | Health check — requires JWT cookie or system API key (ADR-021) | `200`, `401` |
 | `POST` | `/admin/search/reindex` | Rebuild Elasticsearch index from SQL Server | `200` |
 
 Full contract available through Swagger at `https://localhost:{port}/swagger`.

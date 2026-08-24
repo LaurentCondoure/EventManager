@@ -1,4 +1,4 @@
-﻿# TASK-023 â€” Cross-Cutting / Authentication / test
+# TASK-023 — Cross-Cutting / Authentication / test
 
 **Type:** Task
 **Version:** V1
@@ -15,8 +15,8 @@
 
 Write unit tests for RBAC enforcement and route guards.
 
-- Unauthenticated request to protected route â†’ 401
-- Authenticated request with correct role â†’ passes
-- Authenticated request with insufficient role â†’ 403
-- SPA navigation without session â†’ redirect to login
-- SPA navigation with insufficient role â†’ redirect to role-appropriate home
+- Unauthenticated request to protected route → 401
+- Authenticated request with correct role → passes
+- Authenticated request with insufficient role → 403
+- SPA navigation without session → redirect to login
+- SPA navigation with insufficient role → redirect to role-appropriate home
