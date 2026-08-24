@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 
-using EventManager.Domain.DTOs;
-using EventManager.Domain.Entities;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.DTOs;
+using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Events.Interfaces;
 using EventManager.IntegrationTests.Fakes;
 
 using Elastic.Clients.Elasticsearch;

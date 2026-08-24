@@ -1,4 +1,4 @@
-namespace EventManager.Domain.DTOs;
+namespace EventManager.Domain.Events.DTOs;
 
 /// <summary>Read model returned by the API for an event.</summary>
 public record EventDto(

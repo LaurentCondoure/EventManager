@@ -1,6 +1,6 @@
-using EventManager.Domain.Entities;
+using EventManager.Domain.Events.Entities;
 
-namespace EventManager.Domain.Interfaces;
+namespace EventManager.Domain.Events.Interfaces;
 
 /// <summary>
 /// Data access contract for event comments (MongoDB).

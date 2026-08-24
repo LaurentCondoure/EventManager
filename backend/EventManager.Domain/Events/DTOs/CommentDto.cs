@@ -1,4 +1,4 @@
-namespace EventManager.Domain.DTOs;
+namespace EventManager.Domain.Events.DTOs;
 
 /// <summary>
 /// Read model returned by the API for a comment.

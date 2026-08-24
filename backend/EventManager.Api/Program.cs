@@ -1,8 +1,8 @@
 using EventManager.Api;
 using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
-using EventManager.Domain.Interfaces;
-using EventManager.Domain.Services;
+using EventManager.Domain.Events.Interfaces;
+using EventManager.Domain.Events.Services;
 using EventManager.Infrastructure.Mappings;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
+
 
 MongoDbMappings.Register();
 

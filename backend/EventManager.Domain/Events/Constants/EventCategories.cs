@@ -1,4 +1,4 @@
-namespace EventManager.Domain.Constants;
+namespace EventManager.Domain.Events.Constants;
 
 public static class EventCategories
 {

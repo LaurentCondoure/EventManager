@@ -1,5 +1,5 @@
-using EventManager.Domain.Constants;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.Constants;
+using EventManager.Domain.Events.Interfaces;
 
 namespace EventManager.Api;
 

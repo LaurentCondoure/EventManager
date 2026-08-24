@@ -1,4 +1,4 @@
-using EventManager.Domain.Constants;
+using EventManager.Domain.Events.Constants;
 using FluentAssertions;
 
 namespace EventManager.UnitTests.Domain;

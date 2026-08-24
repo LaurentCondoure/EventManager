@@ -1,5 +1,5 @@
-using EventManager.Domain.Entities;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Events.Interfaces;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Queries;
 

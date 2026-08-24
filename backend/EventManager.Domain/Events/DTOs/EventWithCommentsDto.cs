@@ -1,4 +1,4 @@
-namespace EventManager.Domain.DTOs;
+namespace EventManager.Domain.Events.DTOs;
 
 /// <summary>
 /// An event combined with its comments — aggregates SQL Server and MongoDB data.
