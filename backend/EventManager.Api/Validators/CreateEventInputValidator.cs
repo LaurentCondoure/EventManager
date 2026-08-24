@@ -1,5 +1,5 @@
-using EventManager.Domain.Constants;
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.Constants;
+using EventManager.Domain.Events.DTOs;
 using FluentValidation;
 
 namespace EventManager.Api.Validators;

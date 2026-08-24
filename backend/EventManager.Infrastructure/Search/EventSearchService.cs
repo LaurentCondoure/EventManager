@@ -1,7 +1,7 @@
 
-using EventManager.Domain.Entities;
-using EventManager.Domain.DTOs;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Events.DTOs;
+using EventManager.Domain.Events.Interfaces;
 
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;

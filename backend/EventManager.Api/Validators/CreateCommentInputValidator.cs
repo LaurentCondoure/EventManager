@@ -1,4 +1,4 @@
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.DTOs;
 using FluentValidation;
 
 namespace EventManager.Api.Validators;

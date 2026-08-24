@@ -1,4 +1,4 @@
-using EventManager.Domain.Entities;
+using EventManager.Domain.Events.Entities;
 using EventManager.Infrastructure.Search;
 using EventManager.InfrastructureTests.Fixtures;
 using FluentAssertions;

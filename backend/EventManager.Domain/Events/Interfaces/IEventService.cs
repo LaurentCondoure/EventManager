@@ -1,7 +1,7 @@
-using EventManager.Domain.DTOs;
-using EventManager.Domain.Entities;
+using EventManager.Domain.Events.DTOs;
+using EventManager.Domain.Events.Entities;
 
-namespace EventManager.Domain.Interfaces;
+namespace EventManager.Domain.Events.Interfaces;
 
 /// <summary>Business logic contract for event management.</summary>
 public interface IEventService

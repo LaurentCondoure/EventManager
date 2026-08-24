@@ -1,5 +1,5 @@
 using EventManager.Api.Validators;
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.DTOs;
 using FluentValidation.TestHelper;
 
 namespace EventManager.UnitTests.Validators;

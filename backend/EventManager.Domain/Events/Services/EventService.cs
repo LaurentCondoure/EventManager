@@ -1,12 +1,12 @@
-using EventManager.Domain.Entities;
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Events.DTOs;
 using EventManager.Domain.Exceptions;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
 
-namespace EventManager.Domain.Services;
+namespace EventManager.Domain.Events.Services;
 
 /// <summary>Implements business logic for event management.</summary>
 public class EventService(

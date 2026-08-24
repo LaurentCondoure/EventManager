@@ -1,4 +1,4 @@
-namespace EventManager.Domain.Entities;
+namespace EventManager.Domain.Events.Entities;
 
 /// <summary>A user comment and rating left on an event. Stored in MongoDB.</summary>
 public class EventComment

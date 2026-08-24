@@ -1,7 +1,7 @@
 using EventManager.Api.Controllers;
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.DTOs;
 using EventManager.Domain.Exceptions;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.Interfaces;
 
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;

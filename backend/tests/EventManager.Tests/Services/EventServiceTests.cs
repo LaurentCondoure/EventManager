@@ -1,8 +1,8 @@
-using EventManager.Domain.Entities;
-using EventManager.Domain.DTOs;
+using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Events.DTOs;
 using EventManager.Domain.Exceptions;
-using EventManager.Domain.Interfaces;
-using EventManager.Domain.Services;
+using EventManager.Domain.Events.Interfaces;
+using EventManager.Domain.Events.Services;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

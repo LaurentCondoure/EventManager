@@ -1,5 +1,5 @@
-using EventManager.Domain.DTOs;
-using EventManager.Domain.Interfaces;
+using EventManager.Domain.Events.DTOs;
+using EventManager.Domain.Events.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
