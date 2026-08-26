@@ -11,4 +11,10 @@ public sealed class DatabaseOptions
 
     /// <summary>Connection string for the <c>EventManager_Identity</c> database (ADR-015).</summary>
     public string IdentityConnection { get; set; } = string.Empty;
+
+    /// <summary>Privileged connection string used only while applying EventManager migrations.</summary>
+    public string DefaultMigrationConnection { get; set; } = string.Empty;
+
+    /// <summary>Privileged connection string used only while applying Identity migrations.</summary>
+    public string IdentityMigrationConnection { get; set; } = string.Empty;
 }
