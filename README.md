@@ -41,7 +41,7 @@ This project supported an intensive practice period designed to complete the han
 
 ### Backend depth
 - .NET 8 / ASP.NET Core API with clean architecture boundaries
-- Dapper data access on SQL Server with explicit query control
+- EF Core data access and migrations on SQL Server
 - MongoDB document modeling for evolving comment structures
 - Serilog structured logging
 ---
@@ -68,7 +68,7 @@ graph TD
 ---
 ## Tech Stack
 
-**Backend** — .NET 8, ASP.NET Core, C#, Dapper, SQL Server, MongoDB, Redis, Elasticsearch  
+**Backend** — .NET 8, ASP.NET Core, C#, EF Core, SQL Server, MongoDB, Redis, Elasticsearch  
 **Frontend** — Vue.js 3, Pinia  
 **Infrastructure** — Docker, Varnish, Terraform  
 **DevOps** — Azure DevOps (pipelines — V2), xUnit, Serilog
@@ -120,32 +120,26 @@ EventManager/
 
 ### Environment
 
-Create the `.env` file from the example and fill in the passwords:
+Create `infrastructure/docker/.env` and set a strong SQL Server `SA_PASSWORD` (minimum 8 characters with uppercase, lowercase, digit and special character):
 
-```bash
-cp .env.example .env
+```text
+SA_PASSWORD=<local-sql-server-password>
 ```
 
-| Variable | Description |
-|---|---|
-| `SA_PASSWORD` | SQL Server SA password (used by Docker to initialise the container) |
-| `APP_PASSWORD` | Application user password — must match the password in your user secrets |
-
-Both passwords must meet SQL Server complexity requirements: uppercase, lowercase, digit, special character, minimum 8 characters.
+The `.env` file is used only by Docker Compose and must not be committed.
 
 ### Configuration
 
-SQL Server connection strings via User Secrets — one per database (ADR-015):
+The API uses separate runtime and migration connections. Configure the four connection strings with User Secrets locally; use environment variables in deployed environments. The migration accounts need DDL permissions, while runtime accounts should only have data access. See the [database deployment runbook](documentation/process/runbook-database-deployment-v1.md) for provisioning.
 
-```bash
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
-  "Server=localhost,1433;Database=EventManagement;User Id=eventmanagement_user;Password=<APP_PASSWORD>;TrustServerCertificate=True" \
-  --project backend/EventManager.Api
-
-dotnet user-secrets set "ConnectionStrings:IdentityConnection" \
-  "Server=localhost,1433;Database=EventManager_Identity;User Id=eventmanagement_user;Password=<APP_PASSWORD>;TrustServerCertificate=True" \
-  --project backend/EventManager.Api
+```powershell
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=EventManager;User Id=eventmanagement_user;Password=<runtime-password>;TrustServerCertificate=True" --project backend/EventManager.Api
+dotnet user-secrets set "ConnectionStrings:IdentityConnection" "Server=localhost,1433;Database=EventManager_Identity;User Id=identity_user;Password=<runtime-password>;TrustServerCertificate=True" --project backend/EventManager.Api
+dotnet user-secrets set "ConnectionStrings:DefaultMigrationConnection" "Server=localhost,1433;Database=EventManager;User Id=eventmanager_migrator;Password=<migration-password>;TrustServerCertificate=True" --project backend/EventManager.Api
+dotnet user-secrets set "ConnectionStrings:IdentityMigrationConnection" "Server=localhost,1433;Database=EventManager_Identity;User Id=identity_migrator;Password=<migration-password>;TrustServerCertificate=True" --project backend/EventManager.Api
 ```
+
+When using PowerShell, prefer single quotes around a connection string if a password contains `$`, so PowerShell does not expand it.
 
 JWT signing secret and the system API key (ADR-014, ADR-021) — never hardcoded, local-only values here:
 
@@ -156,21 +150,23 @@ dotnet user-secrets set "ApiKey:Value" "<a random string>" --project backend/Eve
 
 ### Infrastructure
 
-Start all services and apply database migrations:
+Start all services:
 
 ```bash
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
-The `sql-init` container runs all scripts in `database/migrations/` in order once SQL Server is healthy, then exits.
+The SQL Server container must be healthy before the API starts. The API applies the EF Core migrations for `EventManager` and `EventManager_Identity` through its migration hosted service, using the two migration connection strings.
 
-Once running, the Varnish HTTP cache is available on port `8080` and proxies requests to the API. See [DOCKER.md](documents/technical/DOCKER.md) for service details and verification commands.
+Once running, the Varnish HTTP cache is available on port `8080` and proxies requests to the API. The frontend development server runs on port `5173`.
 
 ### Run
 
 ```bash
 dotnet run --project backend/EventManager.Api --launch-profile https
 ```
+
+The API is available on `https://localhost:7029` and `http://localhost:5256` with the default launch profile. Migration progress is written to the API logs; applied migrations are also recorded in `__EFMigrationsHistory` in each database.
 
 
 
@@ -242,4 +238,5 @@ Test strategy documentation: [TEST_STRATEGY](documents/03-technical/TEST_STRATEG
 | [Architecture](documents/03-technical/Architecture.md) | Implemented component diagrams, data flows (all endpoints) |
 | [Pipelines](documents/03-technical/PIPELINES.md) | Azure DevOps CI/CD pipeline setup and configuration |
 | [Pipeline Workflow](documents/03-technical/PIPELINE_WORKFLOW.md) | Deployment workflow and operator checklist |
+| [Database Deployment Runbook](documentation/process/runbook-database-deployment-v1.md) | SQL Server provisioning and EF Core migration deployment |
 | [AI Usage](AI_USAGE.md) | Transparency statement — how AI was used in this project |

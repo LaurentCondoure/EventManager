@@ -21,12 +21,12 @@ namespace EventManager.IntegrationTests;
 /// Uses WebApplicationFactory to boot the real API in memory.
 /// Replaces SQL Server and Redis with in-memory fakes — no running containers needed.
 /// </summary>
-public class EventsControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class EventsControllerTests : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private readonly HttpClient _client;
     private readonly InMemoryEventRepository _repository;
 
-    public EventsControllerTests(WebApplicationFactory<Program> factory)
+    public EventsControllerTests(IntegrationTestWebApplicationFactory factory)
     {
         _factory    = factory;
         _repository = new InMemoryEventRepository();
@@ -325,10 +325,10 @@ public class EventsControllerTests : IClassFixture<WebApplicationFactory<Program
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly IntegrationTestWebApplicationFactory _factory;
 
     private HttpClient CreateClientWithComments(
-        WebApplicationFactory<Program> factory,
+        IntegrationTestWebApplicationFactory factory,
         IEnumerable<EventComment> comments)
     {
         var commentMock = new Mock<ICommentRepository>();

@@ -18,13 +18,13 @@ namespace EventManager.IntegrationTests;
 /// The in-memory TestServer represent the connection as HTTPS without a real TLS handshake
 /// and relies entirely on the automatic cookie jar, no hand-crafted header.
 /// </summary>
-public class AuthLoginPlaceholderTests : IClassFixture<WebApplicationFactory<Program>>
+public class AuthLoginPlaceholderTests : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private const string TestSecret = "integration-test-signing-key-please-ignore-32bytes+";
 
     private readonly HttpClient _client;
 
-    public AuthLoginPlaceholderTests(WebApplicationFactory<Program> factory)
+    public AuthLoginPlaceholderTests(IntegrationTestWebApplicationFactory factory)
     {
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {

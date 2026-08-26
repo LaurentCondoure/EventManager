@@ -21,7 +21,7 @@ namespace EventManager.IntegrationTests;
 /// the httpOnly cookie is the sole token carrier, and validation is a standalone, in-memory
 /// signature/expiry check — no call into IIdentityService/UserManager per request (ADR-014, ADR-020).
 /// </summary>
-public class JwtBearerConfigurationTests : IClassFixture<WebApplicationFactory<Program>>
+public class JwtBearerConfigurationTests : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private const string TestSecret = "integration-test-signing-key-please-ignore-32bytes+";
     private const string Issuer     = "EventManager";
@@ -29,7 +29,7 @@ public class JwtBearerConfigurationTests : IClassFixture<WebApplicationFactory<P
 
     private readonly JwtBearerOptions _jwtBearerOptions;
 
-    public JwtBearerConfigurationTests(WebApplicationFactory<Program> factory)
+    public JwtBearerConfigurationTests(IntegrationTestWebApplicationFactory factory)
     {
         var configuredFactory = factory.WithWebHostBuilder(builder =>
         {
