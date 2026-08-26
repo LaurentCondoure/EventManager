@@ -64,6 +64,8 @@ mindmap
         test-strategy
         guidelines-doc-001
         guidelines-release-001
+      runbook
+        runbook-database-deployment-v1
       process
         bug-template
         dod-template
@@ -280,6 +282,12 @@ Fill-in-the-blank templates (`[NNN]`, `[Title]`, `[V X]` placeholders) — exclu
 | [`tad-template.md`](documentation/process/tad-template.md) | Technical Architecture Document template |
 | [`task-template.md`](documentation/process/task-template.md) | Implementation task template |
 | [`tech-template.md`](documentation/process/tech-template.md) | Technical task template |
+
+### `documentation/runbook/`
+
+| File | Notes |
+|---|---|
+| [`runbook-database-deployment-v1.md`](documentation/runbook/runbook-database-deployment-v1.md) | SQL Server provisioning and EF Core migration deployment for `EventManager` and `EventManager_Identity` |
 
 ### `documentation/releases/`
 

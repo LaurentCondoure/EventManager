@@ -4,35 +4,22 @@ using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Events.Interfaces;
 using EventManager.Domain.Events.Services;
-using EventManager.Domain.Identity.Interfaces;
-using EventManager.Infrastructure.Identity;
-using EventManager.Infrastructure.Mappings;
+using EventManager.Infrastructure.DependencyInjection;
 using EventManager.Infrastructure.Options;
-using EventManager.Infrastructure.Repositories;
-using EventManager.Infrastructure.Search;
 using AppRateLimiterOptions = EventManager.Infrastructure.Options.RateLimiterOptions;
 
 using System.Text;
 using System.Threading.RateLimiting;
 
-using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MongoDB.Driver;
 using Serilog;
-using StackExchange.Redis;
-
-
-
-MongoDbMappings.Register();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -69,36 +56,8 @@ builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
-builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection(RedisOptions.SectionName));
-builder.Services.Configure<MongoDbOptions>(builder.Configuration.GetSection(MongoDbOptions.SectionName));
-builder.Services.Configure<ElasticsearchOptions>(builder.Configuration.GetSection(ElasticsearchOptions.SectionName));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
-
-// Options are resolved from the built container (not read eagerly off builder.Configuration) so that
-// test hosts overriding configuration via WithWebHostBuilder(...) are honoured — an eager read here
-// would capture configuration as it stood before those overrides are spliced in.
-builder.Services.AddDbContext<EventManagerIdentityDbContext>((sp, options) =>
-    options.UseSqlServer(sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.IdentityConnection));
-
-// TECH-002 adds the RefreshTokens/PasswordHistory tables and the initial migration on this context.
-builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
-{
-    // Password policy — minimal complexity per scoping-v1-user-management.md.
-    options.Password.RequiredLength         = 8;
-    options.Password.RequireDigit           = true;
-    options.Password.RequireLowercase       = true;
-    options.Password.RequireUppercase       = false;
-    options.Password.RequireNonAlphanumeric = false;
-
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.DefaultLockoutTimeSpan  = TimeSpan.FromMinutes(5);
-    options.Lockout.AllowedForNewUsers      = true;
-
-    options.User.RequireUniqueEmail = true;
-})
-    .AddEntityFrameworkStores<EventManagerIdentityDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // AddIdentity() defaults the authentication scheme to its own cookie scheme (IdentityConstants.ApplicationScheme).
 // ADR-014 uses JWT in httpOnly cookies instead, so JWT Bearer must be forced as the default scheme here.
@@ -151,24 +110,6 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IIdentityService, IdentityService>();
-
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(sp.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString));
-
-builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient(sp.GetRequiredService<IOptions<MongoDbOptions>>().Value.ConnectionString));
-
-builder.Services.AddSingleton<ElasticsearchClient>(sp =>
-{
-    var url = sp.GetRequiredService<IOptions<ElasticsearchOptions>>().Value.Url;
-    var settings = new ElasticsearchClientSettings(new Uri(url));
-    return new ElasticsearchClient(settings);
-});
-
-builder.Services.AddScoped<IEventRepository, SqlServerEventRepository>();
-builder.Services.Decorate<IEventRepository, CachedEventRepository>();
-
 //AddRateLimiter does not accept a factory with IServiceProvider.
 //You need to read the configuration directly from builder.Configuration before building the container
 AppRateLimiterOptions rateLimiterConfig = builder.Configuration
@@ -187,8 +128,6 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
-builder.Services.AddScoped<ICommentRepository, MongoDbCommentRepository>();
-builder.Services.AddScoped<IEventSearchService, EventSearchService>();
 builder.Services.AddScoped<IEventService, EventService>();
 
 WebApplication app = builder.Build();

@@ -17,7 +17,7 @@ namespace EventManager.IntegrationTests;
 /// (ADR-014 JWT Bearer + httpOnly cookie): unauthenticated requests are rejected, and a request
 /// carrying a valid access token cookie is let through.
 /// </summary>
-public class HealthEndpointAuthorizationTests : IClassFixture<WebApplicationFactory<Program>>
+public class HealthEndpointAuthorizationTests : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private const string TestSecret = "integration-test-signing-key-please-ignore-32bytes+";
     private const string Issuer     = "EventManager";
@@ -26,7 +26,7 @@ public class HealthEndpointAuthorizationTests : IClassFixture<WebApplicationFact
 
     private readonly HttpClient _client;
 
-    public HealthEndpointAuthorizationTests(WebApplicationFactory<Program> factory)
+    public HealthEndpointAuthorizationTests(IntegrationTestWebApplicationFactory factory)
     {
         _client = factory.WithWebHostBuilder(builder =>
         {
