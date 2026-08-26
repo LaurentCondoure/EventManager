@@ -1,4 +1,5 @@
 using EventManager.Domain.Events.Entities;
+using EventManager.Domain.Exceptions;
 using EventManager.Infrastructure.Options;
 using EventManager.Infrastructure.Repositories;
 using EventManager.InfrastructureTests.Fixtures;
@@ -182,6 +183,17 @@ public class SqlServerEventRepositoryTests : IClassFixture<SqlServerFixture>
         result.Category.Should().Be("Théâtre");
         result.ArtistName.Should().Be("Nouveau Artiste");
         result.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_UnknownId_ThrowsNotFoundException()
+    {
+        var @event = BuildEvent("Unknown Event");
+        @event.Id = Guid.NewGuid();
+
+        Func<Task> action = () => _sut.UpdateAsync(@event);
+
+        await action.Should().ThrowAsync<NotFoundException>();
     }
 
     // ── DeleteAsync ──────────────────────────────────────────────────────────

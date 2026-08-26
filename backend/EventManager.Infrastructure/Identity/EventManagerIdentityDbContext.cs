@@ -15,4 +15,7 @@ namespace EventManager.Infrastructure.Identity;
 public class EventManagerIdentityDbContext(DbContextOptions<EventManagerIdentityDbContext> options)
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    public DbSet<PasswordHistory> PasswordHistory => Set<PasswordHistory>();
 }
