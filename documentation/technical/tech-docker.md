@@ -169,10 +169,14 @@ This mirrors the real `docker-compose.yml` topology (Varnish → backend) closel
 | SQL Server 2022 | `mcr.microsoft.com/mssql/server:2022-latest` | 1433 | `eventmanager-sqlserver` |
 | Redis | `redis:7-alpine` | 6379 | `eventmanager-redis` |
 | MongoDB | `mongo:7` | 27017 | `eventmanager-mongodb` |
-| Elasticsearch | `docker.elastic.co/elasticsearch/elasticsearch:8.11.0` | 9200 | `eventmanager-elasticsearch` |
+| Elasticsearch | `docker.elastic.co/elasticsearch/elasticsearch:9.0.2` | 9200 | `eventmanager-elasticsearch` |
 | Varnish | `varnish:7` | 8080 | `eventmanager-varnish` |
 
 A `sql-init` companion service automatically runs all scripts in `database/migrations/` in alphabetical order once SQL Server is healthy, then exits. Adding a new migration file is sufficient — no change to `docker-compose.yml` needed.
+
+> **Nota bene — Elasticsearch major version upgrades:** an existing `elasticsearch-data` volume created under an older major version refuses to start under a newer one directly. Bumping `8.11.0` → `9.0.2` on a volume still holding `8.11.0` data fails at boot with `cannot upgrade a node from version [8.11.0] directly to version [9.0.2], upgrade to version [8.18.0] first` — this is Elasticsearch's own upgrade-path rule, not specific to this project. When bumping the Elasticsearch image tag, remove the stale volume first — `docker volume rm docker_elasticsearch-data` (or `docker compose down -v` to wipe everything) — then `docker compose up -d elasticsearch` starts clean. A fresh environment (new clone, CI, new machine) is unaffected, since it has no pre-existing volume.
+>
+> Image tags are also duplicated across `docker-compose.yml` and the Testcontainers fixtures in `EventManager.InfrastructureTests/Fixtures/` (centralised in `ContainerImages.cs` on the test side) — nothing enforces they stay in sync automatically. Update both when bumping a version.
 
 **Note — Varnish:** Varnish proxies HTTP requests to the API running on the host machine (`host.docker.internal:5256`). The API must be started separately before Varnish can serve requests. On Linux, `host.docker.internal` is resolved via `extra_hosts: host.docker.internal:host-gateway` in `docker-compose.yml` (handled automatically on Docker Desktop for Windows/Mac).
 

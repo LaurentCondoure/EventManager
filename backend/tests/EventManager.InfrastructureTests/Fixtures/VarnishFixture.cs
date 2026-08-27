@@ -38,7 +38,7 @@ public class VarnishFixture : IAsyncLifetime
 
         await _backend.StartAsync();
 
-        _varnish = new ContainerBuilder("varnish:7")
+        _varnish = new ContainerBuilder(ContainerImages.Varnish)
             .WithNetwork(_network)
             .WithPortBinding(80, assignRandomHostPort: true)
             .WithResourceMapping(Encoding.UTF8.GetBytes(VclContent), "/etc/varnish/default.vcl")

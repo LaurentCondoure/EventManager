@@ -5,7 +5,7 @@ namespace EventManager.InfrastructureTests.Fixtures;
 
 public class SqlServerFixture : IAsyncLifetime
 {
-    private readonly MsSqlContainer _container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
+    private readonly MsSqlContainer _container = new MsSqlBuilder(ContainerImages.SqlServer)
         .Build();
 
     public string ConnectionString => _container.GetConnectionString();
