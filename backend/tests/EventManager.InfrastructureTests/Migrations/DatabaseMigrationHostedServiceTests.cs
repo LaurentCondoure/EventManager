@@ -33,7 +33,8 @@ public sealed class DatabaseMigrationHostedServiceTests : IClassFixture<Migratio
         (await eventContext.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
         (await identityContext.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)).Should().BeEmpty();
         (await eventContext.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)).Should().ContainSingle("20260826075538_InitialEvents");
-        (await identityContext.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)).Should().ContainSingle("20260826073900_InitialIdentity");
+        (await identityContext.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)).Should()
+            .Contain(["20260826073900_InitialIdentity", "20260826111408_SeedIdentityRoles"]);
 
         (await eventContext.Database
             .SqlQueryRaw<int>("SELECT COUNT(*) AS [Value] FROM sys.tables WHERE name = 'Events'")

@@ -148,6 +148,13 @@ dotnet user-secrets set "Jwt:Secret" "<a random string, 32+ characters>" --proje
 dotnet user-secrets set "ApiKey:Value" "<a random string>" --project backend/EventManager.Api
 ```
 
+First super admin seed (ADR-017) — provisioned automatically at startup from these two flat environment variables (no nested section) if no super admin account exists yet. **Required:** the API fails to start if either is unset.
+
+```bash
+dotnet user-secrets set "SEED_ADMIN_EMAIL" "admin@example.com" --project backend/EventManager.Api
+dotnet user-secrets set "SEED_ADMIN_PASSWORD" "<a strong local password>" --project backend/EventManager.Api
+```
+
 ### Infrastructure
 
 Start all services:
@@ -167,6 +174,8 @@ dotnet run --project backend/EventManager.Api --launch-profile https
 ```
 
 The API is available on `https://localhost:7029` and `http://localhost:5256` with the default launch profile. Migration progress is written to the API logs; applied migrations are also recorded in `__EFMigrationsHistory` in each database.
+
+On a fresh database, the same startup sequence also seeds the three static roles (`organizer`, `admin`, `super_admin` — ADR-016, via migration) and provisions the first super admin account from `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` (ADR-017, via a hosted service that runs after migrations). Both are skipped silently on subsequent runs. The provisioned account has `MustResetPassword = true`; there is no working login endpoint yet to exercise it (`/auth/login` is a TECH-001 placeholder pending TASK-001).
 
 
 

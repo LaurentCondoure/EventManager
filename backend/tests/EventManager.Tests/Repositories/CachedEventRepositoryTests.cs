@@ -60,7 +60,7 @@ public class CachedEventRepositoryTests
 
         // Act
         var result = await _sut.GetAllAsync();
-            
+
         // Assert
         _innerMock.Verify(r => r.GetAllAsync(1, 20), Times.Once);
         _dbMock.Verify(d => d.StringSetAsync(
@@ -102,7 +102,7 @@ public class CachedEventRepositoryTests
         // Act
         await _sut.GetAllAsync();
 
-        // Assert — the page lookup must use the version returned by Redis
+        // Assert â€” the page lookup must use the version returned by Redis
         _dbMock.Verify(d => d.StringGetAsync(
             It.Is<RedisKey>(k => ((string)k!).Contains(":v5")),
             It.IsAny<CommandFlags>()), Times.Once);
@@ -236,7 +236,7 @@ public class CachedEventRepositoryTests
     /// <remarks>
     /// StackExchange.Redis 2.12.x introduced a new priority overload:     /// it is the one that the compiler chooses for StringSetAsync(key, value, Ttl)
     /// Task<bool> StringSetAsync(RedisKey key, RedisValue value, Expiration expiry = default, ValueCondition when = default, CommandFlags flags = CommandFlags.None);
-    /// TimeSpan implicitly converts to Expiration.The old overloads with TimeSpan? no longer have default values — so they can no longer be resolved with 3 arguments.
+    /// TimeSpan implicitly converts to Expiration.The old overloads with TimeSpan? no longer have default values â€” so they can no longer be resolved with 3 arguments.
     /// </remarks>
     private void SetupStringSet() =>
         _dbMock.Setup(d => d.StringSetAsync(
