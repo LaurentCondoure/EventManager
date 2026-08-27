@@ -26,7 +26,7 @@ Without a super admin account in the database, no login can be tested end-to-end
 ## Description
 
 - On application startup, check if a super admin account exists in `EventManager_Identity`
-- If none exists, create one from environment variables (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`)
+- If none exists, create one from environment variables (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`)
 - Account is created with `MustResetPassword = true` and role `super_admin`
 - If account already exists, provisioning is skipped silently
 - Provisioning runs after migrations are applied
@@ -36,7 +36,7 @@ Without a super admin account in the database, no login can be tested end-to-end
 ## Acceptance Criteria
 
 - [ ] On fresh database startup, super admin account is created automatically
-- [ ] Credentials are read exclusively from environment variables
+- [ ] Credentials are read exclusively from environment variables (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`)
 - [ ] `MustResetPassword = true` is set on the provisioned account
 - [ ] Role `super_admin` is assigned correctly
 - [ ] Provisioning is idempotent â€” running twice does not create a duplicate or throw

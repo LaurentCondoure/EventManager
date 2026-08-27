@@ -31,6 +31,11 @@ public static class InfrastructureServiceCollectionExtensions
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));
         services.Configure<MongoDbOptions>(configuration.GetSection(MongoDbOptions.SectionName));
         services.Configure<ElasticsearchOptions>(configuration.GetSection(ElasticsearchOptions.SectionName));
+        services.Configure<SeedAdminOptions>(options =>
+        {
+            options.Email = configuration["SEED_ADMIN_EMAIL"] ?? string.Empty;
+            options.Password = configuration["SEED_ADMIN_PASSWORD"] ?? string.Empty;
+        });
 
         services.AddDbContext<EventManagerIdentityDbContext>((sp, options) =>
             options.UseSqlServer(sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.IdentityConnection));
@@ -55,6 +60,9 @@ public static class InfrastructureServiceCollectionExtensions
             .AddDefaultTokenProviders();
 
         services.AddDatabaseMigrations();
+        // Registered after AddDatabaseMigrations() — hosted services start in registration order,
+        // and provisioning must run after Identity migrations are applied (ADR-017).
+        services.AddHostedService<SuperAdminProvisioningHostedService>();
         services.AddScoped<IIdentityService, IdentityService>();
 
         services.AddSingleton<IConnectionMultiplexer>(sp =>
