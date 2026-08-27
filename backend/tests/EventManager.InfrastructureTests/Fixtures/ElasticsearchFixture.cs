@@ -6,7 +6,7 @@ namespace EventManager.InfrastructureTests.Fixtures;
 
 public class ElasticsearchFixture : IAsyncLifetime
 {
-    private readonly ElasticsearchContainer _container = new ElasticsearchBuilder("docker.elastic.co/elasticsearch/elasticsearch:9.0.2")
+    private readonly ElasticsearchContainer _container = new ElasticsearchBuilder(ContainerImages.Elasticsearch)
         .Build();
 
     public ElasticsearchClient Client { get; private set; } = default!;

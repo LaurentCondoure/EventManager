@@ -7,7 +7,7 @@ namespace EventManager.InfrastructureTests.Fixtures;
 
 public class MongoDbFixture : IAsyncLifetime
 {
-    private readonly MongoDbContainer _container = new MongoDbBuilder("mongo:7")
+    private readonly MongoDbContainer _container = new MongoDbBuilder(ContainerImages.MongoDb)
         .Build();
 
     public IMongoClient Client { get; private set; } = default!;

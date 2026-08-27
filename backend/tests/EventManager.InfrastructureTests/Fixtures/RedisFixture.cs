@@ -5,7 +5,7 @@ namespace EventManager.InfrastructureTests.Fixtures;
 
 public class RedisFixture : IAsyncLifetime
 {
-    private readonly RedisContainer _container = new RedisBuilder("redis:7-alpine")
+    private readonly RedisContainer _container = new RedisBuilder(ContainerImages.Redis)
         .Build();
 
     public IConnectionMultiplexer Connection { get; private set; } = default!;
