@@ -21,6 +21,7 @@ main
   └── develop
         ├── feature-[slug]
         │     └── [optional] subtask-[slug]
+        ├── bugfix-[slug]
         └── release-vX
               └── stabilisation bug fixes
                     ├── merge into main (tag vX.Y.Z)
@@ -35,6 +36,7 @@ main
 | `develop` | Integration branch. Accumulates completed features for the current version. | `main` | — |
 | `feature-[slug]` | Implements a user story or a group of related tasks. | `develop` | `develop` |
 | `subtask-[slug]` | Implements a single task or technical task within a feature. | `feature-[slug]` | `feature-[slug]` |
+| `bugfix-[slug]` | Fixes a non-critical defect found outside a release stabilisation (e.g. during ongoing development), not tied to a single feature branch. | `develop` | `develop` |
 | `release-vX` | Stabilisation branch for the version. Isolates release preparation from ongoing development. | `develop` | `main` + `develop` |
 | `hotfix-[slug]` | Addresses a critical defect in production that cannot wait for the next version. | `main` | `main` + `develop` |
 | `docs-[slug]` | Adds or updates transversal documentation (TAD, ADR, design, guidelines, runbook, changelog). | `develop` | `develop` |
@@ -45,6 +47,7 @@ main
 |---|---|---|
 | Feature | `feature-[slug]` | `feature-superadmin-login` |
 | Subtask | `subtask-[slug]` | `subtask-identity-setup` |
+| Bugfix | `bugfix-[slug]` | `bugfix-docker-image-consistency` |
 | Release | `release-vX` | `release-v1` |
 | Hotfix | `hotfix-[slug]` | `hotfix-login-redirect` |
 | Documentation | `docs-[slug]` | `docs-tat-v1` |
@@ -59,6 +62,7 @@ main
 - `release-vX` is deleted after both merges are done.
 - A `feature-[slug]` branch is deleted after merge into `develop`.
 - A `subtask-[slug]` branch is deleted after merge into its parent `feature-[slug]`.
+- A `bugfix-[slug]` branch is created from `develop` for a non-critical defect that doesn't belong to an in-progress feature branch (e.g. found during exploration, or spanning multiple already-merged features). It merges into `develop` via pull request and is deleted afterward — same lifecycle as `feature-[slug]`. Use a `hotfix-[slug]` instead if the defect is critical and already in production.
 - Branch names are in kebab-case.
 - A `docs-[slug]` branch is used for transversal documentation that does not belong to a specific feature (TAD, ADR, design, guidelines, runbook, changelog). Feature-specific documentation (scoping note, DoD, stories, tasks) is committed on the corresponding `feature-[slug]` branch.
 - A `docs-[slug]` branch is deleted after merge into `develop`.
@@ -262,6 +266,7 @@ CD (Continuous Deployment) covers the local environment only at this stage. Prod
 | 1.0 | 2026-08-17 | Document created |
 | 1.1 | 2026-08-17 | Added release branch to branching strategy and release process |
 | 1.2 | 2026-08-17 | Added docs branch convention. Added GitHub repository configuration section. |
+| 1.3 | 2026-08-27 | Added `bugfix-[slug]` branch convention — authorized to target `develop` alongside `feature-*`, `docs-*`, `release-*`, `hotfix-*`. |
 
 ---
 

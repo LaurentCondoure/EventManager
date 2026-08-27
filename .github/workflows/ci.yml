@@ -30,9 +30,9 @@ jobs:
         if: github.base_ref == 'develop'
         run: |
           SOURCE="${{ github.head_ref }}"
-          if [[ "$SOURCE" != feature-* && "$SOURCE" != docs-* && "$SOURCE" != release-* && "$SOURCE" != hotfix-* ]]; then
+          if [[ "$SOURCE" != feature-* && "$SOURCE" != docs-* && "$SOURCE" != release-* && "$SOURCE" != hotfix-* && "$SOURCE" != bugfix-* ]]; then
             echo "❌ Branch '$SOURCE' is not allowed to merge into develop."
-            echo "Only feature-*, docs-*, release-* and hotfix-* branches can target develop."
+            echo "Only feature-*, docs-*, release-*, hotfix-* and bugfix-* branches can target develop."
             exit 1
           fi
           echo "✅ Source branch '$SOURCE' is authorized to target develop."
