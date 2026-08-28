@@ -1,4 +1,4 @@
-using EventManager.Api.Auth;
+using EventManager.Api.Auth.Authentication;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

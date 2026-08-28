@@ -8,7 +8,7 @@ using EventManager.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
-namespace EventManager.Api.Auth;
+namespace EventManager.Api.Auth.Authentication;
 
 /// <summary>Scheme name and header name for the static system API key (ADR-021).</summary>
 public static class ApiKeyAuthenticationDefaults

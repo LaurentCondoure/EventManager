@@ -64,6 +64,8 @@ public static class InfrastructureServiceCollectionExtensions
         // and provisioning must run after Identity migrations are applied (ADR-017).
         services.AddHostedService<SuperAdminProvisioningHostedService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddSingleton<IConnectionMultiplexer>(sp =>
             ConnectionMultiplexer.Connect(sp.GetRequiredService<IOptions<RedisOptions>>().Value.ConnectionString));
