@@ -1,12 +1,16 @@
 using EventManager.Api;
-using EventManager.Api.Auth;
+using EventManager.Api.Auth.Authentication;
 using EventManager.Api.ExceptionHandlers;
 using EventManager.Api.Validators;
 using EventManager.Domain.Events.Interfaces;
 using EventManager.Domain.Events.Services;
+using EventManager.Domain.Identity.Interfaces;
+using EventManager.Domain.Identity.Services;
 using EventManager.Infrastructure.DependencyInjection;
 using EventManager.Infrastructure.Options;
 using AppRateLimiterOptions = EventManager.Infrastructure.Options.RateLimiterOptions;
+using IAppAuthenticationService = EventManager.Domain.Identity.Interfaces.IAuthenticationService;
+using AppAuthenticationService = EventManager.Domain.Identity.Services.AuthenticationService;
 
 using System.Text;
 using System.Threading.RateLimiting;
@@ -53,6 +57,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEventInputValidator>();
 builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
 builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+builder.Services.AddExceptionHandler<UnauthorizedExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -129,6 +134,9 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services.AddScoped<IEventService, EventService>();
+// Aliased above: ASP.NET Core's own Microsoft.AspNetCore.Authentication.IAuthenticationService/
+// AuthenticationService (in scope via the JwtBearer usings) collide with our identically-named types.
+builder.Services.AddScoped<IAppAuthenticationService, AppAuthenticationService>();
 
 WebApplication app = builder.Build();
 

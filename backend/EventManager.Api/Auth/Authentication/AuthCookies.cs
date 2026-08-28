@@ -1,4 +1,4 @@
-namespace EventManager.Api.Auth;
+namespace EventManager.Api.Auth.Authentication;
 
 /// <summary>Names of the httpOnly cookies carrying the JWT access and refresh tokens (ADR-014).</summary>
 public static class AuthCookieNames

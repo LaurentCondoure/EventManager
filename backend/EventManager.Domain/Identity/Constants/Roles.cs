@@ -27,4 +27,13 @@ public static class Roles
         Role.SuperAdmin => Guid.Parse("00000000-0000-0000-0000-000000000003"),
         _ => throw new ArgumentOutOfRangeException(nameof(role), role, null)
     };
+
+    /// <summary>Reverse of <see cref="ToRoleName"/> — parses a JWT/Identity role claim value back to a <see cref="Role"/>.</summary>
+    public static Role FromRoleName(this string roleName) => roleName switch
+    {
+        "organizer"   => Role.Organizer,
+        "admin"       => Role.Admin,
+        "super_admin" => Role.SuperAdmin,
+        _ => throw new ArgumentOutOfRangeException(nameof(roleName), roleName, null)
+    };
 }
